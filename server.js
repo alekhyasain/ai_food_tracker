@@ -14,7 +14,7 @@ app.use(express.static('.'));
 
 // Serve static files
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'indian_food_tracker.html'));
+    res.sendFile(path.join(__dirname, 'food_tracker.html'));
 });
 
 // API Routes for ingredient management
