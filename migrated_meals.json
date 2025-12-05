@@ -1,0 +1,94 @@
+{
+  "2025-12-03": [
+    {
+      "id": 1764888784297.3318,
+      "timestamp": "2025-12-03T08:30:00.000Z",
+      "description": "Breakfast: Oatmeal with berries and nuts",
+      "nutrition": {
+        "calories": 350,
+        "protein": 12,
+        "carbs": 45,
+        "fat": 8,
+        "fiber": 6
+      },
+      "source": "ingredients",
+      "ingredients": [
+        {
+          "name": "Rolled Oats",
+          "quantity": 0.5,
+          "measurement": "cup"
+        },
+        {
+          "name": "Mixed Berries",
+          "quantity": 0.25,
+          "measurement": "cup"
+        },
+        {
+          "name": "Almonds",
+          "quantity": 10,
+          "measurement": "pieces"
+        }
+      ]
+    },
+    {
+      "id": 1764888784297.62,
+      "timestamp": "2025-12-03T12:45:00.000Z",
+      "description": "Lunch: Quinoa salad with vegetables",
+      "nutrition": {
+        "calories": 420,
+        "protein": 15,
+        "carbs": 52,
+        "fat": 12,
+        "fiber": 8
+      },
+      "source": "database",
+      "ingredients": [
+        {
+          "name": "Quinoa",
+          "quantity": 0.75,
+          "measurement": "cup"
+        },
+        {
+          "name": "Mixed Vegetables",
+          "quantity": 1,
+          "measurement": "cup"
+        },
+        {
+          "name": "Olive Oil",
+          "quantity": 1,
+          "measurement": "tbsp"
+        }
+      ]
+    },
+    {
+      "id": 1764888784297.2102,
+      "timestamp": "2025-12-03T19:15:00.000Z",
+      "description": "Dinner: Grilled chicken with sweet potato",
+      "nutrition": {
+        "calories": 485,
+        "protein": 35,
+        "carbs": 28,
+        "fat": 18,
+        "fiber": 4
+      },
+      "source": "manual",
+      "ingredients": [
+        {
+          "name": "Chicken Breast",
+          "quantity": 150,
+          "measurement": "g"
+        },
+        {
+          "name": "Sweet Potato",
+          "quantity": 1,
+          "measurement": "medium"
+        },
+        {
+          "name": "Broccoli",
+          "quantity": 1,
+          "measurement": "cup"
+        }
+      ]
+    }
+  ]
+}

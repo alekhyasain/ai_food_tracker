@@ -736,6 +736,14 @@ app.post('/api/export-excel', async (req, res) => {
             endDate: endDate
         });
         
+        // DIAGNOSTIC LOGGING - Check for December 3rd specifically
+        const dec3Data = mealsByDate['2025-12-03'];
+        console.log('🔍 EXPORT_DEBUG: December 3rd data check:', {
+            hasDecember3Data: !!dec3Data,
+            december3MealCount: dec3Data?.length || 0,
+            december3Meals: dec3Data?.map(m => ({ description: m.description, time: m.time })) || []
+        });
+        
         if (dates.length === 0) {
             console.error('❌ EXPORT_SERVER: No meal data found');
             return res.status(400).json({ error: 'No meal data found for export' });
@@ -743,50 +751,89 @@ app.post('/api/export-excel', async (req, res) => {
         
         console.log('📊 EXPORT_SERVER: Starting Excel export generation...');
         
-        console.log('📊 EXPORT_SERVER: Creating Excel workbook...');
-        // Create workbook
-        const workbook = new ExcelJS.Workbook();
-        workbook.creator = 'Food Diary App';
-        workbook.lastModifiedBy = 'Food Diary App';
-        workbook.created = new Date();
-        workbook.modified = new Date();
+        // Generate filename and path - use YYYY-MM format
+        let exportFilename = filename;
+        if (!exportFilename) {
+            // Determine the month from the data being exported
+            const firstDate = dates[0];
+            const date = new Date(firstDate + 'T00:00:00');
+            const yearMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            exportFilename = `${yearMonth}.xlsx`;
+        }
+        const filePath = path.join(__dirname, 'trackers', exportFilename);
         
-        console.log('📊 EXPORT_SERVER: Grouping meals by month...');
-        // Group meals by month
-        const mealsByMonth = {};
-        Object.entries(mealsByDate).forEach(([dateKey, meals]) => {
-            if (meals && meals.length > 0) {
-                const date = new Date(dateKey + 'T00:00:00');
-                const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-                const monthName = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
-                
-                if (!mealsByMonth[monthKey]) {
-                    mealsByMonth[monthKey] = {
-                        name: monthName,
-                        dates: {}
-                    };
-                }
-                mealsByMonth[monthKey].dates[dateKey] = meals;
+        console.log('📁 EXPORT_SERVER: File path:', filePath);
+        
+        // Check if file already exists
+        let workbook;
+        let fileExistedAtStart = false;
+        let isNewFileCreation = false;
+        
+        try {
+            await fs.access(filePath);
+            fileExistedAtStart = true;
+            console.log('📄 EXPORT_SERVER: Existing file found, will append data');
+            
+            // Load existing workbook
+            workbook = new ExcelJS.Workbook();
+            await workbook.xlsx.readFile(filePath);
+        } catch (error) {
+            console.log('📄 EXPORT_SERVER: Creating new file');
+            fileExistedAtStart = false;
+            isNewFileCreation = true;
+            
+            // Create new workbook
+            workbook = new ExcelJS.Workbook();
+            workbook.creator = 'Food Diary App';
+            workbook.lastModifiedBy = 'Food Diary App';
+            workbook.created = new Date();
+            workbook.modified = new Date();
+        }
+        
+        console.log('📊 EXPORT_SERVER: Creating separate sheets per date...');
+        
+        // Create sheets for each individual date
+        const sortedDates = dates.sort();
+        let totalMealsProcessed = 0;
+        let duplicateDatesSkipped = [];
+        
+        console.log('📅 EXPORT_SERVER: Processing individual dates:', {
+            totalDates: sortedDates.length,
+            dateRange: sortedDates.length > 0 ? `${sortedDates[0]} to ${sortedDates[sortedDates.length - 1]}` : 'none',
+            sampleDates: sortedDates.slice(0, 5)
+        });
+        
+        sortedDates.forEach(dateKey => {
+            const meals = mealsByDate[dateKey];
+            if (!meals || meals.length === 0) return;
+            
+            const date = new Date(dateKey + 'T00:00:00');
+            const sheetName = dateKey; // Use YYYY-MM-DD format as sheet name
+            
+            console.log('📄 EXPORT_SERVER: Processing date sheet:', {
+                dateKey,
+                sheetName,
+                mealCount: meals.length,
+                fileExistedAtStart
+            });
+            
+            // Check if worksheet already exists when appending
+            let worksheet = fileExistedAtStart ? workbook.getWorksheet(sheetName) : null;
+            let isDuplicateDate = false;
+            
+            if (worksheet) {
+                // Sheet already exists - this is a duplicate date
+                isDuplicateDate = true;
+                duplicateDatesSkipped.push(dateKey);
+                console.log('⚠️ DUPLICATE_CHECK: Sheet already exists for date:', dateKey, '- skipping to prevent duplication');
+                return;
             }
-        });
-        
-        console.log('📊 EXPORT_SERVER: Monthly data grouped:', {
-            totalMonths: Object.keys(mealsByMonth).length,
-            months: Object.keys(mealsByMonth),
-            totalMealsPerMonth: Object.entries(mealsByMonth).map(([monthKey, monthData]) => ({
-                month: monthKey,
-                dates: Object.keys(monthData.dates).length,
-                meals: Object.values(monthData.dates).reduce((sum, meals) => sum + meals.length, 0)
-            }))
-        });
-        
-        // Create sheets for each month
-        Object.entries(mealsByMonth).forEach(([monthKey, monthData]) => {
-            const worksheet = workbook.addWorksheet(monthData.name);
+            
+            // Create new worksheet for this date
+            worksheet = workbook.addWorksheet(sheetName);
             
             // Set column widths
             worksheet.columns = [
-                { header: 'Date', key: 'date', width: 15 },
                 { header: 'Time', key: 'time', width: 10 },
                 { header: 'Meal Description', key: 'description', width: 40 },
                 { header: 'Calories', key: 'calories', width: 10 },
@@ -809,151 +856,105 @@ app.post('/api/export-excel', async (req, res) => {
             headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
             headerRow.height = 25;
             
-            let currentRow = 2;
-            let monthTotals = { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, mealCount: 0 };
-            
-            // Sort dates within the month
-            const sortedDates = Object.keys(monthData.dates).sort();
-            
-            sortedDates.forEach(dateKey => {
-                const meals = monthData.dates[dateKey];
-                const date = new Date(dateKey + 'T00:00:00');
-                const formattedDate = date.toLocaleDateString('en-US', {
-                    weekday: 'short',
-                    month: 'short',
-                    day: 'numeric'
-                });
-                
-                let dayTotals = { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
-                let dayStartRow = currentRow;
-                
-                // Add meals for this day
-                meals.forEach(meal => {
-                    const mealTime = new Date(meal.timestamp).toLocaleTimeString('en-US', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: false
-                    });
-                    
-                    // Format ingredients list
-                    let ingredientsList = '';
-                    if (meal.ingredients && meal.ingredients.length > 0) {
-                        ingredientsList = meal.ingredients.map(ing =>
-                            `${ing.name} (${ing.quantity}x ${ing.measurement})`
-                        ).join('; ');
-                    }
-                    
-                    const row = worksheet.addRow({
-                        date: formattedDate,
-                        time: mealTime,
-                        description: meal.description,
-                        calories: meal.nutrition.calories,
-                        protein: meal.nutrition.protein,
-                        carbs: meal.nutrition.carbs,
-                        fat: meal.nutrition.fat,
-                        fiber: meal.nutrition.fiber,
-                        source: meal.source === 'database' ? 'Database' :
-                               meal.source === 'ingredients' ? 'Custom Recipe' : 'Manual Entry',
-                        ingredients: ingredientsList
-                    });
-                    
-                    // Style data rows
-                    row.alignment = { vertical: 'top', wrapText: true };
-                    row.height = Math.max(20, Math.ceil(ingredientsList.length / 50) * 15);
-                    
-                    // Add to day totals
-                    dayTotals.calories += meal.nutrition.calories;
-                    dayTotals.protein += meal.nutrition.protein;
-                    dayTotals.carbs += meal.nutrition.carbs;
-                    dayTotals.fat += meal.nutrition.fat;
-                    dayTotals.fiber += meal.nutrition.fiber;
-                    
-                    currentRow++;
-                });
-                
-                // Add day summary row
-                if (meals.length > 1) {
-                    const summaryRow = worksheet.addRow({
-                        date: '',
-                        time: '',
-                        description: `📊 Daily Total (${meals.length} meals)`,
-                        calories: Math.round(dayTotals.calories),
-                        protein: Math.round(dayTotals.protein * 10) / 10,
-                        carbs: Math.round(dayTotals.carbs * 10) / 10,
-                        fat: Math.round(dayTotals.fat * 10) / 10,
-                        fiber: Math.round(dayTotals.fiber * 10) / 10,
-                        source: 'SUMMARY',
-                        ingredients: ''
-                    });
-                    
-                    // Style summary row
-                    summaryRow.font = { bold: true };
-                    summaryRow.fill = {
-                        type: 'pattern',
-                        pattern: 'solid',
-                        fgColor: { argb: 'E7E6E6' }
-                    };
-                    currentRow++;
-                }
-                
-                // Add spacing between days
-                worksheet.addRow({});
-                currentRow++;
-                
-                // Add to month totals
-                monthTotals.calories += dayTotals.calories;
-                monthTotals.protein += dayTotals.protein;
-                monthTotals.carbs += dayTotals.carbs;
-                monthTotals.fat += dayTotals.fat;
-                monthTotals.fiber += dayTotals.fiber;
-                monthTotals.mealCount += meals.length;
-            });
-            
-            // Add month summary at the end
-            worksheet.addRow({});
-            const monthSummaryRow = worksheet.addRow({
-                date: '',
+            // Add date header row
+            const dateHeaderRow = worksheet.addRow({
                 time: '',
-                description: `🗓️ ${monthData.name} TOTAL (${monthTotals.mealCount} meals)`,
-                calories: Math.round(monthTotals.calories),
-                protein: Math.round(monthTotals.protein * 10) / 10,
-                carbs: Math.round(monthTotals.carbs * 10) / 10,
-                fat: Math.round(monthTotals.fat * 10) / 10,
-                fiber: Math.round(monthTotals.fiber * 10) / 10,
-                source: 'MONTH TOTAL',
+                description: `📅 ${date.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                })}`,
+                calories: '',
+                protein: '',
+                carbs: '',
+                fat: '',
+                fiber: '',
+                source: '',
                 ingredients: ''
             });
             
-            // Style month summary
-            monthSummaryRow.font = { bold: true, size: 12 };
-            monthSummaryRow.fill = {
+            dateHeaderRow.font = { bold: true, size: 14 };
+            dateHeaderRow.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'F2F2F2' }
+            };
+            
+            // Add empty row for spacing
+            worksheet.addRow({});
+            
+            let dayTotals = { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
+            
+            // Add meals for this day
+            meals.forEach((meal, mealIndex) => {
+                const mealTime = new Date(meal.timestamp).toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                });
+                
+                // Format ingredients list - handle both array and string formats
+                let ingredientsList = '';
+                if (meal.ingredients) {
+                    if (Array.isArray(meal.ingredients) && meal.ingredients.length > 0) {
+                        // Handle array format (expected format)
+                        ingredientsList = meal.ingredients.map(ing =>
+                            `${ing.name} (${ing.quantity}x ${ing.measurement})`
+                        ).join('; ');
+                    } else if (typeof meal.ingredients === 'string' && meal.ingredients.trim()) {
+                        // Handle string format (fallback for compatibility)
+                        ingredientsList = meal.ingredients.trim();
+                    }
+                }
+                
+                const row = worksheet.addRow({
+                    time: mealTime,
+                    description: meal.description,
+                    calories: meal.nutrition.calories,
+                    protein: meal.nutrition.protein,
+                    carbs: meal.nutrition.carbs,
+                    fat: meal.nutrition.fat,
+                    fiber: meal.nutrition.fiber,
+                    source: meal.source === 'database' ? 'Database' :
+                           meal.source === 'ingredients' ? 'Custom Recipe' : 'Manual Entry',
+                    ingredients: ingredientsList
+                });
+                
+                // Style data rows
+                row.alignment = { vertical: 'top', wrapText: true };
+                row.height = Math.max(20, Math.ceil(ingredientsList.length / 50) * 15);
+                
+                // Add to day totals
+                dayTotals.calories += meal.nutrition.calories;
+                dayTotals.protein += meal.nutrition.protein;
+                dayTotals.carbs += meal.nutrition.carbs;
+                dayTotals.fat += meal.nutrition.fat;
+                dayTotals.fiber += meal.nutrition.fiber;
+            });
+            
+            // Add day summary row
+            worksheet.addRow({});
+            const summaryRow = worksheet.addRow({
+                time: '',
+                description: `📊 Daily Total (${meals.length} meals)`,
+                calories: Math.round(dayTotals.calories),
+                protein: Math.round(dayTotals.protein * 10) / 10,
+                carbs: Math.round(dayTotals.carbs * 10) / 10,
+                fat: Math.round(dayTotals.fat * 10) / 10,
+                fiber: Math.round(dayTotals.fiber * 10) / 10,
+                source: 'SUMMARY',
+                ingredients: ''
+            });
+            
+            // Style summary row
+            summaryRow.font = { bold: true };
+            summaryRow.fill = {
                 type: 'pattern',
                 pattern: 'solid',
                 fgColor: { argb: '4472C4' }
             };
-            monthSummaryRow.font.color = { argb: 'FFFFFF' };
-            
-            // Add daily averages
-            const daysInMonth = sortedDates.length;
-            const avgRow = worksheet.addRow({
-                date: '',
-                time: '',
-                description: `📈 Daily Average (${daysInMonth} days)`,
-                calories: Math.round(monthTotals.calories / daysInMonth),
-                protein: Math.round((monthTotals.protein / daysInMonth) * 10) / 10,
-                carbs: Math.round((monthTotals.carbs / daysInMonth) * 10) / 10,
-                fat: Math.round((monthTotals.fat / daysInMonth) * 10) / 10,
-                fiber: Math.round((monthTotals.fiber / daysInMonth) * 10) / 10,
-                source: 'AVERAGE',
-                ingredients: ''
-            });
-            
-            avgRow.font = { bold: true, italic: true };
-            avgRow.fill = {
-                type: 'pattern',
-                pattern: 'solid',
-                fgColor: { argb: 'D9E2F3' }
-            };
+            summaryRow.font.color = { argb: 'FFFFFF' };
             
             // Add borders to all cells
             worksheet.eachRow((row, rowNumber) => {
@@ -969,36 +970,53 @@ app.post('/api/export-excel', async (req, res) => {
             
             // Freeze the header row
             worksheet.views = [{ state: 'frozen', ySplit: 1 }];
+            
+            totalMealsProcessed += meals.length;
         });
         
         // If no data found, create a summary sheet
-        if (Object.keys(mealsByMonth).length === 0) {
+        if (sortedDates.length === 0) {
             const worksheet = workbook.addWorksheet('No Data');
             worksheet.addRow(['No meal data found for the selected date range.']);
             worksheet.getCell('A1').font = { bold: true, size: 14 };
         }
         
-        console.log('✅ EXPORT_SERVER: Excel workbook created successfully');
-        
-        // Generate filename
-        const exportFilename = filename || `Food_Diary_Export_${new Date().toISOString().split('T')[0]}.xlsx`;
-        
-        console.log('📊 EXPORT_SERVER: Setting response headers and sending file:', {
-            filename: exportFilename,
-            contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            totalSheets: Object.keys(mealsByMonth).length
+        console.log('✅ EXPORT_SERVER: Date sheets created:', {
+            totalDatesProcessed: sortedDates.length,
+            totalMealsProcessed,
+            duplicateDatesSkipped: duplicateDatesSkipped.length,
+            skippedDates: duplicateDatesSkipped
         });
         
-        // Set response headers for file download
-        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        res.setHeader('Content-Disposition', `attachment; filename="${exportFilename}"`);
+        console.log('✅ EXPORT_SERVER: Excel workbook created successfully');
         
-        console.log('📊 EXPORT_SERVER: Writing workbook to response...');
-        // Write workbook to response
-        await workbook.xlsx.write(res);
-        res.end();
+        console.log('💾 EXPORT_SERVER: Saving file to trackers folder:', {
+            filename: exportFilename,
+            filePath: filePath,
+            fileExistedAtStart: fileExistedAtStart,
+            totalSheets: sortedDates.length - duplicateDatesSkipped.length
+        });
         
-        console.log('✅ EXPORT_SERVER: Excel file sent successfully:', exportFilename);
+        // Save workbook to trackers folder
+        await workbook.xlsx.writeFile(filePath);
+        
+        console.log('✅ EXPORT_SERVER: Excel file saved successfully:', filePath);
+        
+        // Send success response instead of file download
+        res.json({
+            success: true,
+            message: fileExistedAtStart ?
+                `Data appended to existing file: ${exportFilename}` :
+                `New file created: ${exportFilename}`,
+            filename: exportFilename,
+            filePath: `trackers/${exportFilename}`,
+            fileExists: fileExistedAtStart,
+            isNewFileCreation: isNewFileCreation,
+            totalSheets: sortedDates.length - duplicateDatesSkipped.length,
+            totalMeals: totalMealsProcessed,
+            duplicateDatesSkipped: duplicateDatesSkipped.length,
+            skippedDates: duplicateDatesSkipped
+        });
         
     } catch (error) {
         console.error('❌ EXPORT_SERVER: Excel export error:', {

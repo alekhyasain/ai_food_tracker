@@ -97,7 +97,7 @@
             </div>
             <!-- Simplified Main Action Buttons -->
             <div class="mt-6 space-y-4">
-                <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-2xl mx-auto">
+                <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-3xl mx-auto">
                     <button onclick="openUnifiedAddModal()" class="unified-btn flex-1 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white px-8 py-4 rounded-xl">
                         <div class="text-center">
                             <div class="text-2xl mb-1">➕</div>
@@ -105,15 +105,24 @@
                             <div class="text-sm opacity-90">Create meals, manage ingredients, or add recipes</div>
                         </div>
                     </button>
-                    <button onclick="openUnifiedLogModal()" class="unified-btn flex-1 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white px-8 py-4 rounded-xl">
+                    <button onclick="startDirectExport()" class="unified-btn flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-4 rounded-xl" id="mainExportButton">
                         <div class="text-center">
-                            <div class="text-2xl mb-1">📝</div>
-                            <div class="font-semibold text-lg">Log Today's Meals</div>
-                            <div class="text-sm opacity-90">View daily summary and export data</div>
+                            <div class="text-2xl mb-1">📊</div>
+                            <div class="font-semibold text-lg">Export to Excel</div>
+                            <div class="text-sm opacity-90">Download your food diary data</div>
                         </div>
                     </button>
                 </div>
-                <p class="text-sm text-gray-500 text-center">Everything you need in just two buttons - simplified and organized!</p>
+                <p class="text-sm text-gray-500 text-center">Everything you need in two simple buttons - add meals and export data!</p>
+                
+                <!-- Export Status Display -->
+                <div id="exportStatusDisplay" class="hidden mt-4 max-w-md mx-auto">
+                    <div id="exportStatusContent" class="p-4 rounded-lg border text-center">
+                        <div id="exportStatusIcon" class="text-2xl mb-2"></div>
+                        <div id="exportStatusMessage" class="font-medium"></div>
+                        <div id="exportStatusDetails" class="text-sm mt-1 opacity-75"></div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -349,7 +358,12 @@
 
                     <!-- Ingredient Builder -->
                     <div class="mt-6">
-                        <h4 class="text-lg font-semibold text-gray-800 mb-3">Add Ingredients:</h4>
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-lg font-semibold text-gray-800">Add Ingredients:</h4>
+                            <button onclick="reloadIngredientsInModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition duration-200" title="Reload ingredients if you need to refresh the list">
+                                🔄 Reload Ingredients
+                            </button>
+                        </div>
                         <div class="space-y-3">
                             <div class="grid grid-cols-3 gap-2">
                                 <select id="recipeIngredientSelect" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -1342,7 +1356,8 @@
         let foodDatabase = {};
         let rawIngredients = {};
         let mealsByDate = {}; // New date-based storage structure
-        let selectedDate = null; // Will be initialized properly in initializeDateSystem
+        let selectedDate = new Date(); // Initialize with current date first
+        selectedDate.setDate(selectedDate.getDate() - 1); // Set to yesterday (Dec 4, 2025)
         let customRecipes = JSON.parse(localStorage.getItem('customRecipes') || '{}');
         let currentRecipeIngredients = [];
         let currentMealIngredients = [];
@@ -1449,10 +1464,11 @@
             console.log('📅 DATE_INIT: Current time:', new Date().toISOString());
             console.log('📅 DATE_INIT: User timezone:', Intl.DateTimeFormat().resolvedOptions().timeZone);
             
-            // Ensure selectedDate is properly initialized
+            // Ensure selectedDate is properly initialized to yesterday
             if (!selectedDate || !(selectedDate instanceof Date) || isNaN(selectedDate.getTime())) {
-                console.log('📅 DATE_INIT: selectedDate was invalid, setting to current date');
+                console.log('📅 DATE_INIT: selectedDate was invalid, setting to yesterday');
                 selectedDate = new Date();
+                selectedDate.setDate(selectedDate.getDate() - 1); // Set to yesterday
                 console.log('📅 DATE_INIT: New selectedDate set to:', selectedDate.toISOString());
             } else {
                 console.log('📅 DATE_INIT: selectedDate already valid:', selectedDate.toISOString().split('T')[0]);
@@ -3607,6 +3623,12 @@
                 return;
             }
             
+            // Ensure databases are loaded before populating
+            if (!foodDatabase || !foodDatabase.dishes) {
+                console.log('⚠️ populateQuickDishes: foodDatabase not loaded yet');
+                return;
+            }
+            
             const allDishes = {...foodDatabase.dishes, ...customRecipes};
             
             container.innerHTML = Object.entries(allDishes).map(([key, dish]) => `
@@ -3767,11 +3789,28 @@
             console.log('🍽️ QUICKDISH: rawIngredients state:', rawIngredients ? 'EXISTS' : 'NULL');
             console.log('🍽️ QUICKDISH: foodDatabase state:', foodDatabase ? 'EXISTS' : 'NULL');
             
-            const servings = parseFloat(document.getElementById(`servings_${dishKey}`).value);
+            const servingsElement = document.getElementById(`servings_${dishKey}`);
+            if (!servingsElement) {
+                console.error('❌ QUICKDISH: Servings element not found for:', dishKey);
+                showErrorMessage('Error: Could not find serving size input');
+                return;
+            }
+            
+            const servings = parseFloat(servingsElement.value);
+            if (!foodDatabase || !foodDatabase.dishes) {
+                console.error('❌ QUICKDISH: foodDatabase not loaded');
+                showErrorMessage('Food database not loaded. Please wait and try again.');
+                return;
+            }
+            
             const allDishes = {...foodDatabase.dishes, ...customRecipes};
             const dish = allDishes[dishKey];
             
-            if (!dish) return;
+            if (!dish) {
+                console.error('❌ QUICKDISH: Dish not found:', dishKey);
+                showErrorMessage('Dish not found: ' + dishKey);
+                return;
+            }
             
             const nutrition = dish.total_per_serving;
             const meal = {
@@ -4474,6 +4513,13 @@
             console.log('🚀 INIT: Current time:', new Date().toISOString());
             console.log('🚀 INIT: rawIngredients state:', rawIngredients ? 'EXISTS' : 'NULL');
             console.log('🚀 INIT: foodDatabase state:', foodDatabase ? 'EXISTS' : 'NULL');
+            
+            // Ensure selectedDate is set to yesterday before initializing
+            if (!selectedDate || !(selectedDate instanceof Date) || isNaN(selectedDate.getTime())) {
+                selectedDate = new Date();
+                selectedDate.setDate(selectedDate.getDate() - 1); // Set to yesterday
+                console.log('🚀 INIT: Set selectedDate to yesterday:', selectedDate.toISOString().split('T')[0]);
+            }
             
             // Initialize the date-based system FIRST to prevent race conditions
             initializeDateSystem();
@@ -5609,37 +5655,79 @@
         }
 
         async function startExport() {
+            console.log('🚀 EXPORT_DEBUG: ===== STARTING EXPORT PROCESS =====');
+            console.log('🚀 EXPORT_DEBUG: Export button clicked at:', new Date().toISOString());
+            
             const exportButton = document.getElementById('exportButton');
             const exportProgress = document.getElementById('exportProgress');
             const progressText = document.getElementById('exportProgressText');
             
+            console.log('🔍 EXPORT_DEBUG: DOM elements found:', {
+                exportButton: !!exportButton,
+                exportProgress: !!exportProgress,
+                progressText: !!progressText
+            });
+            
             try {
+                console.log('🔄 EXPORT_DEBUG: Step 1 - Disabling button and showing progress');
                 // Disable button and show progress
                 exportButton.disabled = true;
                 exportProgress.classList.remove('hidden');
                 progressText.textContent = 'Preparing data...';
+                console.log('✅ EXPORT_DEBUG: UI updated - button disabled, progress shown');
                 
+                console.log('🔄 EXPORT_DEBUG: Step 2 - Getting export range selection');
                 // Get export data
-                const selectedRange = document.querySelector('input[name="exportRange"]:checked').value;
+                const selectedRangeElement = document.querySelector('input[name="exportRange"]:checked');
+                console.log('🔍 EXPORT_DEBUG: Selected range element:', selectedRangeElement);
+                
+                if (!selectedRangeElement) {
+                    throw new Error('No export range selected');
+                }
+                
+                const selectedRange = selectedRangeElement.value;
+                console.log('📊 EXPORT_DEBUG: Selected range:', selectedRange);
+                
+                console.log('🔄 EXPORT_DEBUG: Step 3 - Getting export data from localStorage');
+                console.log('📊 EXPORT_DEBUG: Current mealsByDate keys:', Object.keys(mealsByDate || {}));
+                console.log('📊 EXPORT_DEBUG: Total meals in storage:', Object.values(mealsByDate || {}).reduce((total, meals) => total + (meals?.length || 0), 0));
+                
                 const dataToExport = getExportData(selectedRange);
+                console.log('📊 EXPORT_DEBUG: Export data retrieved:', {
+                    selectedRange: selectedRange,
+                    totalDates: Object.keys(dataToExport).length,
+                    totalMeals: Object.values(dataToExport).reduce((total, meals) => total + (meals?.length || 0), 0),
+                    dateKeys: Object.keys(dataToExport),
+                    sampleData: Object.keys(dataToExport).length > 0 ? {
+                        firstDate: Object.keys(dataToExport)[0],
+                        firstDateMealCount: dataToExport[Object.keys(dataToExport)[0]]?.length || 0
+                    } : null
+                });
                 
                 if (Object.keys(dataToExport).length === 0) {
+                    console.error('❌ EXPORT_DEBUG: No data found for export');
                     throw new Error('No data found for the selected date range');
                 }
                 
+                console.log('🔄 EXPORT_DEBUG: Step 4 - Preparing filename');
                 // Get filename
                 let filename = document.getElementById('exportFilename').value.trim();
+                console.log('📝 EXPORT_DEBUG: User filename input:', filename);
+                
                 if (!filename) {
                     const today = new Date();
                     const dateStr = today.toISOString().split('T')[0];
                     filename = `Food_Diary_Export_${dateStr}.xlsx`;
+                    console.log('📝 EXPORT_DEBUG: Generated filename:', filename);
                 }
                 
                 // Ensure .xlsx extension
                 if (!filename.toLowerCase().endsWith('.xlsx')) {
                     filename += '.xlsx';
+                    console.log('📝 EXPORT_DEBUG: Added .xlsx extension:', filename);
                 }
                 
+                console.log('🔄 EXPORT_DEBUG: Step 5 - Preparing request data');
                 progressText.textContent = 'Sending data to server...';
                 
                 // Prepare request data
@@ -5650,23 +5738,24 @@
                     filename: filename
                 };
                 
-                console.log('📤 Sending export request:', {
+                console.log('📤 EXPORT_DEBUG: Request data prepared:', {
                     totalDates: Object.keys(dataToExport).length,
                     totalMeals: Object.values(dataToExport).reduce((total, meals) => total + meals.length, 0),
-                    filename: filename
+                    filename: filename,
+                    startDate: requestData.startDate,
+                    endDate: requestData.endDate,
+                    payloadSize: JSON.stringify(requestData).length
                 });
                 
                 progressText.textContent = 'Generating Excel file...';
                 
-                console.log('🌐 EXPORT_DEBUG: Making request to /api/export-excel...');
-                console.log('📊 EXPORT_DEBUG: Request payload preview:', {
-                    mealsByDateKeys: Object.keys(requestData.mealsByDate || {}),
-                    startDate: requestData.startDate,
-                    endDate: requestData.endDate,
-                    filename: requestData.filename
-                });
+                console.log('🔄 EXPORT_DEBUG: Step 6 - Making API request to server');
+                console.log('🌐 EXPORT_DEBUG: Sending POST request to /api/export-excel');
+                console.log('🌐 EXPORT_DEBUG: Request headers: Content-Type: application/json');
+                console.log('🌐 EXPORT_DEBUG: Request body size:', JSON.stringify(requestData).length, 'characters');
                 
                 // Make request to server
+                const fetchStartTime = performance.now();
                 const response = await fetch('/api/export-excel', {
                     method: 'POST',
                     headers: {
@@ -5674,54 +5763,86 @@
                     },
                     body: JSON.stringify(requestData)
                 });
+                const fetchEndTime = performance.now();
                 
-                console.log('📡 EXPORT_DEBUG: Server response received:', {
+                console.log('📡 EXPORT_DEBUG: Server response received in', (fetchEndTime - fetchStartTime).toFixed(2), 'ms');
+                console.log('📡 EXPORT_DEBUG: Response details:', {
                     status: response.status,
                     statusText: response.statusText,
+                    ok: response.ok,
                     contentType: response.headers.get('content-type'),
-                    contentLength: response.headers.get('content-length')
+                    contentLength: response.headers.get('content-length'),
+                    contentDisposition: response.headers.get('content-disposition')
                 });
                 
                 if (!response.ok) {
-                    console.error('❌ EXPORT_DEBUG: Server error response');
+                    console.error('❌ EXPORT_DEBUG: Server returned error status:', response.status);
                     let errorData;
                     try {
                         errorData = await response.json();
-                        console.error('📄 EXPORT_DEBUG: Error details:', errorData);
+                        console.error('📄 EXPORT_DEBUG: Error response data:', errorData);
                     } catch (parseError) {
                         console.error('📄 EXPORT_DEBUG: Could not parse error response as JSON:', parseError);
                         const errorText = await response.text();
-                        console.error('📄 EXPORT_DEBUG: Raw error response:', errorText);
+                        console.error('📄 EXPORT_DEBUG: Raw error response:', errorText.substring(0, 500));
                         throw new Error(`Server error: ${response.status} - ${errorText.substring(0, 200)}`);
                     }
                     throw new Error(errorData.error || `Server error: ${response.status}`);
                 }
                 
-                progressText.textContent = 'Downloading file...';
+                console.log('🔄 EXPORT_DEBUG: Step 7 - Processing server response');
+                progressText.textContent = 'Processing server response...';
                 
-                console.log('📥 EXPORT_DEBUG: Processing file download...');
+                // Handle JSON response from new trackers folder system
+                const responseStartTime = performance.now();
+                const result = await response.json();
+                const responseEndTime = performance.now();
                 
-                // Handle file download
-                const blob = await response.blob();
-                console.log('📁 EXPORT_DEBUG: Blob created:', {
-                    size: blob.size,
-                    type: blob.type
+                console.log('📄 EXPORT_DEBUG: JSON response parsed in', (responseEndTime - responseStartTime).toFixed(2), 'ms');
+                console.log('📄 EXPORT_DEBUG: Server response:', {
+                    success: result.success,
+                    message: result.message,
+                    filePath: result.filePath,
+                    fileSize: result.fileSize,
+                    isNewFile: result.isNewFile,
+                    appendedData: result.appendedData
                 });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
                 
-                console.log('✅ EXPORT_DEBUG: Excel export completed successfully:', {
-                    filename: filename,
-                    fileSize: blob.size,
-                    downloadTriggered: true
+                if (!result.success) {
+                    console.error('❌ EXPORT_DEBUG: Server reported export failure');
+                    throw new Error(result.message || 'Export failed on server');
+                }
+                
+                console.log('🎉 EXPORT_DEBUG: ===== EXPORT COMPLETED SUCCESSFULLY =====');
+                console.log('✅ EXPORT_DEBUG: Final summary:', {
+                    filename: result.filePath ? result.filePath.split('/').pop() : filename,
+                    fileSize: result.fileSize,
+                    fileSizeKB: result.fileSize ? (result.fileSize / 1024).toFixed(2) + ' KB' : 'Unknown',
+                    totalDates: Object.keys(dataToExport).length,
+                    totalMeals: Object.values(dataToExport).reduce((total, meals) => total + meals.length, 0),
+                    savedToTrackers: true,
+                    isNewFile: result.isNewFile,
+                    appendedData: result.appendedData,
+                    timestamp: new Date().toISOString()
                 });
-                showSuccessMessage(`📊 Excel file "${filename}" downloaded successfully!`);
+                
+                // Create success message based on whether file was new or appended
+                let successMessage;
+                if (result.isNewFile) {
+                    successMessage = `📊 New Excel file created: "${result.filePath.split('/').pop()}"`;
+                } else {
+                    successMessage = `📊 Data appended to existing file: "${result.filePath.split('/').pop()}"`;
+                }
+                
+                if (result.fileSize) {
+                    successMessage += ` (${(result.fileSize / 1024).toFixed(1)} KB)`;
+                }
+                
+                showSuccessMessage(successMessage);
+                
+                // Show success status for direct export with file location info
+                const statusDetails = `File saved to: ${result.filePath}${result.appendedData ? ' (data appended)' : ' (new file)'}`;
+                showExportStatus('success', 'Export Complete!', statusDetails);
                 
                 // Close modal after successful export
                 setTimeout(() => {
@@ -5729,18 +5850,260 @@
                 }, 1500);
                 
             } catch (error) {
-                console.error('❌ EXPORT_DEBUG: Export failed with detailed error:', {
+                console.error('💥 EXPORT_DEBUG: ===== EXPORT FAILED =====');
+                console.error('❌ EXPORT_DEBUG: Error details:', {
                     errorMessage: error.message,
                     errorStack: error.stack,
                     errorName: error.name,
+                    errorType: typeof error,
                     timestamp: new Date().toISOString()
                 });
+                
+                // Log current state for debugging
+                console.error('🔍 EXPORT_DEBUG: Current state when error occurred:', {
+                    mealsByDateExists: !!mealsByDate,
+                    mealsByDateKeys: Object.keys(mealsByDate || {}),
+                    totalMealsInStorage: Object.values(mealsByDate || {}).reduce((total, meals) => total + (meals?.length || 0), 0),
+                    selectedDate: selectedDate?.toISOString?.() || 'Invalid date',
+                    currentURL: window.location.href,
+                    userAgent: navigator.userAgent
+                });
+                
                 showErrorMessage('Export failed: ' + error.message);
+                
+                // Show error status for direct export
+                showExportStatus('error', 'Export Failed', error.message || 'An unexpected error occurred');
                 
                 // Re-enable button and hide progress
                 exportButton.disabled = false;
                 exportProgress.classList.add('hidden');
+                
+                console.error('💥 EXPORT_DEBUG: ===== END ERROR REPORT =====');
             }
+        }
+
+        // ========================================
+        // DIRECT EXPORT FUNCTIONS
+        // ========================================
+        
+        // Direct export function - no modal required
+        function startDirectExport() {
+            console.log('🚀 EXPORT_DIRECT: Starting direct export...');
+            showExportStatus('loading', 'Preparing Export...', 'Gathering your food diary data');
+            
+            // Set up default export parameters for direct export
+            const today = new Date();
+            const firstOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            
+            // Create a temporary form state for direct export
+            const tempModal = document.createElement('div');
+            tempModal.innerHTML = `
+                <input type="radio" name="exportRange" value="all" checked>
+                <input type="date" id="exportStartDate" value="${formatDateKey(firstOfMonth)}">
+                <input type="date" id="exportEndDate" value="${formatDateKey(today)}">
+                <input type="text" id="exportFilename" value="">
+                <div id="exportProgress" class="hidden">
+                    <div id="exportProgressText">Preparing...</div>
+                </div>
+                <button id="exportButton" disabled="false">Export</button>
+            `;
+            
+            // Temporarily add to DOM for startExport to find elements
+            tempModal.style.display = 'none';
+            document.body.appendChild(tempModal);
+            
+            // Use the existing startExport function with our temporary elements
+            try {
+                startExport().finally(() => {
+                    // Clean up temporary elements
+                    document.body.removeChild(tempModal);
+                });
+            } catch (error) {
+                console.error('❌ EXPORT_DIRECT: Direct export failed:', error);
+                showExportStatus('error', 'Export Failed', error.message || 'An unexpected error occurred');
+                // Clean up on error too
+                if (document.body.contains(tempModal)) {
+                    document.body.removeChild(tempModal);
+                }
+            }
+        }
+        
+        // Show export status to user
+        function showExportStatus(type, message, details = '') {
+            const statusDisplay = document.getElementById('exportStatusDisplay');
+            const statusContent = document.getElementById('exportStatusContent');
+            const statusIcon = document.getElementById('exportStatusIcon');
+            const statusMessage = document.getElementById('exportStatusMessage');
+            const statusDetails = document.getElementById('exportStatusDetails');
+            
+            // Show the status display
+            statusDisplay.classList.remove('hidden');
+            
+            // Configure based on status type
+            switch (type) {
+                case 'loading':
+                    statusContent.className = 'p-4 rounded-lg border border-blue-200 bg-blue-50 text-blue-800 text-center';
+                    statusIcon.textContent = '⏳';
+                    break;
+                case 'success':
+                    statusContent.className = 'p-4 rounded-lg border border-green-200 bg-green-50 text-green-800 text-center';
+                    statusIcon.textContent = '✅';
+                    // Auto-hide success message after 5 seconds
+                    setTimeout(() => hideExportStatus(), 5000);
+                    break;
+                case 'error':
+                    statusContent.className = 'p-4 rounded-lg border border-red-200 bg-red-50 text-red-800 text-center';
+                    statusIcon.textContent = '❌';
+                    // Auto-hide error message after 10 seconds
+                    setTimeout(() => hideExportStatus(), 10000);
+                    break;
+            }
+            
+            statusMessage.textContent = message;
+            statusDetails.textContent = details;
+        }
+        
+        // Hide export status
+        function hideExportStatus() {
+            const statusDisplay = document.getElementById('exportStatusDisplay');
+            statusDisplay.classList.add('hidden');
+        }
+
+        // ========================================
+        // EXPORT BUTTON DIAGNOSTIC FUNCTIONS
+        // ========================================
+        
+        // Add diagnostic function to test export button functionality
+        function testExportButton() {
+            console.log('🧪 EXPORT_TEST: ===== TESTING EXPORT BUTTON FUNCTIONALITY =====');
+            console.log('🧪 EXPORT_TEST: Test initiated at:', new Date().toISOString());
+            
+            // Test 1: Check if modal is open and accessible
+            const modal = document.getElementById('exportModal');
+            const isModalVisible = modal && modal.classList.contains('active');
+            const modalDisplay = modal ? window.getComputedStyle(modal).display : 'not found';
+            console.log('📋 EXPORT_TEST: Modal state:', {
+                exists: !!modal,
+                hasActiveClass: modal ? modal.classList.contains('active') : false,
+                computedDisplay: modalDisplay,
+                isVisible: isModalVisible
+            });
+            
+            // Test 2: Check if button exists and is clickable
+            const button = document.getElementById('exportButton');
+            const buttonExists = !!button;
+            const buttonVisible = button ? window.getComputedStyle(button).display !== 'none' : false;
+            const buttonDisabled = button ? button.disabled : true;
+            console.log('🔘 EXPORT_TEST: Button state:', {
+                exists: buttonExists,
+                visible: buttonVisible,
+                disabled: buttonDisabled,
+                hasOnClick: button ? !!button.onclick || button.hasAttribute('onclick') : false,
+                onClickValue: button ? button.getAttribute('onclick') : null
+            });
+            
+            // Test 3: Check server connectivity
+            console.log('🌐 EXPORT_TEST: Testing server connectivity...');
+            fetch('/api/export-excel', { method: 'HEAD' })
+                .then(response => {
+                    console.log('🌐 EXPORT_TEST: Server response:', {
+                        ok: response.ok,
+                        status: response.status,
+                        statusText: response.statusText
+                    });
+                })
+                .catch(error => {
+                    console.log('❌ EXPORT_TEST: Server connection failed:', {
+                        error: error.message,
+                        type: error.name
+                    });
+                });
+            
+            // Test 4: Check for meal data availability
+            const hasMealData = mealsByDate && Object.keys(mealsByDate).length > 0;
+            const totalMeals = hasMealData ? Object.values(mealsByDate).reduce((total, meals) => total + meals.length, 0) : 0;
+            console.log('📊 EXPORT_TEST: Data availability:', {
+                mealsByDateExists: !!mealsByDate,
+                totalDates: hasMealData ? Object.keys(mealsByDate).length : 0,
+                totalMeals: totalMeals,
+                hasExportableData: hasMealData && totalMeals > 0
+            });
+            
+            // Test 5: Check DOM elements required by startExport()
+            const exportProgress = document.getElementById('exportProgress');
+            const progressText = document.getElementById('exportProgressText');
+            console.log('🔧 EXPORT_TEST: Required DOM elements:', {
+                exportProgress: !!exportProgress,
+                progressText: !!progressText,
+                allElementsPresent: !!exportProgress && !!progressText
+            });
+            
+            // Test 6: Try to manually trigger the function
+            console.log('🧪 EXPORT_TEST: Testing manual function call...');
+            try {
+                if (typeof startExport === 'function') {
+                    console.log('✅ EXPORT_TEST: startExport function exists and is callable');
+                    // Don't actually call it, just verify it exists
+                } else {
+                    console.log('❌ EXPORT_TEST: startExport function not found or not callable');
+                }
+            } catch (error) {
+                console.log('❌ EXPORT_TEST: Error testing startExport function:', error.message);
+            }
+            
+            // Test 7: Check for JavaScript errors in console
+            console.log('🔍 EXPORT_TEST: Check browser console for any JavaScript errors');
+            console.log('🔍 EXPORT_TEST: Look for errors related to: fetch, DOM manipulation, or async functions');
+            
+            // Summary
+            const diagnosis = {
+                modalAccessible: isModalVisible,
+                buttonClickable: buttonExists && buttonVisible && !buttonDisabled,
+                serverReachable: 'testing...', // Will be updated by fetch result
+                dataAvailable: hasMealData && totalMeals > 0,
+                domElementsReady: !!exportProgress && !!progressText,
+                functionExists: typeof startExport === 'function'
+            };
+            
+            console.log('📋 EXPORT_TEST: DIAGNOSIS SUMMARY:', diagnosis);
+            console.log('🧪 EXPORT_TEST: ===== TEST COMPLETED =====');
+            
+            return diagnosis;
+        }
+        
+        // Add function to open export modal and test button
+        function testExportFlow() {
+            console.log('🚀 EXPORT_FLOW_TEST: Testing complete export flow...');
+            
+            // Step 1: Open the export modal
+            console.log('📂 EXPORT_FLOW_TEST: Opening export modal...');
+            openExportModal();
+            
+            // Step 2: Wait a moment for modal to open, then test
+            setTimeout(() => {
+                console.log('🧪 EXPORT_FLOW_TEST: Modal should be open now, testing button...');
+                const testResults = testExportButton();
+                
+                // Step 3: Provide recommendations based on test results
+                console.log('💡 EXPORT_FLOW_TEST: RECOMMENDATIONS:');
+                if (!testResults.modalAccessible) {
+                    console.log('❌ ISSUE: Export modal is not accessible - check openExportModal() function');
+                }
+                if (!testResults.buttonClickable) {
+                    console.log('❌ ISSUE: Export button is not clickable - check button state and CSS');
+                }
+                if (!testResults.dataAvailable) {
+                    console.log('❌ ISSUE: No meal data available for export - add some meals first');
+                }
+                if (!testResults.domElementsReady) {
+                    console.log('❌ ISSUE: Required DOM elements missing - check HTML structure');
+                }
+                if (!testResults.functionExists) {
+                    console.log('❌ ISSUE: startExport function not found - check JavaScript loading');
+                }
+                
+                console.log('🚀 EXPORT_FLOW_TEST: Flow test completed');
+            }, 500);
         }
 
         // Export preview event listeners moved to consolidated initialization
@@ -6033,6 +6396,44 @@
             }).catch(error => {
                 console.error('❌ MODAL_RELOAD: Database reload failed:', error);
                 showErrorMessage('Error reloading ingredients database: ' + error.message);
+            });
+        }
+
+        function reloadIngredientsInModal() {
+            console.log('🔄 MODAL_RELOAD: reloadIngredientsInModal() called');
+            console.log('🔄 MODAL_RELOAD: This function reloads ingredients specifically for the recipe builder modal');
+            
+            // Show loading feedback
+            showSuccessMessage('🔄 Reloading ingredients for recipe builder...');
+            
+            // Force reload of ingredients database
+            rawIngredients = null;
+            foodDatabase = null;
+            
+            loadDatabases().then(() => {
+                console.log('✅ MODAL_RELOAD: Ingredients reloaded successfully for recipe builder');
+                
+                // Update the recipe ingredient select dropdown if it exists
+                const recipeIngredientSelect = document.getElementById('recipeIngredientSelect');
+                if (recipeIngredientSelect) {
+                    populateIngredientSelect();
+                    console.log('✅ MODAL_RELOAD: Recipe ingredient select updated');
+                } else {
+                    console.log('⚠️ MODAL_RELOAD: recipeIngredientSelect not found');
+                }
+                
+                // Update any other ingredient-related UI elements in the modal
+                const quickDishesContainer = document.getElementById('quickDishesInModal');
+                if (quickDishesContainer) {
+                    populateQuickDishesInModal();
+                    console.log('✅ MODAL_RELOAD: Quick dishes updated');
+                }
+                
+                showSuccessMessage('✅ Ingredients reloaded successfully for recipe builder!');
+                
+            }).catch(error => {
+                console.error('❌ MODAL_RELOAD: Failed to reload ingredients for recipe builder:', error);
+                showErrorMessage('Error reloading ingredients: ' + error.message);
             });
         }
 
@@ -8659,6 +9060,34 @@
         </div>
     </div>
 
+
+        // ========================================
+        // DIAGNOSTIC EXECUTION AND INITIALIZATION
+        // ========================================
+        
+        // Make diagnostic functions available globally for manual testing
+        window.testExportButton = testExportButton;
+        window.testExportFlow = testExportFlow;
+        
+        // Auto-run diagnostics when page loads (after a delay to ensure everything is initialized)
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                console.log('🔧 AUTO_DIAGNOSTIC: Running automatic export button diagnostics...');
+                console.log('🔧 AUTO_DIAGNOSTIC: You can also manually run:');
+                console.log('🔧 AUTO_DIAGNOSTIC: - testExportButton() - Test button functionality');
+                console.log('🔧 AUTO_DIAGNOSTIC: - testExportFlow() - Test complete export flow');
+                
+                // Run automatic diagnostic
+                const autoTestResults = testExportButton();
+                
+                // Provide user-friendly feedback
+                if (autoTestResults.buttonClickable && autoTestResults.functionExists) {
+                    console.log('✅ AUTO_DIAGNOSTIC: Export button appears to be working correctly');
+                } else {
+                    console.log('⚠️ AUTO_DIAGNOSTIC: Export button issues detected - check console for details');
+                }
+            }, 2000); // Wait 2 seconds for full initialization
+        });
 
 </body>
 </html>

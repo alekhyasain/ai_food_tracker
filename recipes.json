@@ -1114,6 +1114,330 @@
         "fat": 8.6,
         "fiber": 8.8
       }
+    },
+    "roasted_kala_chana": {
+      "name": "Roasted Kala Chana",
+      "category": "dal",
+      "servings": 6,
+      "ingredients": [
+        {
+          "key": "dals_legumes.kala_chana",
+          "name": "Kala chana",
+          "amount": "2x 1 cup uncooked",
+          "nutrition": {
+            "calories": 1440,
+            "protein": 76,
+            "carbs": 240,
+            "fat": 24,
+            "fiber": 68
+          }
+        },
+        {
+          "key": "oils_fats.olive_oil",
+          "name": "Olive oil",
+          "amount": "2x 1 tsp",
+          "nutrition": {
+            "calories": 80,
+            "protein": 0,
+            "carbs": 0,
+            "fat": 9,
+            "fiber": 0
+          }
+        },
+        {
+          "key": "vegetables.tomato",
+          "name": "Tomato",
+          "amount": "1x 1 medium",
+          "nutrition": {
+            "calories": 22,
+            "protein": 1.1,
+            "carbs": 4.8,
+            "fat": 0.2,
+            "fiber": 1.4
+          }
+        }
+      ],
+      "total_per_serving": {
+        "calories": 257,
+        "protein": 12.9,
+        "carbs": 40.8,
+        "fat": 5.5,
+        "fiber": 11.6
+      }
+    },
+    "rice_flour_mix_dosa": {
+      "name": "Rice Flour Mix Dosa",
+      "category": "other",
+      "servings": 8,
+      "ingredients": [
+        {
+          "key": "grains.white_rice",
+          "name": "White Rice",
+          "amount": "0.44x 1 cup uncooked",
+          "nutrition": {
+            "calories": 308.44,
+            "protein": 5.676,
+            "carbs": 68.068,
+            "fat": 0.48400000000000004,
+            "fiber": 1.716
+          }
+        },
+        {
+          "key": "grains.boiled_white_rice",
+          "name": "Boiled white rice",
+          "amount": "1.32x 1 cup uncooked",
+          "nutrition": {
+            "calories": 922.6800000000001,
+            "protein": 20.064,
+            "carbs": 198.52800000000002,
+            "fat": 2.508,
+            "fiber": 5.412
+          }
+        },
+        {
+          "key": "dals_legumes.urad_dal",
+          "name": "Urad dal",
+          "amount": "0.3535x 1 cup uncooked",
+          "nutrition": {
+            "calories": 238.61249999999998,
+            "protein": 17.49825,
+            "carbs": 42.419999999999995,
+            "fat": 0,
+            "fiber": 20.67975
+          }
+        },
+        {
+          "key": "dals_legumes.methi_seeds",
+          "name": "Methi Seeds",
+          "amount": "0.44x 1 tbsp",
+          "nutrition": {
+            "calories": 15.84,
+            "protein": 1.32,
+            "carbs": 2.64,
+            "fat": 0.44,
+            "fiber": 1.32
+          }
+        },
+        {
+          "key": "grains.rice_flour",
+          "name": "Rice Flour",
+          "amount": "1.25x 1 cup",
+          "nutrition": {
+            "calories": 725,
+            "protein": 11.75,
+            "carbs": 158.75,
+            "fat": 2.75,
+            "fiber": 9.125
+          }
+        },
+        {
+          "key": "oils_fats.olive_oil",
+          "name": "Olive oil",
+          "amount": "4x 1 tsp",
+          "nutrition": {
+            "calories": 160,
+            "protein": 0,
+            "carbs": 0,
+            "fat": 18,
+            "fiber": 0
+          }
+        }
+      ],
+      "total_per_serving": {
+        "calories": 296,
+        "protein": 7,
+        "carbs": 58.8,
+        "fat": 3,
+        "fiber": 4.8
+      }
+    },
+    "bhindi_sabji": {
+      "name": "Bhindi Sabji",
+      "category": "sabji",
+      "servings": 2,
+      "ingredients": [
+        {
+          "key": "vegetables.bhindi",
+          "name": "Bhindi",
+          "amount": "2x 1 cup chopped",
+          "nutrition": {
+            "calories": 70,
+            "protein": 4,
+            "carbs": 14,
+            "fat": 4,
+            "fiber": 6
+          }
+        },
+        {
+          "key": "spices_seasonings.sabji_podi",
+          "name": "Sabji podi",
+          "amount": "2x 1 tbsp",
+          "nutrition": {
+            "calories": 40,
+            "protein": 2,
+            "carbs": 8,
+            "fat": 2,
+            "fiber": 6
+          }
+        },
+        {
+          "key": "oils_fats.olive_oil",
+          "name": "Olive oil",
+          "amount": "2x 1 tsp",
+          "nutrition": {
+            "calories": 80,
+            "protein": 0,
+            "carbs": 0,
+            "fat": 9,
+            "fiber": 0
+          }
+        }
+      ],
+      "total_per_serving": {
+        "calories": 95,
+        "protein": 3,
+        "carbs": 11,
+        "fat": 7.5,
+        "fiber": 6
+      }
+    },
+    "pongal": {
+      "name": "Pongal",
+      "category": "other",
+      "servings": 2,
+      "ingredients": [
+        {
+          "key": "oils_fats.ghee",
+          "name": "Ghee",
+          "amount": "1x 1 tsp",
+          "nutrition": {
+            "calories": 50,
+            "protein": 0,
+            "carbs": 0,
+            "fat": 5,
+            "fiber": 0
+          }
+        },
+        {
+          "key": "oils_fats.olive_oil",
+          "name": "Olive oil",
+          "amount": "1x 1 tsp",
+          "nutrition": {
+            "calories": 40,
+            "protein": 0,
+            "carbs": 0,
+            "fat": 4.5,
+            "fiber": 0
+          }
+        },
+        {
+          "key": "dals_legumes.moong_dal",
+          "name": "Moong Dal",
+          "amount": "0.3x 1 cup uncooked",
+          "nutrition": {
+            "calories": 104.1,
+            "protein": 7.199999999999999,
+            "carbs": 17.7,
+            "fat": 0.36,
+            "fiber": 4.8
+          }
+        },
+        {
+          "key": "grains.white_rice",
+          "name": "White Rice",
+          "amount": "0.525x 1 cup uncooked",
+          "nutrition": {
+            "calories": 368.02500000000003,
+            "protein": 6.772500000000001,
+            "carbs": 81.2175,
+            "fat": 0.5775000000000001,
+            "fiber": 2.0475
+          }
+        }
+      ],
+      "total_per_serving": {
+        "calories": 281,
+        "protein": 7,
+        "carbs": 49.5,
+        "fat": 5.2,
+        "fiber": 3.4
+      }
+    },
+    "unsweetened_oat_milk_coffee": {
+      "name": "Unsweetened oat milk coffee",
+      "category": "other",
+      "servings": 1,
+      "ingredients": [
+        {
+          "key": "other.unsweetned_oat_milk",
+          "name": "Unsweetned Oat milk",
+          "amount": "0.5x 1 cup",
+          "nutrition": {
+            "calories": 30,
+            "protein": 0.5,
+            "carbs": 3.5,
+            "fat": 1,
+            "fiber": 0.25
+          }
+        },
+        {
+          "key": "spices_seasonings.sugar",
+          "name": "Sugar",
+          "amount": "0.7x 1 tsp",
+          "nutrition": {
+            "calories": 11.2,
+            "protein": 0,
+            "carbs": 2.94,
+            "fat": 0,
+            "fiber": 0
+          }
+        }
+      ],
+      "total_per_serving": {
+        "calories": 41,
+        "protein": 0.5,
+        "carbs": 6.4,
+        "fat": 1,
+        "fiber": 0.3
+      }
+    },
+    "oat_milk_coffee": {
+      "name": "Oat milk coffee",
+      "category": "other",
+      "servings": 1,
+      "ingredients": [
+        {
+          "key": "other.oat_milk",
+          "name": "Oat milk",
+          "amount": "0.5x 1 cup",
+          "nutrition": {
+            "calories": 55,
+            "protein": 1,
+            "carbs": 6.5,
+            "fat": 2.5,
+            "fiber": 0.5
+          }
+        },
+        {
+          "key": "spices_seasonings.sugar",
+          "name": "Sugar",
+          "amount": "0.8x 1 tsp",
+          "nutrition": {
+            "calories": 12.8,
+            "protein": 0,
+            "carbs": 3.3600000000000003,
+            "fat": 0,
+            "fiber": 0
+          }
+        }
+      ],
+      "total_per_serving": {
+        "calories": 68,
+        "protein": 1,
+        "carbs": 9.9,
+        "fat": 2.5,
+        "fiber": 0.5
+      }
     }
   },
   "ingredients_database": {
