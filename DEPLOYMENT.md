@@ -95,6 +95,154 @@ npm start &  # Run in background
 
 Set up a reverse proxy (nginx/Apache) and domain name for public access.
 
+## Hosting on Your Phone
+
+You can access the app directly on your phone in two ways:
+
+### Option A: Local Network (Home/Office WiFi)
+
+**Works on:** Same WiFi network as your computer
+
+1. **Find your computer's IP address**
+   ```bash
+   # macOS/Linux
+   ifconfig | grep "inet " | grep -v 127.0.0.1
+   
+   # Windows
+   ipconfig
+   ```
+   Look for something like `192.168.x.x` or `10.x.x.x`
+
+2. **Start the server on your computer**
+   ```bash
+   npm start
+   ```
+
+3. **On your phone**, open browser and go to:
+   ```
+   http://YOUR-COMPUTER-IP:3000
+   ```
+   Example: `http://192.168.1.100:3000`
+
+4. **Allow network access** (if using macOS):
+   - System Preferences → Security & Privacy → Firewall Options
+   - Allow Node.js through the firewall
+
+**Pros:** Fast, no internet needed
+**Cons:** Only works on same WiFi network
+
+### Option B: Public Tunnel (Access from Anywhere)
+
+**Works on:** Any device, any network, even over cellular data
+
+#### Using ngrok (Easiest)
+
+1. **Install ngrok** from https://ngrok.com
+   ```bash
+   # macOS
+   brew install ngrok
+   
+   # Or download from their website
+   ```
+
+2. **Start the server**
+   ```bash
+   npm start
+   ```
+
+3. **In another terminal, create a tunnel**
+   ```bash
+   ngrok http 3000
+   ```
+
+4. **Share the public URL** with your phone
+   - ngrok will show: `https://abc123def456.ngrok.io`
+   - Open that URL on your phone's browser
+   - Your app is now accessible from anywhere!
+
+5. **To stop the tunnel**
+   ```bash
+   Ctrl+C
+   ```
+
+**Pros:** Works from anywhere, any network
+**Cons:** URL changes when you restart (unless you have paid plan)
+
+#### Using Cloudflare Tunnel (Free & Persistent)
+
+1. **Install Cloudflare CLI**
+   ```bash
+   brew install cloudflare/cloudflare/cloudflared
+   ```
+
+2. **Start the server**
+   ```bash
+   npm start
+   ```
+
+3. **In another terminal, create tunnel**
+   ```bash
+   cloudflared tunnel --url http://localhost:3000
+   ```
+
+4. **Share the public URL** (same every time!)
+   - The URL persists so you don't need to reshare
+   - Perfect for long-term access
+
+#### Option: Use Render.com (Simplest)
+
+1. Push code to GitHub
+2. Deploy on Render.com (see above)
+3. Get permanent URL: `https://your-app-name.onrender.com`
+4. Access from phone anytime
+
+### Phone Workflow
+
+#### Using Local WiFi:
+1. Open browser on phone
+2. Go to `http://192.168.1.100:3000`
+3. Add meal, recipe, or ingredient
+4. Changes sync to GitHub automatically ✅
+
+#### Using ngrok/Cloudflare:
+1. Open browser on phone
+2. Go to the public tunnel URL
+3. Works anywhere with internet ✅
+4. Changes sync to GitHub automatically ✅
+
+#### Using Render.com:
+1. Open browser on phone
+2. Go to `https://your-app.onrender.com`
+3. Works forever (on free tier) ✅
+4. Changes sync to GitHub automatically ✅
+
+### Complete Example Setup
+
+```bash
+# Terminal 1: Start the server
+cd ai_food_tracker
+npm start
+
+# Terminal 2: Create public tunnel
+ngrok http 3000
+
+# Copy the URL from ngrok output
+# Example: https://abc123def456.ngrok.io
+
+# On your phone:
+# 1. Open browser
+# 2. Enter the URL
+# 3. You're done!
+```
+
+### Mobile Browser Optimization
+
+The app is fully responsive on mobile:
+- ✅ Touch-friendly buttons and inputs
+- ✅ Vertical/horizontal layout support
+- ✅ Optimized for small screens
+- ✅ Fast load times on cellular data
+
 ## Using the App Across Devices
 
 ### Desktop/Laptop
