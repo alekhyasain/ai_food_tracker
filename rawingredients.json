@@ -989,6 +989,30 @@
             "fiber": 4
           }
         }
+      },
+      "garlic": {
+        "name": "Garlic",
+        "measurements": {
+          "1_clove": {
+            "calories": 4.47,
+            "protein": 0.19,
+            "carbs": 0.99,
+            "fat": 0.02,
+            "fiber": 0.06
+          }
+        }
+      },
+      "ginger": {
+        "name": "Ginger",
+        "measurements": {
+          "1_inch": {
+            "calories": 9,
+            "protein": 0.4,
+            "carbs": 2,
+            "fat": 0.2,
+            "fiber": 0
+          }
+        }
       }
     }
   }

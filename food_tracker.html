@@ -16,7 +16,16 @@
         .modal {
             display: none;
         }
-        .modal.active {
+        
+        /* Recipe management specific styles */
+        #manageRecipesModal, #recipeEditModal {
+            display: none;
+        }
+        
+        #recipeEditModal {
+            z-index: 70; /* Higher than manage recipes modal */
+        }
+        .modal.active, #manageRecipesModal.active, #recipeEditModal.active {
             display: flex;
         }
         
@@ -97,7 +106,7 @@
             </div>
             <!-- Simplified Main Action Buttons -->
             <div class="mt-6 space-y-4">
-                <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-3xl mx-auto">
+                <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-4xl mx-auto">
                     <button onclick="openUnifiedAddModal()" class="unified-btn flex-1 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white px-8 py-4 rounded-xl">
                         <div class="text-center">
                             <div class="text-2xl mb-1">➕</div>
@@ -113,7 +122,7 @@
                         </div>
                     </button>
                 </div>
-                <p class="text-sm text-gray-500 text-center">Everything you need in two simple buttons - add meals and export data!</p>
+                <p class="text-sm text-gray-500 text-center">Everything you need in three simple buttons - add meals, manage recipes, and export data!</p>
                 
                 <!-- Export Status Display -->
                 <div id="exportStatusDisplay" class="hidden mt-4 max-w-md mx-auto">
@@ -1072,6 +1081,32 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Recipe Editor Access Section -->
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <h4 class="text-lg font-semibold mb-3 text-gray-800">🍳 Recipe Editor Access</h4>
+                        <p class="text-sm text-gray-600 mb-3">Quickly access recipe editing while managing ingredients</p>
+                        
+                        <div class="space-y-3">
+                            <!-- Recipe Selection -->
+                            <div>
+                                <label for="recipeSelector" class="block text-sm font-medium text-gray-700 mb-1">Select Recipe to Edit:</label>
+                                <select id="recipeSelector" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">-- Choose a recipe --</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Action Buttons -->
+                            <div class="flex gap-2">
+                                <button id="editSelectedRecipeBtn" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>
+                                    📝 Edit Selected Recipe
+                                </button>
+                                <button id="createNewRecipeBtn" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                                    ➕ Create New Recipe
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1383,13 +1418,135 @@
         </div>
     </div>
 
+    <!-- Manage Recipes Modal -->
+    <div id="manageRecipesModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-6xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-semibold text-gray-800">👨‍🍳 Manage Recipes</h3>
+                <button onclick="closeManageRecipesModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+            
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <p class="text-gray-600">View and manage all your custom recipes</p>
+                    <button onclick="openUnifiedAddModal('recipe')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+                        ➕ Create New Recipe
+                    </button>
+                </div>
+                
+                <!-- Recipe List -->
+                <div id="recipeListContainer" class="space-y-4">
+                    <!-- Recipes will be populated here -->
+                </div>
+                
+                <!-- Empty State -->
+                <div id="emptyRecipeState" class="text-center py-12 text-gray-500" style="display: none;">
+                    <div class="text-6xl mb-4">👨‍🍳</div>
+                    <h3 class="text-xl font-semibold mb-2">No recipes yet</h3>
+                    <p class="mb-4">Create your first custom recipe to get started!</p>
+                    <button onclick="openUnifiedAddModal('recipe')" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg">
+                        Create Your First Recipe
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recipe Edit Modal -->
+    <div id="recipeEditModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-60">
+        <div class="bg-white rounded-lg p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-semibold text-gray-800">✏️ Edit Recipe</h3>
+                <button onclick="closeRecipeEditModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+            
+            <form id="editRecipeForm" class="space-y-6">
+                <!-- Recipe Name -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Recipe Name</label>
+                    <input type="text" id="editRecipeName" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                
+                <!-- Servings -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Number of Servings</label>
+                    <input type="number" id="editRecipeServings" min="1" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                
+                <!-- Add Ingredient Section -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h4 class="text-lg font-semibold text-blue-900 mb-3">Add Ingredients</h4>
+                    <div class="space-y-3">
+                        <!-- Search and Select Ingredient -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Search Ingredient:</label>
+                            <div class="relative">
+                                <input type="text" id="editIngredientSearch" placeholder="Type ingredient name..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" oninput="filterEditRecipeIngredients()">
+                                <div id="editIngredientDropdown" class="absolute z-10 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto hidden mt-1">
+                                    <!-- Options will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Selected Ingredient Display -->
+                        <div id="editSelectedIngredientDisplay" class="hidden bg-white p-3 rounded border border-gray-200">
+                            <div class="flex justify-between items-center">
+                                <span class="font-medium text-gray-800" id="editSelectedIngredientName"></span>
+                                <button type="button" onclick="clearEditIngredientSelection()" class="text-red-500 hover:text-red-700 text-sm">Clear</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Quantity Input -->
+                        <div id="editIngredientQuantitySection" class="hidden">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Quantity:</label>
+                            <input type="number" id="editIngredientQuantity" min="0.1" step="0.1" value="1" placeholder="e.g., 1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        
+                        <!-- Add Button -->
+                        <button type="button" id="editAddIngredientBtn" onclick="addEditIngredientToForm()" class="w-full mt-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg hidden">
+                            ✅ Add to Recipe
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Ingredients List -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Recipe Ingredients</label>
+                    <div id="editIngredientsContainer" class="space-y-3 bg-gray-50 p-4 rounded-lg">
+                        <!-- Ingredients will be populated here -->
+                    </div>
+                </div>
+                
+                <!-- Nutrition Summary -->
+                <div id="editNutritionSummary" class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="font-semibold mb-2">Nutrition per Serving</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div>Calories: <span id="editCalories">0</span></div>
+                        <div>Protein: <span id="editProtein">0</span>g</div>
+                        <div>Carbs: <span id="editCarbs">0</span>g</div>
+                        <div>Fat: <span id="editFat">0</span>g</div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex justify-end space-x-4">
+                    <button type="button" onclick="closeRecipeEditModal()" class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Global variables
         let foodDatabase = {};
         let rawIngredients = {};
         let mealsByDate = {}; // New date-based storage structure
-        let selectedDate = new Date(); // Initialize with current date first
-        selectedDate.setDate(selectedDate.getDate() - 1); // Set to yesterday (Dec 4, 2025)
+        let selectedDate = new Date(); // Initialize with current date
         let customRecipes = JSON.parse(localStorage.getItem('customRecipes') || '{}');
         let currentRecipeIngredients = [];
         let currentMealIngredients = [];
@@ -3845,6 +4002,7 @@
             }
             
             const nutrition = dish.total_per_serving;
+            const selectedMealType = getSelectedMealType();
             const meal = {
                 id: Date.now(),
                 description: `${dish.name} (${servings} serving${servings !== 1 ? 's' : ''})`,
@@ -3856,7 +4014,8 @@
                     fat: Math.round(nutrition.fat * servings * 10) / 10,
                     fiber: Math.round(nutrition.fiber * servings * 10) / 10
                 },
-                source: 'database'
+                source: 'database',
+                mealType: selectedMealType
             };
             
             addMealToDate(meal);
@@ -3879,6 +4038,7 @@
                 return;
             }
             
+            const selectedMealType = getSelectedMealType();
             const meal = {
                 id: Date.now(),
                 description: description,
@@ -3890,7 +4050,8 @@
                     fat: Math.round(calories * 0.30 / 9),
                     fiber: Math.round(calories * 0.02)
                 },
-                source: 'custom'
+                source: 'custom',
+                mealType: selectedMealType
             };
             
             addMealToDate(meal);
@@ -5604,6 +5765,7 @@
             };
 
             // Create meal entry for logging
+            const selectedMealType = getSelectedMealType();
             const meal = {
                 id: Date.now(),
                 description: `${finalMealName} (${servingsToLog} serving${servingsToLog !== 1 ? 's' : ''})`,
@@ -5616,6 +5778,7 @@
                     fiber: Math.round(perServing.fiber * servingsToLog * 10) / 10
                 },
                 source: 'ingredients',
+                mealType: selectedMealType,
                 ingredients: currentMealIngredients.map(ing => ({
                     name: ing.name,
                     quantity: ing.quantity,
@@ -6228,12 +6391,18 @@
         // Export preview event listeners moved to consolidated initialization
 
         // Unified Modal Functions
-        function openUnifiedAddModal() {
+        function openUnifiedAddModal(defaultTab = 'quickDishes') {
             document.getElementById('unifiedAddModal').classList.add('active');
-            // Default to quick dishes tab
-            switchAddTab('quickDishes');
-            // Populate quick dishes in modal
-            populateQuickDishesInModal();
+            
+            // Switch to the specified tab
+            if (defaultTab === 'recipe') {
+                switchAddTab('recipe');
+            } else {
+                // Default to quick dishes tab
+                switchAddTab('quickDishes');
+                // Populate quick dishes in modal
+                populateQuickDishesInModal();
+            }
             // Auto-select meal type based on current time
             setTimeBasedMealType();
         }
@@ -6345,6 +6514,15 @@
                     showSuccessMessage('✅ Meal builder ready! Search for ingredients to get started.');
                 }
                 
+            } else if (tabName === 'manageIngredients') {
+                console.log('🥬 TAB: Manage Ingredients tab opened, initializing recipe editor access...');
+                
+                // Initialize recipe editor access functionality
+                setTimeout(() => {
+                    initializeRecipeEditorAccess();
+                }, 100); // Small delay to ensure DOM is ready
+                
+                showSuccessMessage('✅ Ingredients management ready! You can also access recipe editing from here.');
             }
         }
 
@@ -7089,6 +7267,7 @@
             };
 
             // Create meal entry for logging
+            const selectedMealType = getSelectedMealType();
             const meal = {
                 id: Date.now(),
                 description: `${finalMealName} (${servingsToLog} serving${servingsToLog !== 1 ? 's' : ''})`,
@@ -7101,6 +7280,7 @@
                     fiber: Math.round(perServing.fiber * servingsToLog * 10) / 10
                 },
                 source: 'mixed_meal',
+                mealType: selectedMealType,
                 items: inlineMealItems.map(item => ({
                     type: item.type,
                     name: item.name,
@@ -9227,12 +9407,663 @@
 
 
         // ========================================
+        // RECIPE MANAGEMENT FUNCTIONS
+        // ========================================
+
+        let currentEditingRecipe = null;
+
+        // Open Manage Recipes Modal
+        function openManageRecipesModal() {
+            document.getElementById('manageRecipesModal').classList.add('active');
+            loadRecipeList();
+        }
+
+        // Close Manage Recipes Modal
+        function closeManageRecipesModal() {
+            document.getElementById('manageRecipesModal').classList.remove('active');
+        }
+
+        // Load and display recipe list
+        function loadRecipeList() {
+            const customRecipes = JSON.parse(localStorage.getItem('customRecipes') || '{}');
+            const recipeListContainer = document.getElementById('recipeListContainer');
+            const emptyState = document.getElementById('emptyRecipeState');
+            
+            const recipeNames = Object.keys(customRecipes);
+            
+            if (recipeNames.length === 0) {
+                recipeListContainer.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            
+            recipeListContainer.innerHTML = recipeNames.map(recipeName => {
+                const recipe = customRecipes[recipeName];
+                const totalCalories = recipe.ingredients.reduce((sum, ing) => {
+                    const ingredient = rawIngredients[ing.name] || {};
+                    return sum + ((ingredient.calories || 0) * (ing.quantity || 0) / 100);
+                }, 0);
+                const caloriesPerServing = Math.round(totalCalories / (recipe.servings || 1));
+                const ingredientCount = recipe.ingredients.length;
+                
+                return `
+                    <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-2">${recipeName}</h4>
+                                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm text-gray-600">
+                                    <div class="flex items-center">
+                                        <span class="text-orange-500 mr-1">🔥</span>
+                                        <span>${caloriesPerServing} cal/serving</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <span class="text-blue-500 mr-1">🍽️</span>
+                                        <span>${recipe.servings || 1} servings</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <span class="text-green-500 mr-1">🥬</span>
+                                        <span>${ingredientCount} ingredients</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2 ml-4">
+                                <button onclick="openRecipeEditModal('${recipeName}')"
+                                        class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                                    ✏️ Edit
+                                </button>
+                                <button onclick="deleteRecipeConfirm('${recipeName}')"
+                                        class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm">
+                                    🗑️ Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Open Recipe Edit Modal
+        function openRecipeEditModal(recipeName) {
+            console.log('🔍 RACE_DEBUG: openRecipeEditModal called for:', recipeName);
+            console.log('🔍 RACE_DEBUG: rawIngredients state:', rawIngredients ? 'LOADED' : 'NOT_LOADED');
+            console.log('🔍 RACE_DEBUG: rawIngredients keys:', rawIngredients ? Object.keys(rawIngredients).length : 0);
+            
+            // RACE CONDITION FIX: Check if ingredients are loaded
+            if (!rawIngredients || Object.keys(rawIngredients).length === 0) {
+                console.log('❌ RACE_DEBUG: Ingredients not loaded, loading now...');
+                showSuccessMessage('🔄 Loading ingredients for recipe editor...');
+                
+                loadDatabases().then(() => {
+                    console.log('✅ RACE_DEBUG: Ingredients loaded, retrying recipe edit');
+                    openRecipeEditModal(recipeName); // Retry after loading
+                }).catch(error => {
+                    console.error('❌ RACE_DEBUG: Failed to load ingredients:', error);
+                    showErrorMessage('Failed to load ingredients: ' + error.message);
+                });
+                return;
+            }
+            
+            const customRecipes = JSON.parse(localStorage.getItem('customRecipes') || '{}');
+            const recipe = customRecipes[recipeName];
+            
+            if (!recipe) {
+                console.log('❌ RACE_DEBUG: Recipe not found:', recipeName);
+                alert('Recipe not found!');
+                return;
+            }
+            
+            console.log('✅ RACE_DEBUG: Recipe found, proceeding with modal opening');
+            
+            currentEditingRecipe = recipeName;
+            
+            // Populate form fields
+            document.getElementById('editRecipeName').value = recipeName;
+            document.getElementById('editRecipeServings').value = recipe.servings || 1;
+            
+            // Load ingredients
+            loadEditIngredients(recipe.ingredients);
+            
+            // Calculate and display nutrition
+            updateEditNutrition();
+            
+            // Show modal
+            document.getElementById('recipeEditModal').classList.add('active');
+        }
+
+        // Close Recipe Edit Modal
+        function closeRecipeEditModal() {
+            document.getElementById('recipeEditModal').classList.remove('active');
+            currentEditingRecipe = null;
+            document.getElementById('editIngredientsContainer').innerHTML = '';
+            document.getElementById('editIngredientSearch').value = '';
+            document.getElementById('editSelectedIngredientDisplay').classList.add('hidden');
+            document.getElementById('editIngredientQuantitySection').classList.add('hidden');
+        }
+
+        // Load ingredients into edit form
+        function loadEditIngredients(ingredients) {
+            const container = document.getElementById('editIngredientsContainer');
+            container.innerHTML = '';
+            
+            ingredients.forEach((ingredient, index) => {
+                addEditIngredientRow(ingredient.name, ingredient.quantity, index);
+            });
+            
+            // Add one empty row if no ingredients
+            if (ingredients.length === 0) {
+                addEditIngredientRow('', '', 0);
+            }
+        }
+
+        // ========================================
+        // ENHANCED RECIPE EDIT INGREDIENT FUNCTIONS
+        // ========================================
+        
+        let editRecipeSelectedIngredient = null;
+        
+        // Filter ingredients for recipe edit modal
+        function filterEditRecipeIngredients() {
+            const searchInput = document.getElementById('editIngredientSearch');
+            const dropdown = document.getElementById('editIngredientDropdown');
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            
+            if (!searchTerm) {
+                dropdown.classList.add('hidden');
+                return;
+            }
+            
+            // Search through ingredients
+            const matchedIngredients = [];
+            for (const category in rawIngredients) {
+                for (const ingredientKey in rawIngredients[category]) {
+                    const ingredient = rawIngredients[category][ingredientKey];
+                    if (ingredient.name.toLowerCase().includes(searchTerm)) {
+                        matchedIngredients.push({
+                            name: ingredient.name,
+                            category: category,
+                            key: ingredientKey
+                        });
+                    }
+                }
+            }
+            
+            if (matchedIngredients.length === 0) {
+                dropdown.innerHTML = '<div class="p-3 text-gray-500">No ingredients found</div>';
+                dropdown.classList.remove('hidden');
+                return;
+            }
+            
+            dropdown.innerHTML = matchedIngredients.map(ing => `
+                <div class="p-2 hover:bg-blue-100 cursor-pointer border-b border-gray-200 text-sm"
+                     onclick="selectEditRecipeIngredient('${ing.name}', '${ing.category}', '${ing.key}')">
+                    <div class="font-medium text-gray-800">${ing.name}</div>
+                    <div class="text-xs text-gray-500">${ing.category.replace(/_/g, ' ')}</div>
+                </div>
+            `).join('');
+            
+            dropdown.classList.remove('hidden');
+        }
+        
+        // Select ingredient in recipe edit modal
+        function selectEditRecipeIngredient(ingredientName, category, key) {
+            editRecipeSelectedIngredient = { name: ingredientName, category, key };
+            document.getElementById('editIngredientSearch').value = ingredientName;
+            document.getElementById('editSelectedIngredientName').textContent = ingredientName;
+            document.getElementById('editSelectedIngredientDisplay').classList.remove('hidden');
+            document.getElementById('editIngredientQuantitySection').classList.remove('hidden');
+            document.getElementById('editAddIngredientBtn').classList.remove('hidden');
+            document.getElementById('editIngredientDropdown').classList.add('hidden');
+            document.getElementById('editIngredientQuantity').focus();
+        }
+        
+        // Clear selected ingredient in recipe edit modal
+        function clearEditIngredientSelection() {
+            editRecipeSelectedIngredient = null;
+            document.getElementById('editIngredientSearch').value = '';
+            document.getElementById('editSelectedIngredientDisplay').classList.add('hidden');
+            document.getElementById('editIngredientQuantitySection').classList.add('hidden');
+            document.getElementById('editAddIngredientBtn').classList.add('hidden');
+            document.getElementById('editIngredientQuantity').value = '1';
+        }
+        
+        // Add selected ingredient to recipe form
+        function addEditIngredientToForm() {
+            if (!editRecipeSelectedIngredient) {
+                showErrorMessage('Please select an ingredient first');
+                return;
+            }
+            
+            const quantity = parseFloat(document.getElementById('editIngredientQuantity').value);
+            if (!quantity || quantity <= 0) {
+                showErrorMessage('Please enter a valid quantity');
+                return;
+            }
+            
+            const container = document.getElementById('editIngredientsContainer');
+            const ingredientRow = document.createElement('div');
+            ingredientRow.className = 'flex space-x-3 items-center bg-white p-3 rounded border border-gray-200';
+            
+            const ingredient = rawIngredients[editRecipeSelectedIngredient.category][editRecipeSelectedIngredient.key];
+            
+            ingredientRow.innerHTML = `
+                <div class="flex-1">
+                    <div class="font-medium text-gray-800">${editRecipeSelectedIngredient.name}</div>
+                    <div class="text-xs text-gray-500">${quantity}g</div>
+                </div>
+                <input type="hidden" value="${editRecipeSelectedIngredient.name}">
+                <input type="hidden" value="${quantity}">
+                <button type="button" onclick="this.parentElement.remove(); updateEditNutrition()"
+                        class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm">
+                    Remove
+                </button>
+            `;
+            
+            container.appendChild(ingredientRow);
+            updateEditNutrition();
+            clearEditIngredientSelection();
+            
+            showSuccessMessage(`Added ${editRecipeSelectedIngredient.name} to recipe`);
+        }
+
+        // Add ingredient row to edit form
+        function addEditIngredient() {
+            const container = document.getElementById('editIngredientsContainer');
+            const index = container.children.length;
+            addEditIngredientRow('', '', index);
+        }
+
+        // Add ingredient row with specific values
+        function addEditIngredientRow(ingredientName, quantity, index) {
+            const container = document.getElementById('editIngredientsContainer');
+            
+            const ingredientRow = document.createElement('div');
+            ingredientRow.className = 'flex space-x-3 items-center';
+            ingredientRow.innerHTML = `
+                <select class="flex-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        onchange="updateEditNutrition()" required>
+                    <option value="">Select ingredient...</option>
+                    ${Object.keys(rawIngredients).map(name =>
+                        `<option value="${name}" ${name === ingredientName ? 'selected' : ''}>${name}</option>`
+                    ).join('')}
+                </select>
+                <input type="number" placeholder="Quantity (g)" min="0" step="0.1"
+                       value="${quantity}"
+                       class="w-32 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                       onchange="updateEditNutrition()" required>
+                <button type="button" onclick="removeEditIngredient(this)"
+                        class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg">
+                    ✕
+                </button>
+            `;
+            
+            container.appendChild(ingredientRow);
+        }
+
+        // Remove ingredient row from edit form
+        function removeEditIngredient(button) {
+            button.parentElement.remove();
+            updateEditNutrition();
+        }
+
+        // Update nutrition display in edit form
+        function updateEditNutrition() {
+            const container = document.getElementById('editIngredientsContainer');
+            const servings = parseInt(document.getElementById('editRecipeServings').value) || 1;
+            
+            let totalCalories = 0, totalProtein = 0, totalCarbs = 0, totalFat = 0;
+            
+            Array.from(container.children).forEach(row => {
+                const select = row.querySelector('select');
+                const input = row.querySelector('input');
+                
+                const ingredientName = select.value;
+                const quantity = parseFloat(input.value) || 0;
+                
+                if (ingredientName && quantity > 0) {
+                    const ingredient = rawIngredients[ingredientName];
+                    if (ingredient) {
+                        const multiplier = quantity / 100;
+                        totalCalories += (ingredient.calories || 0) * multiplier;
+                        totalProtein += (ingredient.protein || 0) * multiplier;
+                        totalCarbs += (ingredient.carbs || 0) * multiplier;
+                        totalFat += (ingredient.fat || 0) * multiplier;
+                    }
+                }
+            });
+            
+            // Update display (per serving)
+            document.getElementById('editCalories').textContent = Math.round(totalCalories / servings);
+            document.getElementById('editProtein').textContent = Math.round(totalProtein / servings);
+            document.getElementById('editCarbs').textContent = Math.round(totalCarbs / servings);
+            document.getElementById('editFat').textContent = Math.round(totalFat / servings);
+        }
+
+        // Handle edit form submission
+        document.getElementById('editRecipeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!currentEditingRecipe) {
+                alert('No recipe selected for editing!');
+                return;
+            }
+            
+            const newRecipeName = document.getElementById('editRecipeName').value.trim();
+            const servings = parseInt(document.getElementById('editRecipeServings').value) || 1;
+            
+            if (!newRecipeName) {
+                alert('Please enter a recipe name!');
+                return;
+            }
+            
+            // Collect ingredients from both old format (select/input) and new format (hidden inputs)
+            const container = document.getElementById('editIngredientsContainer');
+            const ingredients = [];
+            
+            Array.from(container.children).forEach(row => {
+                let ingredientName = '';
+                let quantity = 0;
+                
+                // Check for new format (hidden inputs with added ingredients)
+                const hiddenInputs = row.querySelectorAll('input[type="hidden"]');
+                if (hiddenInputs.length >= 2) {
+                    ingredientName = hiddenInputs[0].value;
+                    quantity = parseFloat(hiddenInputs[1].value) || 0;
+                } else {
+                    // Check for old format (select and quantity input)
+                    const select = row.querySelector('select');
+                    const input = row.querySelector('input[type="number"]');
+                    
+                    if (select && input) {
+                        ingredientName = select.value;
+                        quantity = parseFloat(input.value) || 0;
+                    }
+                }
+                
+                if (ingredientName && quantity > 0) {
+                    ingredients.push({
+                        name: ingredientName,
+                        quantity: quantity
+                    });
+                }
+            });
+            
+            if (ingredients.length === 0) {
+                alert('Please add at least one ingredient!');
+                return;
+            }
+            
+            // Save updated recipe
+            const customRecipes = JSON.parse(localStorage.getItem('customRecipes') || '{}');
+            
+            // If recipe name changed, delete old entry
+            if (currentEditingRecipe !== newRecipeName) {
+                delete customRecipes[currentEditingRecipe];
+            }
+            
+            // Save new/updated recipe
+            customRecipes[newRecipeName] = {
+                ingredients: ingredients,
+                servings: servings,
+                lastModified: new Date().toISOString()
+            };
+            
+            localStorage.setItem('customRecipes', JSON.stringify(customRecipes));
+            
+            // Close modal and refresh list
+            closeRecipeEditModal();
+            loadRecipeList();
+            
+            showSuccessMessage(`Recipe "${newRecipeName}" updated successfully!`);
+        });
+
+        // Delete recipe with confirmation
+        function deleteRecipeConfirm(recipeName) {
+            if (confirm(`Are you sure you want to delete the recipe "${recipeName}"? This action cannot be undone.`)) {
+                const customRecipes = JSON.parse(localStorage.getItem('customRecipes') || '{}');
+                delete customRecipes[recipeName];
+                localStorage.setItem('customRecipes', JSON.stringify(customRecipes));
+                loadRecipeList();
+                alert(`Recipe "${recipeName}" deleted successfully!`);
+            }
+        }
+
+        // Update existing editRecipe function to use new popup
+        function editRecipe(recipeName) {
+            // Close any open modals first
+            closeUnifiedAddModal();
+            
+            // Open the recipe edit modal instead of loading into create recipe tab
+            openRecipeEditModal(recipeName);
+        }
+
+        // ========================================
+        // RECIPE EDITOR ACCESS FROM INGREDIENTS MANAGEMENT
+        // ========================================
+        
+        // Populate recipe selector dropdown
+        function populateRecipeSelector() {
+            console.log('🍳 RECIPE_SELECTOR: populateRecipeSelector() called');
+            const selector = document.getElementById('recipeSelector');
+            const editButton = document.getElementById('editSelectedRecipeBtn');
+            
+            if (!selector) {
+                console.log('⚠️ RECIPE_SELECTOR: Recipe selector element not found');
+                return;
+            }
+            
+            // Get all available recipes (both server and custom)
+            const allRecipes = {...(foodDatabase?.dishes || {}), ...customRecipes};
+            const recipeKeys = Object.keys(allRecipes);
+            
+            console.log('🍳 RECIPE_SELECTOR: Found', recipeKeys.length, 'total recipes');
+            
+            // Clear existing options
+            selector.innerHTML = '<option value="">-- Choose a recipe --</option>';
+            
+            if (recipeKeys.length === 0) {
+                selector.innerHTML += '<option value="" disabled>No recipes available</option>';
+                if (editButton) editButton.disabled = true;
+                return;
+            }
+            
+            // Sort recipes alphabetically
+            recipeKeys.sort((a, b) => {
+                const nameA = allRecipes[a].name || a;
+                const nameB = allRecipes[b].name || b;
+                return nameA.localeCompare(nameB);
+            });
+            
+            // Add recipe options
+            recipeKeys.forEach(key => {
+                const recipe = allRecipes[key];
+                const recipeName = recipe.name || key;
+                const isCustom = customRecipes[key] ? ' (Custom)' : '';
+                selector.innerHTML += `<option value="${key}">${recipeName}${isCustom}</option>`;
+            });
+            
+            console.log('✅ RECIPE_SELECTOR: Recipe selector populated with', recipeKeys.length, 'recipes');
+        }
+        
+        // Handle recipe selection change
+        function onRecipeSelectionChange() {
+            const selector = document.getElementById('recipeSelector');
+            const editButton = document.getElementById('editSelectedRecipeBtn');
+            
+            if (!selector || !editButton) return;
+            
+            const selectedRecipe = selector.value;
+            editButton.disabled = !selectedRecipe;
+            
+            if (selectedRecipe) {
+                console.log('🍳 RECIPE_SELECTOR: Recipe selected:', selectedRecipe);
+            }
+        }
+        
+        // Edit selected recipe from ingredients management
+        function editSelectedRecipeFromIngredients() {
+            console.log('📝 RECIPE_EDIT: editSelectedRecipeFromIngredients() called');
+            
+            const selector = document.getElementById('recipeSelector');
+            if (!selector) {
+                console.error('❌ RECIPE_EDIT: Recipe selector not found');
+                return;
+            }
+            
+            const selectedRecipe = selector.value;
+            if (!selectedRecipe) {
+                showErrorMessage('Please select a recipe to edit');
+                return;
+            }
+            
+            console.log('📝 RECIPE_EDIT: Opening recipe editor for:', selectedRecipe);
+            
+            // Use the existing openRecipeEditModal function with all its race condition fixes
+            openRecipeEditModal(selectedRecipe);
+        }
+        
+        // Create new recipe from ingredients management
+        function createNewRecipeFromIngredients() {
+            console.log('➕ RECIPE_CREATE: createNewRecipeFromIngredients() called');
+            
+            // Close the ingredients management modal
+            closeUnifiedAddModal();
+            
+            // Open the recipe builder
+            openRecipeBuilder();
+            
+            showSuccessMessage('✅ Recipe builder opened! Create your new recipe.');
+        }
+        
+        // Initialize recipe editor access when ingredients management opens
+        function initializeRecipeEditorAccess() {
+            console.log('🔧 RECIPE_INIT: initializeRecipeEditorAccess() called');
+            
+            // Ensure databases are loaded before populating selector
+            if (!foodDatabase || !customRecipes) {
+                console.log('🔄 RECIPE_INIT: Databases not loaded, loading now...');
+                loadDatabases().then(() => {
+                    console.log('✅ RECIPE_INIT: Databases loaded, populating selector');
+                    populateRecipeSelector();
+                }).catch(error => {
+                    console.error('❌ RECIPE_INIT: Failed to load databases:', error);
+                });
+            } else {
+                populateRecipeSelector();
+            }
+            
+            // Add event listeners
+            const selector = document.getElementById('recipeSelector');
+            const editButton = document.getElementById('editSelectedRecipeBtn');
+            const createButton = document.getElementById('createNewRecipeBtn');
+            
+            if (selector) {
+                selector.addEventListener('change', onRecipeSelectionChange);
+            }
+            
+            if (editButton) {
+                editButton.addEventListener('click', editSelectedRecipeFromIngredients);
+            }
+            
+            if (createButton) {
+                createButton.addEventListener('click', createNewRecipeFromIngredients);
+            }
+            
+            console.log('✅ RECIPE_INIT: Recipe editor access initialized');
+        }
+
+        // ========================================
         // DIAGNOSTIC EXECUTION AND INITIALIZATION
         // ========================================
         
         // Make diagnostic functions available globally for manual testing
         window.testExportButton = testExportButton;
         window.testExportFlow = testExportFlow;
+        
+        // Test functions for recipe editor integration
+        window.testRecipeEditorIntegration = function() {
+            console.log('🧪 Testing Recipe Editor Integration...');
+            
+            // Test 1: Check if recipe editor access section exists
+            const recipeEditorSection = document.getElementById('recipeEditorAccess');
+            console.log('Recipe Editor Access Section:', recipeEditorSection ? '✅ Found' : '❌ Missing');
+            
+            // Test 2: Check if recipe selector exists
+            const recipeSelector = document.getElementById('recipeSelector');
+            console.log('Recipe Selector:', recipeSelector ? '✅ Found' : '❌ Missing');
+            
+            // Test 3: Check if buttons exist
+            const editBtn = document.getElementById('editSelectedRecipeBtn');
+            const createBtn = document.getElementById('createNewRecipeBtn');
+            console.log('Edit Button:', editBtn ? '✅ Found' : '❌ Missing');
+            console.log('Create Button:', createBtn ? '✅ Found' : '❌ Missing');
+            
+            // Test 4: Check if functions are available
+            console.log('populateRecipeSelector function:', typeof populateRecipeSelector === 'function' ? '✅ Available' : '❌ Missing');
+            console.log('editSelectedRecipeFromIngredients function:', typeof editSelectedRecipeFromIngredients === 'function' ? '✅ Available' : '❌ Missing');
+            console.log('createNewRecipeFromIngredients function:', typeof createNewRecipeFromIngredients === 'function' ? '✅ Available' : '❌ Missing');
+            console.log('initializeRecipeEditorAccess function:', typeof initializeRecipeEditorAccess === 'function' ? '✅ Available' : '❌ Missing');
+            
+            // Test 5: Test recipe selector population
+            if (typeof populateRecipeSelector === 'function') {
+                try {
+                    populateRecipeSelector();
+                    const options = recipeSelector ? recipeSelector.options.length : 0;
+                    console.log('Recipe Selector Population:', options > 1 ? `✅ ${options} options loaded` : '⚠️ Only default option');
+                } catch (error) {
+                    console.log('Recipe Selector Population:', `❌ Error: ${error.message}`);
+                }
+            }
+            
+            console.log('🧪 Recipe Editor Integration Test Complete!');
+        };
+        
+        // Test function for modal layering
+        window.testModalLayering = function() {
+            console.log('🧪 Testing Modal Layering...');
+            
+            const unifiedModal = document.getElementById('unifiedAddModal');
+            const recipeEditModal = document.getElementById('recipeEditModal');
+            
+            if (unifiedModal && recipeEditModal) {
+                const unifiedZIndex = window.getComputedStyle(unifiedModal).zIndex;
+                const recipeZIndex = window.getComputedStyle(recipeEditModal).zIndex;
+                
+                console.log('Unified Modal z-index:', unifiedZIndex);
+                console.log('Recipe Edit Modal z-index:', recipeZIndex);
+                
+                if (parseInt(recipeZIndex) > parseInt(unifiedZIndex)) {
+                    console.log('Modal Layering: ✅ Recipe edit modal will appear above unified modal');
+                } else {
+                    console.log('Modal Layering: ⚠️ Check z-index values');
+                }
+            } else {
+                console.log('Modal Layering: ❌ One or both modals not found');
+            }
+        };
+        
+        // Test function for race condition preservation
+        window.testRaceConditionHandling = function() {
+            console.log('🧪 Testing Race Condition Handling...');
+            
+            // Check if openRecipeEditModal has proper validation
+            const openRecipeEditModalStr = openRecipeEditModal.toString();
+            
+            const hasDbValidation = openRecipeEditModalStr.includes('!rawIngredients || Object.keys(rawIngredients).length === 0');
+            const hasRetryMechanism = openRecipeEditModalStr.includes('loadDatabases().then');
+            
+            console.log('Database Validation Check:', hasDbValidation ? '✅ Present' : '❌ Missing');
+            console.log('Retry Mechanism:', hasRetryMechanism ? '✅ Present' : '❌ Missing');
+            
+            // Check if our new functions preserve this logic
+            const editFromIngredientsStr = editSelectedRecipeFromIngredients.toString();
+            const preservesValidation = editFromIngredientsStr.includes('openRecipeEditModal');
+            
+            console.log('Integration Preserves Race Condition Fixes:', preservesValidation ? '✅ Yes' : '❌ No');
+            
+            console.log('🧪 Race Condition Handling Test Complete!');
+        };
         
         // Auto-run diagnostics when page loads (after a delay to ensure everything is initialized)
         document.addEventListener('DOMContentLoaded', function() {
@@ -9241,6 +10072,9 @@
                 console.log('🔧 AUTO_DIAGNOSTIC: You can also manually run:');
                 console.log('🔧 AUTO_DIAGNOSTIC: - testExportButton() - Test button functionality');
                 console.log('🔧 AUTO_DIAGNOSTIC: - testExportFlow() - Test complete export flow');
+                console.log('🔧 AUTO_DIAGNOSTIC: - testRecipeEditorIntegration() - Test recipe editor integration');
+                console.log('🔧 AUTO_DIAGNOSTIC: - testModalLayering() - Test modal z-index layering');
+                console.log('🔧 AUTO_DIAGNOSTIC: - testRaceConditionHandling() - Test race condition preservation');
                 
                 // Run automatic diagnostic
                 const autoTestResults = testExportButton();

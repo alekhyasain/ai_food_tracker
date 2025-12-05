@@ -1,332 +1,5 @@
 {
   "dishes": {
-    "aloo_gobi": {
-      "name": "Aloo Gobi",
-      "category": "sabji",
-      "servings": 4,
-      "ingredients": [
-        {
-          "name": "Potato",
-          "amount": "3 medium",
-          "calories": 231,
-          "protein": 6.2,
-          "carbs": 52.9,
-          "fat": 0.3,
-          "fiber": 4.7
-        },
-        {
-          "name": "Cauliflower",
-          "amount": "1 small head",
-          "calories": 147,
-          "protein": 11.9,
-          "carbs": 30,
-          "fat": 1.7,
-          "fiber": 12.2
-        },
-        {
-          "name": "Onion",
-          "amount": "1 medium",
-          "calories": 44,
-          "protein": 1.2,
-          "carbs": 10,
-          "fat": 0.1,
-          "fiber": 1.9
-        },
-        {
-          "name": "Tomato",
-          "amount": "1 medium",
-          "calories": 22,
-          "protein": 1.1,
-          "carbs": 4.8,
-          "fat": 0.2,
-          "fiber": 1.4
-        },
-        {
-          "name": "Ginger-garlic paste",
-          "amount": "1 tbsp",
-          "calories": 15,
-          "protein": 0.5,
-          "carbs": 3,
-          "fat": 0.1,
-          "fiber": 0.2
-        },
-        {
-          "name": "Cumin powder",
-          "amount": "1 tsp",
-          "calories": 8,
-          "protein": 0.4,
-          "carbs": 0.9,
-          "fat": 0.5,
-          "fiber": 0.2
-        },
-        {
-          "name": "Coriander powder",
-          "amount": "1 tsp",
-          "calories": 5,
-          "protein": 0.2,
-          "carbs": 1,
-          "fat": 0.3,
-          "fiber": 0.8
-        },
-        {
-          "name": "Turmeric powder",
-          "amount": "1/2 tsp",
-          "calories": 4,
-          "protein": 0.1,
-          "carbs": 0.9,
-          "fat": 0.1,
-          "fiber": 0.2
-        },
-        {
-          "name": "Oil",
-          "amount": "3 tbsp",
-          "calories": 360,
-          "protein": 0,
-          "carbs": 0,
-          "fat": 40.5,
-          "fiber": 0
-        }
-      ],
-      "total_per_serving": {
-        "calories": 209,
-        "protein": 5.4,
-        "carbs": 25.9,
-        "fat": 10.8,
-        "fiber": 5.4
-      },
-      "preparation_notes": "Sauté potatoes and cauliflower with spices until tender"
-    },
-    "rajma": {
-      "name": "Rajma",
-      "category": "dal",
-      "servings": 4,
-      "ingredients": [
-        {
-          "name": "Kidney beans (cooked)",
-          "amount": "1.5 cups",
-          "calories": 337,
-          "protein": 22.5,
-          "carbs": 60,
-          "fat": 1.1,
-          "fiber": 16.5
-        },
-        {
-          "name": "Onion",
-          "amount": "2 medium",
-          "calories": 88,
-          "protein": 2.4,
-          "carbs": 20,
-          "fat": 0.2,
-          "fiber": 3.8
-        },
-        {
-          "name": "Tomato",
-          "amount": "3 medium",
-          "calories": 66,
-          "protein": 3.3,
-          "carbs": 14.4,
-          "fat": 0.7,
-          "fiber": 4.4
-        },
-        {
-          "name": "Ginger-garlic paste",
-          "amount": "2 tbsp",
-          "calories": 30,
-          "protein": 1,
-          "carbs": 6,
-          "fat": 0.2,
-          "fiber": 0.4
-        },
-        {
-          "name": "Cumin powder",
-          "amount": "1 tsp",
-          "calories": 8,
-          "protein": 0.4,
-          "carbs": 0.9,
-          "fat": 0.5,
-          "fiber": 0.2
-        },
-        {
-          "name": "Coriander powder",
-          "amount": "1 tsp",
-          "calories": 5,
-          "protein": 0.2,
-          "carbs": 1,
-          "fat": 0.3,
-          "fiber": 0.8
-        },
-        {
-          "name": "Garam masala",
-          "amount": "1/2 tsp",
-          "calories": 3,
-          "protein": 0.1,
-          "carbs": 0.6,
-          "fat": 0.1,
-          "fiber": 0.2
-        },
-        {
-          "name": "Oil",
-          "amount": "2 tbsp",
-          "calories": 240,
-          "protein": 0,
-          "carbs": 0,
-          "fat": 27,
-          "fiber": 0
-        }
-      ],
-      "total_per_serving": {
-        "calories": 194,
-        "protein": 7.5,
-        "carbs": 25.7,
-        "fat": 7.3,
-        "fiber": 6.6
-      },
-      "preparation_notes": "Soak beans overnight, pressure cook, then simmer with spiced onion-tomato gravy"
-    },
-    "palak_paneer": {
-      "name": "Palak Paneer",
-      "category": "sabji",
-      "servings": 4,
-      "ingredients": [
-        {
-          "name": "Paneer",
-          "amount": "200g",
-          "calories": 654,
-          "protein": 36,
-          "carbs": 6,
-          "fat": 54,
-          "fiber": 0
-        },
-        {
-          "name": "Spinach",
-          "amount": "500g",
-          "calories": 115,
-          "protein": 14.4,
-          "carbs": 18.2,
-          "fat": 1.9,
-          "fiber": 11
-        },
-        {
-          "name": "Onion",
-          "amount": "1 medium",
-          "calories": 44,
-          "protein": 1.2,
-          "carbs": 10,
-          "fat": 0.1,
-          "fiber": 1.9
-        },
-        {
-          "name": "Tomato",
-          "amount": "1 medium",
-          "calories": 22,
-          "protein": 1.1,
-          "carbs": 4.8,
-          "fat": 0.2,
-          "fiber": 1.4
-        },
-        {
-          "name": "Ginger-garlic paste",
-          "amount": "1 tbsp",
-          "calories": 15,
-          "protein": 0.5,
-          "carbs": 3,
-          "fat": 0.1,
-          "fiber": 0.2
-        },
-        {
-          "name": "Cream",
-          "amount": "3 tbsp",
-          "calories": 153,
-          "protein": 1.3,
-          "carbs": 1.2,
-          "fat": 16.3,
-          "fiber": 0
-        },
-        {
-          "name": "Oil",
-          "amount": "2 tbsp",
-          "calories": 240,
-          "protein": 0,
-          "carbs": 0,
-          "fat": 27,
-          "fiber": 0
-        }
-      ],
-      "total_per_serving": {
-        "calories": 311,
-        "protein": 13.6,
-        "carbs": 10.8,
-        "fat": 24.9,
-        "fiber": 3.6
-      },
-      "preparation_notes": "Blanch spinach, make puree, cook with paneer and spices"
-    },
-    "rice_plain": {
-      "name": "Plain Rice",
-      "category": "rice",
-      "servings": 4,
-      "ingredients": [
-        {
-          "name": "Basmati rice",
-          "amount": "1 cup",
-          "calories": 685,
-          "protein": 12.9,
-          "carbs": 150,
-          "fat": 1.1,
-          "fiber": 2.2
-        }
-      ],
-      "total_per_serving": {
-        "calories": 171,
-        "protein": 3.2,
-        "carbs": 37.5,
-        "fat": 0.3,
-        "fiber": 0.6
-      },
-      "preparation_notes": "Wash rice, cook with water in 1:2 ratio"
-    },
-    "chapati": {
-      "name": "Chapati",
-      "category": "bread",
-      "servings": 1,
-      "ingredients": [
-        {
-          "name": "Whole wheat flour",
-          "amount": "30g",
-          "calories": 102,
-          "protein": 3.6,
-          "carbs": 20.7,
-          "fat": 0.5,
-          "fiber": 2.7
-        },
-        {
-          "name": "Water",
-          "amount": "as needed",
-          "calories": 0,
-          "protein": 0,
-          "carbs": 0,
-          "fat": 0,
-          "fiber": 0
-        },
-        {
-          "name": "Oil",
-          "amount": "1/2 tsp",
-          "calories": 20,
-          "protein": 0,
-          "carbs": 0,
-          "fat": 2.3,
-          "fiber": 0
-        }
-      ],
-      "total_per_serving": {
-        "calories": 122,
-        "protein": 3.6,
-        "carbs": 20.7,
-        "fat": 2.8,
-        "fiber": 2.7
-      },
-      "preparation_notes": "Make dough, roll thin, cook on tawa"
-    },
     "spinach_sambar": {
       "name": "Spinach Sambar",
       "category": "dal",
@@ -833,14 +506,38 @@
             "fat": 0,
             "fiber": 0
           }
+        },
+        {
+          "key": "other.ginger",
+          "name": "Ginger",
+          "amount": "2.5x 1 inch",
+          "nutrition": {
+            "calories": 22.5,
+            "protein": 1,
+            "carbs": 5,
+            "fat": 0.5,
+            "fiber": 0
+          }
+        },
+        {
+          "key": "other.garlic",
+          "name": "Garlic",
+          "amount": "6x 1 clove",
+          "nutrition": {
+            "calories": 26.82,
+            "protein": 1.1400000000000001,
+            "carbs": 5.9399999999999995,
+            "fat": 0.12,
+            "fiber": 0.36
+          }
         }
       ],
       "total_per_serving": {
-        "calories": 420,
-        "protein": 15.5,
-        "carbs": 66.3,
-        "fat": 11,
-        "fiber": 4.1
+        "calories": 432,
+        "protein": 16,
+        "carbs": 69,
+        "fat": 11.1,
+        "fiber": 4.2
       }
     },
     "apple_chia_pudding": {
@@ -1353,13 +1050,25 @@
             "fat": 0.5775000000000001,
             "fiber": 2.0475
           }
+        },
+        {
+          "key": "oils_fats.cashews",
+          "name": "Cashews",
+          "amount": "3x 1 piece",
+          "nutrition": {
+            "calories": 30,
+            "protein": 0.75,
+            "carbs": 1.5,
+            "fat": 1.7999999999999998,
+            "fiber": 0
+          }
         }
       ],
       "total_per_serving": {
-        "calories": 281,
-        "protein": 7,
-        "carbs": 49.5,
-        "fat": 5.2,
+        "calories": 296,
+        "protein": 7.4,
+        "carbs": 50.2,
+        "fat": 6.1,
         "fiber": 3.4
       }
     },

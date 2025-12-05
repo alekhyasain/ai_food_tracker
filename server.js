@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 app.use(express.static('.'));
 
 // Serve static files
@@ -741,7 +741,12 @@ app.post('/api/export-excel', async (req, res) => {
         console.log('🔍 EXPORT_DEBUG: December 3rd data check:', {
             hasDecember3Data: !!dec3Data,
             december3MealCount: dec3Data?.length || 0,
-            december3Meals: dec3Data?.map(m => ({ description: m.description, time: m.time })) || []
+            december3Meals: dec3Data?.map(m => ({ 
+                description: m.description, 
+                time: m.time,
+                mealType: m.mealType,
+                source: m.source
+            })) || []
         });
         
         if (dates.length === 0) {
@@ -835,6 +840,7 @@ app.post('/api/export-excel', async (req, res) => {
             // Set column widths
             worksheet.columns = [
                 { header: 'Time', key: 'time', width: 10 },
+                { header: 'Meal Type', key: 'mealType', width: 15 },
                 { header: 'Meal Description', key: 'description', width: 40 },
                 { header: 'Calories', key: 'calories', width: 10 },
                 { header: 'Protein (g)', key: 'protein', width: 12 },
@@ -859,6 +865,7 @@ app.post('/api/export-excel', async (req, res) => {
             // Add date header row
             const dateHeaderRow = worksheet.addRow({
                 time: '',
+                mealType: '',
                 description: `📅 ${date.toLocaleDateString('en-US', {
                     weekday: 'long',
                     year: 'numeric',
@@ -910,6 +917,7 @@ app.post('/api/export-excel', async (req, res) => {
                 
                 const row = worksheet.addRow({
                     time: mealTime,
+                    mealType: meal.mealType || 'Lunch',
                     description: meal.description,
                     calories: meal.nutrition.calories,
                     protein: meal.nutrition.protein,
@@ -937,6 +945,7 @@ app.post('/api/export-excel', async (req, res) => {
             worksheet.addRow({});
             const summaryRow = worksheet.addRow({
                 time: '',
+                mealType: '',
                 description: `📊 Daily Total (${meals.length} meals)`,
                 calories: Math.round(dayTotals.calories),
                 protein: Math.round(dayTotals.protein * 10) / 10,
