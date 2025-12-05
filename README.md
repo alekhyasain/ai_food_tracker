@@ -1,22 +1,38 @@
-# Indian Food Diary - Ingredient Management System
+# Indian Food Diary - Comprehensive Food & Nutrition Tracker
 
-A comprehensive food tracking application with ingredient management capabilities for Indian cuisine.
+A full-featured food tracking application for monitoring daily nutrition intake with comprehensive recipe management, meal logging, and weight tracking for Indian cuisine.
 
 ## Features
 
-### Core Functionality
-- **Volume-Based Tracking**: Track food using simple measurements like cups, tablespoons, etc.
-- **Pre-made Dishes**: Quick add popular Indian dishes with accurate nutritional data
-- **Custom Entries**: Add custom meals with automatic calorie estimation
-- **Recipe Builder**: Create custom recipes with precise nutritional calculations
-- **Daily Summary**: Track calories, protein, fiber, and meal count
+### Meal Tracking
+- **Meal Type Classification**: Track meals as Breakfast, Lunch, Dinner, or Snacks
+- **Quick Add Dishes**: Instantly add pre-made Indian dishes with accurate nutritional data
+- **Custom Entries**: Add custom meals with manual calorie and macro tracking
+- **Inline Meal Logging**: Add meals directly from the daily view
+- **Volume-Based Measurements**: Track food using cups, tablespoons, grams, and other measurements
+- **Daily Summary**: View aggregated calories, protein, carbs, fat, and fiber for each day
 
-### New Ingredient Management
-- **Add New Ingredients**: Add ingredients with multiple measurement options
-- **Edit Existing Ingredients**: Modify ingredient data and nutritional information
-- **Delete Ingredients**: Remove ingredients from the database
-- **Category Management**: Organize ingredients by categories (grains, vegetables, spices, etc.)
-- **Real-time Updates**: Changes are immediately reflected in the recipe builder
+### Recipe Management
+- **Custom Recipe Builder**: Create and save custom recipes with precise ingredient measurements
+- **Recipe Search**: Search recipes by name
+- **Ingredient Management**: Add/remove ingredients from recipes with flexible quantity inputs
+- **Automatic Nutrition Calculation**: Recipes auto-calculate based on ingredient portions
+
+### Data Export & Analysis
+- **Excel Export**: Export all meal data to Excel with meal type, date, and nutritional information
+- **Multi-Sheet Export**: Organized export with detailed meal breakdowns and daily summaries
+- **Formatted Output**: Professional Excel formatting with color-coded sections
+
+### Weight & Exercise Tracking
+- **Daily Weight Logging**: Record weight in lbs or kg (user preference)
+- **Unit Conversion**: Automatic conversion between metric and imperial units
+- **Exercise Tracking**: Log exercises with duration and calorie burn estimation
+- **Progress Analytics**: View trends over time with visual feedback
+
+### User Preferences
+- **Unit System Selection**: Choose between lbs/oz or kg measurements
+- **BMR Calculator**: Calculate Basal Metabolic Rate for personalized nutrition insights
+- **Persistent Data**: All data stored locally in browser (localStorage)
 
 ## Installation & Setup
 
@@ -30,190 +46,249 @@ A comprehensive food tracking application with ingredient management capabilitie
    ```bash
    npm install
    ```
+   This installs Express, ExcelJS for Excel export, and CORS support.
 
 2. **Start the Server**
    ```bash
    npm start
    ```
-   
-   Or for development with auto-restart:
-   ```bash
-   npm run dev
-   ```
+   The server will start on `http://localhost:3000`
 
 3. **Access the Application**
-   - Open your browser and go to: `http://localhost:3000`
-   - The application will serve the HTML file and provide API endpoints
+   - Open your browser and navigate to: `http://localhost:3000`
+   - The app will load with today's date by default
 
 ## Usage Guide
 
-### Basic Food Tracking
-1. **Quick Add Dishes**: Use the pre-made dishes section to quickly add common Indian foods
-2. **Custom Entries**: Add custom meals with descriptions and optional calorie counts
-3. **Recipe Builder**: Create detailed recipes with specific ingredients and measurements
+### Food Tracking
 
-### Ingredient Management
+#### Quick Add Dishes
+1. Navigate to the **"Add Quick Dish"** section
+2. Select a **Meal Type** (Breakfast, Lunch, Dinner, Snack)
+3. Choose a pre-made dish from the dropdown
+4. Select your portion size
+5. Click **"Add to Today's Meals"** to log it
 
-#### Adding New Ingredients
-1. Click the **"🥬 Manage Ingredients"** button in the header
-2. Fill in the ingredient details:
-   - **Name**: Enter the ingredient name (e.g., "Bitter Gourd")
-   - **Category**: Select appropriate category
-   - **Measurements**: Add one or more measurement options with nutritional data
-3. Click **"Save Ingredient"** to add to the database
+#### Custom Meal Entry
+1. Go to the **"Add Custom Entry"** tab
+2. Select **Meal Type**
+3. Enter a description (e.g., "Homemade biryani")
+4. Enter estimated calories
+5. (Optional) Add ingredients for detailed tracking
+6. Click **"Add to Today's Meals"**
 
-#### Editing Ingredients
-1. Open the ingredient management modal
-2. Use the category filter to find ingredients
-3. Click **"Edit"** on any ingredient
-4. Modify the data and click **"Update Ingredient"**
+#### Inline Meal Logging
+1. Scroll to the meal section for your chosen meal type
+2. Click the **"+ Add meal"** button
+3. Fill in meal details or select from recipes
+4. Confirm to add to your meal log
 
-#### Deleting Ingredients
-1. Find the ingredient in the management modal
-2. Click **"Delete"** and confirm the action
-3. The ingredient will be removed from the database
+### Recipe Management
 
-### Measurement Format
-When adding measurements, use the following format:
-- **Measurement Key**: `1_cup_chopped`, `1_tbsp`, `1_medium`, etc.
-- **Display Name**: Human-readable format like "1 cup chopped"
+#### Creating a Custom Recipe
+1. In the **"Add Recipe"** section, enter a recipe name
+2. **Add Ingredients**: 
+   - Search for ingredients by name
+   - Select from the list of available ingredients
+   - Specify the quantity and measurement
+   - Click **"Add Ingredient"** to include it
+3. Review the automatic nutrition calculation
+4. Click **"Save Recipe"** to store it
 
-### Nutritional Data
-For each measurement, provide:
-- **Calories**: Total calories for that measurement
-- **Protein**: Protein content in grams
-- **Carbs**: Carbohydrate content in grams
-- **Fat**: Fat content in grams
-- **Fiber**: Fiber content in grams
+#### Using Recipes
+- In any meal entry form, select your custom recipe from the dropdown
+- Choose your portion size
+- The nutritional data will auto-populate
+
+### Weight & Exercise Tracking
+
+#### Log Weight
+1. Select your preferred unit system (lbs or kg) in settings
+2. In the weight section, enter today's weight
+3. View weight trends and changes over time
+
+#### Log Exercise
+1. Go to the **"Exercise"** section
+2. Enter exercise name and duration
+3. The app estimates calorie burn based on duration
+4. View your daily exercise summary
+
+### Data Export
+
+#### Export to Excel
+1. Click the **"📊 Export to Excel"** button
+2. The app generates a formatted Excel file with:
+   - Daily meal breakdowns with meal types
+   - Nutritional summaries per day
+   - Weekly aggregates
+   - Professional formatting
+3. The file downloads automatically
+
+### Unit System & Preferences
+
+#### Change Units
+1. Use the unit selector to switch between lbs/oz and kg/g
+2. All weights automatically convert between systems
+3. Preferences are saved in browser storage
+
+#### BMR Calculator
+1. Click the **"ℹ️"** icon next to the BMR display
+2. View your calculated Basal Metabolic Rate
+3. Use this for personalized nutrition planning
 
 ## API Endpoints
 
 The server provides the following REST API endpoints:
 
-### Ingredients
-- `GET /api/ingredients` - Get all ingredients
-- `POST /api/ingredients` - Add new ingredient
-- `PUT /api/ingredients/:category/:key` - Update existing ingredient
-- `DELETE /api/ingredients/:category/:key` - Delete ingredient
-- `GET /api/categories` - Get available categories
+### Meal Management
+- `POST /api/meals` - Add a new meal
+- `DELETE /api/meals/:id` - Delete a meal
 
-### Request Format for Adding Ingredients
-```json
-{
-  "category": "vegetables",
-  "ingredientKey": "bitter_gourd",
-  "ingredientData": {
-    "name": "Bitter Gourd",
-    "measurements": {
-      "1_cup_chopped": {
-        "calories": 17,
-        "protein": 1,
-        "carbs": 3.7,
-        "fat": 0.2,
-        "fiber": 2.6
-      }
-    }
-  }
-}
-```
+### Export
+- `POST /api/export-excel` - Generate and download Excel file with meal data
+
+### Data Structure
+The app uses the following localStorage keys:
+- `indianFoodMealsByDate`: Daily meal logs organized by date
+- `customRecipes`: User-created recipes
+- `weightByDate`: Daily weight entries
+- `exerciseByDate`: Daily exercise logs
+- `userHeight`: Stored user height for BMR calculations
+- `userUnitSystem`: User's preferred unit system (lbs or kg)
 
 ## File Structure
 
 ```
 food_diary/
-├── server.js                 # Express server with API endpoints
-├── package.json              # Node.js dependencies and scripts
-├── indian_food_tracker.html  # Main application interface
-├── rawingredients.json       # Ingredient database
-├── recipes.json              # Recipe database
+├── server.js                 # Express.js server with API endpoints
+├── food_tracker.html         # Main application (single-page HTML with inline JS/CSS)
+├── package.json              # Node.js dependencies
+├── package-lock.json         # Locked dependency versions
+├── rawingredients.json       # Master ingredient database with nutritional data
+├── recipes.json              # Pre-made Indian dish recipes
+├── trackers/                 # Directory for storing exported data
 └── README.md                 # This file
 ```
 
-## Data Storage
+## Technical Stack
 
-- **Ingredients**: Stored in `rawingredients.json` with hierarchical structure
-- **Recipes**: Pre-made dishes stored in `recipes.json`
-- **Custom Recipes**: Saved in browser localStorage
-- **Daily Meals**: Saved in browser localStorage
+- **Backend**: Node.js with Express.js
+- **Frontend**: Vanilla JavaScript with Tailwind CSS
+- **Data Storage**: LocalStorage (browser) + JSON files (server)
+- **Export**: ExcelJS library for Excel generation
+- **Dependencies**: 
+  - express (web server)
+  - cors (cross-origin requests)
+  - exceljs (Excel file generation)
 
-## Categories
+## Data Storage Architecture
 
-The system supports the following ingredient categories:
-- **Grains**: Rice, wheat flour, quinoa, etc.
-- **Dals & Legumes**: Toor dal, moong dal, chickpeas, etc.
-- **Vegetables**: Onions, tomatoes, leafy greens, etc.
-- **Spices & Seasonings**: Turmeric, cumin, garam masala, etc.
-- **Oils & Fats**: Cooking oil, ghee, etc.
-- **Other**: Miscellaneous ingredients
+### LocalStorage (Browser)
+- `mealsByDate`: Object with date keys storing array of meals
+- `customRecipes`: User-created recipes with ingredients
+- `weightByDate`: Daily weight tracking
+- `exerciseByDate`: Daily exercise logs
+
+### Server Files
+- `rawingredients.json`: Complete ingredient database with measurements and nutrition
+- `recipes.json`: Pre-made recipes for quick add functionality
+
+### Meal Data Structure
+```javascript
+{
+  id: "unique-id",
+  description: "Meal name",
+  calories: 250,
+  protein: 10,
+  carbs: 30,
+  fat: 8,
+  fiber: 5,
+  mealType: "breakfast", // breakfast, lunch, dinner, snack
+  ingredients: [
+    { name: "ingredient", quantity: 1, measurement: "cup" }
+  ]
+}
+```
 
 ## Error Handling
 
-The system includes comprehensive error handling:
-- **Server Connectivity**: Checks if server is running before allowing ingredient management
-- **Validation**: Ensures all required fields are filled
-- **User Feedback**: Shows success/error messages for all operations
-- **Fallback Data**: Uses embedded data if server is unavailable
-
-## Development
-
-### Adding New Features
-1. **Backend**: Add new API endpoints in `server.js`
-2. **Frontend**: Add corresponding JavaScript functions in the HTML file
-3. **UI**: Use existing Tailwind CSS classes for consistent styling
-
-### Database Schema
-The ingredient database follows this structure:
-```json
-{
-  "basic_ingredients": {
-    "category_name": {
-      "ingredient_key": {
-        "name": "Display Name",
-        "measurements": {
-          "measurement_key": {
-            "calories": 0,
-            "protein": 0,
-            "carbs": 0,
-            "fat": 0,
-            "fiber": 0
-          }
-        }
-      }
-    }
-  }
-}
-```
+The application includes comprehensive error handling:
+- **Server Connectivity**: Gracefully handles server unavailability
+- **Data Validation**: Validates all meal entries and recipe data
+- **User Feedback**: Clear success/error messages for all operations
+- **LocalStorage Fallback**: Works offline with data persistence
+- **Large Exports**: Supports up to 50MB JSON payloads for Excel exports
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **"Ingredient management requires the server to be running"**
-   - Make sure you've run `npm start` to start the server
-   - Check that the server is running on port 3000
+1. **"Can't connect to server"**
+   - Ensure the server is running: `npm start`
+   - Verify server is on port 3000: `http://localhost:3000`
+   - Check for port conflicts
 
-2. **Changes not reflecting**
-   - Click the "🔄 Reload Ingredients" button to refresh the data
-   - Check the browser console for any error messages
+2. **Date keeps resetting to yesterday**
+   - This has been fixed - app now defaults to current date
+   - Clear browser cache if issue persists
 
-3. **Server won't start**
-   - Ensure Node.js is installed: `node --version`
+3. **Meal type not showing in Excel export**
+   - Ensure you're selecting a meal type when logging meals
+   - Re-export to see updated data
+
+4. **Weight not converting properly**
+   - Check your selected unit system in preferences
+   - Try clearing browser storage: `localStorage.clear()`
+
+5. **Server won't start**
+   - Verify Node.js: `node --version`
    - Install dependencies: `npm install`
-   - Check if port 3000 is already in use
+   - Try a different port if 3000 is occupied
 
 ### Browser Compatibility
-- Modern browsers with ES6+ support
+- Modern browsers with ES6+ support (Chrome, Firefox, Safari, Edge)
 - JavaScript must be enabled
-- Local storage must be available
+- LocalStorage must be available (not in private/incognito mode)
+- Minimum 2GB RAM recommended for large datasets
+
+## Performance Tips
+
+- **Large Export Files**: May take 30-60 seconds for year of data
+- **Ingredient Search**: Use filters to narrow down options
+- **Multiple Meals**: Batch add meals in quick add section for efficiency
+- **Data Cleanup**: Regularly review and delete old entries to keep app responsive
 
 ## Contributing
 
-When adding new ingredients or features:
-1. Follow the existing naming conventions
-2. Use consistent measurement formats
-3. Provide accurate nutritional data
-4. Test thoroughly before committing changes
+When contributing:
+1. Maintain the existing code structure
+2. Use consistent naming conventions
+3. Test in multiple browsers
+4. Update README with new features
+5. Ensure nutritional data is accurate
+
+## Known Limitations
+
+- Maximum of ~50MB data export (large meal histories)
+- LocalStorage limited to ~10MB per domain
+- Offline functionality available but no sync when reconnected
+- No user accounts or cloud sync (local storage only)
+
+## Future Enhancements
+
+Potential features for future versions:
+- Cloud backup and sync
+- Multi-user support with accounts
+- Barcode scanning for quick food logging
+- Integration with fitness trackers
+- Meal planning and grocery lists
+- Nutritionist reporting features
+- Mobile app version
 
 ## License
 
 MIT License - Feel free to use and modify as needed.
+
+## Support
+
+For issues or feature requests, check the troubleshooting section above or review the code comments in `food_tracker.html` and `server.js` for detailed implementation notes.
