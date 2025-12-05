@@ -453,6 +453,18 @@
             "fiber": 0
           }
         }
+      },
+      "eggplant": {
+        "name": "Eggplant",
+        "measurements": {
+          "1_cup_chopped": {
+            "calories": 20,
+            "protein": 0.83,
+            "carbs": 4.67,
+            "fat": 0.16,
+            "fiber": 2.8
+          }
+        }
       }
     },
     "spices_seasonings": {
