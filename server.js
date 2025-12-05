@@ -3,9 +3,28 @@ const fs = require('fs').promises;
 const path = require('path');
 const cors = require('cors');
 const ExcelJS = require('exceljs');
+const { execSync } = require('child_process');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Git helper function to commit changes
+async function commitChanges(files, message) {
+    try {
+        const cwd = __dirname;
+        for (const file of files) {
+            execSync(`git add "${file}"`, { cwd });
+        }
+        execSync(`git commit -m "${message}"`, { cwd });
+        execSync(`git push`, { cwd });
+        console.log(`✅ Git commit: ${message}`);
+        return true;
+    } catch (error) {
+        console.error('⚠️ Git commit failed:', error.message);
+        // Don't throw - app should continue working even if git fails
+        return false;
+    }
+}
 
 // Middleware
 app.use(cors());
@@ -56,6 +75,7 @@ app.post('/api/ingredients', async (req, res) => {
         
         // Write back to file
         await fs.writeFile('rawingredients.json', JSON.stringify(ingredients, null, 2));
+        await commitChanges(['rawingredients.json'], `✏️ Add ingredient: ${ingredientData.name}`);
         
         res.json({ 
             success: true, 
@@ -93,6 +113,7 @@ app.put('/api/ingredients/:category/:ingredientKey', async (req, res) => {
         
         // Write back to file
         await fs.writeFile('rawingredients.json', JSON.stringify(ingredients, null, 2));
+        await commitChanges(['rawingredients.json'], `📝 Update ingredient: ${ingredientData.name}`);
         
         res.json({ 
             success: true, 
@@ -126,6 +147,7 @@ app.delete('/api/ingredients/:category/:ingredientKey', async (req, res) => {
         
         // Write back to file
         await fs.writeFile('rawingredients.json', JSON.stringify(ingredients, null, 2));
+        await commitChanges(['rawingredients.json'], `🗑️ Delete ingredient: ${ingredientName}`);
         
         res.json({ 
             success: true, 
@@ -190,6 +212,7 @@ app.post('/api/recipes', async (req, res) => {
         
         // Write back to file
         await fs.writeFile('recipes.json', JSON.stringify(recipes, null, 2));
+        await commitChanges(['recipes.json'], `🍳 Add recipe: ${recipeData.name}`);
         
         res.json({
             success: true,
@@ -227,6 +250,7 @@ app.put('/api/recipes/:key', async (req, res) => {
         
         // Write back to file
         await fs.writeFile('recipes.json', JSON.stringify(recipes, null, 2));
+        await commitChanges(['recipes.json'], `🔄 Update recipe: ${recipeData.name}`);
         
         res.json({
             success: true,
@@ -260,6 +284,7 @@ app.delete('/api/recipes/:key', async (req, res) => {
         
         // Write back to file
         await fs.writeFile('recipes.json', JSON.stringify(recipes, null, 2));
+        await commitChanges(['recipes.json'], `🗑️ Delete recipe: ${key}`);
         
         res.json({
             success: true,
