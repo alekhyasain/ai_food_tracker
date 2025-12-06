@@ -1049,6 +1049,18 @@
             "fiber": 2.1
           }
         }
+      },
+      "masala_makhana": {
+        "name": "Masala Makhana",
+        "measurements": {
+          "1_serving": {
+            "calories": 140,
+            "protein": 2.4,
+            "carbs": 16.5,
+            "fat": 6.3,
+            "fiber": 2.4
+          }
+        }
       }
     }
   }
