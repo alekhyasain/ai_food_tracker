@@ -669,8 +669,8 @@
                                 <!-- Filename -->
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Filename (optional):</label>
-                                    <input type="text" id="exportFilename" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Food_Diary_Export.xlsx">
-                                    <p class="text-xs text-gray-500 mt-1">Leave empty for auto-generated filename</p>
+                                    <input type="text" id="exportFilename" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="2025-12.xlsx">
+                                    <p class="text-xs text-gray-500 mt-1">Leave empty for auto-generated monthly filename (YYYY-MM.xlsx)</p>
                                 </div>
                             </div>
                         </div>
@@ -6125,8 +6125,8 @@
                 
                 if (!filename) {
                     const today = new Date();
-                    const dateStr = today.toISOString().split('T')[0];
-                    filename = `Food_Diary_Export_${dateStr}.xlsx`;
+                    const yearMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+                    filename = `${yearMonth}.xlsx`;
                     console.log('📝 EXPORT_DEBUG: Generated filename:', filename);
                 }
                 
@@ -6596,11 +6596,15 @@
 
         function openJsonImportModal() {
             document.getElementById('jsonImportModal').classList.add('active');
-            
-            document.getElementById('jsonImportFile').addEventListener('change', (e) => {
+
+            // Ensure we attach a single change handler (avoid duplicate listeners on repeated opens)
+            const fileInput = document.getElementById('jsonImportFile');
+            fileInput.value = '';
+            fileInput.onchange = null;
+            fileInput.onchange = (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
-                
+
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     try {
@@ -6608,17 +6612,17 @@
                         const importedMeals = data.meals || {};
                         const totalDays = Object.keys(importedMeals).length;
                         const totalMeals = Object.values(importedMeals).reduce((sum, meals) => sum + (meals?.length || 0), 0);
-                        
-                        document.getElementById('jsonImportPreview').innerHTML = `
-                            ✅ File loaded: ${totalDays} days, ${totalMeals} meals<br>
-                            <small>Exported: ${data.metadata?.exportedAt || 'Unknown'}</small>
+
+                        document.getElementById('jsonImportPreview').innerHTML = `\
+                            ✅ File loaded: ${totalDays} days, ${totalMeals} meals<br>\
+                            <small>Exported: ${data.metadata?.exportedAt || 'Unknown'}</small>\
                         `;
                     } catch (error) {
                         document.getElementById('jsonImportPreview').textContent = '❌ Invalid JSON file';
                     }
                 };
                 reader.readAsText(file);
-            });
+            };
         }
 
         function closeJsonImportModal() {
@@ -6633,38 +6637,42 @@
                     alert('Please select a file');
                     return;
                 }
-                
+
                 const fileContent = await file.text();
                 const data = JSON.parse(fileContent);
                 const importedMeals = data.meals || {};
-                
+
                 const mergeStrategy = document.querySelector('input[name="mergeStrategy"]:checked').value;
-                
-                const response = await fetch('/api/import-json', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        meals: importedMeals,
-                        mergeStrategy
-                    })
-                });
-                
-                const result = await response.json();
-                
-                if (!response.ok) {
-                    console.error('❌ Server error:', result.error);
-                    throw new Error(result.error || 'Import failed');
+
+                // Attempt to send to server, but if server is not available, fall back to local merge
+                let serverResult = null;
+                let serverOk = false;
+                try {
+                    const response = await fetch('/api/import-json', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            meals: importedMeals,
+                            mergeStrategy
+                        })
+                    });
+
+                    serverResult = await response.json().catch(() => null);
+                    serverOk = response.ok;
+
+                    if (!response.ok) {
+                        console.error('❌ Server import error:', serverResult?.error || 'Unknown');
+                    }
+                } catch (err) {
+                    console.warn('⚠️ Could not reach import endpoint:', err.message);
                 }
-                
-                console.log(`✅ Successfully imported ${result.importedCount} meals`);
-                
-                // Update localStorage with imported meals
+
+                // Always merge locally so host without server still loads imported logs
                 if (mergeStrategy === 'replace') {
                     mealsByDate = importedMeals;
                 } else {
-                    // Merge locally
                     Object.entries(importedMeals).forEach(([date, meals]) => {
                         if (!mealsByDate[date]) {
                             mealsByDate[date] = [];
@@ -6688,15 +6696,24 @@
                         }
                     });
                 }
-                
+
                 localStorage.setItem('indianFoodMealsByDate', JSON.stringify(mealsByDate));
-                
-                console.log(`✅ Import complete: ${result.importedCount} meals imported, ${result.skippedCount} skipped`);
+
+                // Inform user of outcome
+                if (serverOk) {
+                    console.log(`✅ Successfully imported ${serverResult?.importedCount ?? 'N/A'} meals (server)`);
+                    alert(`Import completed on server: ${serverResult?.importedCount ?? 0} meals imported.`);
+                } else {
+                    console.warn('⚠️ Server import failed or not available; data merged locally only');
+                    alert('Warning: import merged locally only (server unavailable). Your data is saved in this browser.');
+                }
+
                 updateDateDisplay();
                 closeJsonImportModal();
-                
+
             } catch (error) {
                 console.error('❌ Failed to import JSON:', error.message);
+                alert('Failed to import JSON: ' + (error.message || 'Unknown error'));
             }
         }
 

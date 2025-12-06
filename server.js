@@ -821,11 +821,10 @@ app.post('/api/auto-export-json', async (req, res) => {
             meals: filteredMeals
         };
         
-        // Generate filename with timestamp
+        // Generate filename with YYYY-MM format (monthly grouping)
         const now = new Date();
-        const timestamp = now.toISOString().split('T')[0]; // YYYY-MM-DD
-        const timeStamp = now.toISOString().replace(/[:.]/g, '-').slice(0, -5); // HH-MM-SS
-        const filename = `food-diary-${timestamp}_${timeStamp}.json`;
+        const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`; // YYYY-MM
+        const filename = `food-diary-${yearMonth}.json`;
         const filepath = path.join(trackerJsonDir, filename);
         
         // Write to file

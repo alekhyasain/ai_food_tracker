@@ -1,0 +1,781 @@
+{
+  "metadata": {
+    "exportedAt": "2025-12-06T06:24:08.894Z",
+    "version": "1.0",
+    "appName": "Food Diary",
+    "format": "json",
+    "totalDays": 3,
+    "totalMeals": 43,
+    "dateRange": {
+      "from": "2025-12-03",
+      "to": "2025-12-05"
+    }
+  },
+  "meals": {
+    "2025-12-04": [
+      {
+        "id": 1764961176765,
+        "description": "Rice Flour Mix Dosa (1.5 servings)",
+        "timestamp": "2025-12-04T18:59:36.000Z",
+        "nutrition": {
+          "calories": 444,
+          "protein": 10.5,
+          "carbs": 88.2,
+          "fat": 4.5,
+          "fiber": 7.2
+        },
+        "source": "database",
+        "mealType": "Breakfast",
+        "date": "2025-12-04"
+      },
+      {
+        "id": 1764961190758,
+        "description": "Egg (1x 1 medium)",
+        "timestamp": "2025-12-04T18:59:50.000Z",
+        "nutrition": {
+          "calories": 66,
+          "protein": 6,
+          "carbs": 0,
+          "fat": 4,
+          "fiber": 0
+        },
+        "source": "enhanced_ingredient",
+        "mealType": "Breakfast",
+        "ingredient_data": {
+          "category": "other",
+          "key": "egg",
+          "measurement": "1_medium",
+          "quantity": 1
+        },
+        "date": "2025-12-04"
+      },
+      {
+        "id": 1764961225848,
+        "description": "Unsweetened oat milk coffee (1 serving)",
+        "timestamp": "2025-12-04T19:00:25.000Z",
+        "nutrition": {
+          "calories": 41,
+          "protein": 0.5,
+          "carbs": 6.4,
+          "fat": 1,
+          "fiber": 0.3
+        },
+        "source": "database",
+        "mealType": "Morning Snack",
+        "date": "2025-12-04"
+      },
+      {
+        "id": 1764961232223,
+        "description": "Apple Chia Pudding (1 serving)",
+        "timestamp": "2025-12-04T19:00:32.000Z",
+        "nutrition": {
+          "calories": 242,
+          "protein": 5.9,
+          "carbs": 38.4,
+          "fat": 8.4,
+          "fiber": 7.3
+        },
+        "source": "database",
+        "mealType": "Morning Snack",
+        "date": "2025-12-04"
+      },
+      {
+        "id": 1764961250582,
+        "description": "Lauki Sambar (0.75 servings)",
+        "timestamp": "2025-12-04T19:00:50.000Z",
+        "nutrition": {
+          "calories": 95,
+          "protein": 4.3,
+          "carbs": 13.8,
+          "fat": 2.6,
+          "fiber": 3.3
+        },
+        "source": "database",
+        "mealType": "Lunch",
+        "date": "2025-12-04"
+      },
+      {
+        "id": 1764961261700,
+        "description": "Bhindi Sabji (1 serving)",
+        "timestamp": "2025-12-04T19:01:01.000Z",
+        "nutrition": {
+          "calories": 95,
+          "protein": 3,
+          "carbs": 11,
+          "fat": 7.5,
+          "fiber": 6
+        },
+        "source": "database",
+        "mealType": "Lunch",
+        "date": "2025-12-04"
+      },
+      {
+        "id": 1764961276128,
+        "description": "Quinoa (0.125x 1 cup uncooked)",
+        "timestamp": "2025-12-04T19:01:16.000Z",
+        "nutrition": {
+          "calories": 78,
+          "protein": 3,
+          "carbs": 13.6,
+          "fat": 1.3,
+          "fiber": 1.5
+        },
+        "source": "enhanced_ingredient",
+        "mealType": "Lunch",
+        "ingredient_data": {
+          "category": "grains",
+          "key": "quinoa",
+          "measurement": "1_cup_uncooked",
+          "quantity": 0.125
+        },
+        "date": "2025-12-04"
+      },
+      {
+        "id": 1764961287169,
+        "description": "White Rice (0.0625x 1 cup uncooked)",
+        "timestamp": "2025-12-04T19:01:27.000Z",
+        "nutrition": {
+          "calories": 44,
+          "protein": 0.8,
+          "carbs": 9.7,
+          "fat": 0.1,
+          "fiber": 0.2
+        },
+        "source": "enhanced_ingredient",
+        "mealType": "Lunch",
+        "ingredient_data": {
+          "category": "grains",
+          "key": "white_rice",
+          "measurement": "1_cup_uncooked",
+          "quantity": 0.0625
+        },
+        "date": "2025-12-04"
+      },
+      {
+        "id": 1764961299018,
+        "description": "Low fat dahi (0.33x 1 cup)",
+        "timestamp": "2025-12-04T19:01:39.000Z",
+        "nutrition": {
+          "calories": 36,
+          "protein": 2.6,
+          "carbs": 3.6,
+          "fat": 1.3,
+          "fiber": 0
+        },
+        "source": "enhanced_ingredient",
+        "mealType": "Lunch",
+        "ingredient_data": {
+          "category": "other",
+          "key": "low_fat_dahi",
+          "measurement": "1_cup",
+          "quantity": 0.33
+        },
+        "date": "2025-12-04"
+      },
+      {
+        "id": 1764961315729,
+        "description": "Harvest snap peas (0.7x 1 serving)",
+        "timestamp": "2025-12-04T19:01:55.000Z",
+        "nutrition": {
+          "calories": 91,
+          "protein": 3.5,
+          "carbs": 11.2,
+          "fat": 3.5,
+          "fiber": 2.8
+        },
+        "source": "enhanced_ingredient",
+        "mealType": "Evening Snack",
+        "ingredient_data": {
+          "category": "other",
+          "key": "harvest_snap_peas",
+          "measurement": "1_serving",
+          "quantity": 0.7
+        },
+        "date": "2025-12-04"
+      },
+      {
+        "id": 1764961319796,
+        "description": "Oat milk coffee (1 serving)",
+        "timestamp": "2025-12-04T19:01:59.000Z",
+        "nutrition": {
+          "calories": 68,
+          "protein": 1,
+          "carbs": 9.9,
+          "fat": 2.5,
+          "fiber": 0.5
+        },
+        "source": "database",
+        "mealType": "Evening Snack",
+        "date": "2025-12-04"
+      },
+      {
+        "id": 1764961331190,
+        "description": "Roasted Kala Chana (1 serving)",
+        "timestamp": "2025-12-04T19:02:11.000Z",
+        "nutrition": {
+          "calories": 257,
+          "protein": 12.9,
+          "carbs": 40.8,
+          "fat": 5.5,
+          "fiber": 11.6
+        },
+        "source": "database",
+        "mealType": "Evening Snack",
+        "date": "2025-12-04"
+      },
+      {
+        "id": 1764961344350,
+        "description": "Pongal (1 serving)",
+        "timestamp": "2025-12-04T19:02:24.000Z",
+        "nutrition": {
+          "calories": 296,
+          "protein": 7.4,
+          "carbs": 50.2,
+          "fat": 6.1,
+          "fiber": 3.4
+        },
+        "source": "database",
+        "mealType": "Dinner",
+        "date": "2025-12-04"
+      },
+      {
+        "id": 1764961373408,
+        "description": "Roasted Mixed nuts (0.4x 1 tbsp)",
+        "timestamp": "2025-12-04T19:02:53.000Z",
+        "nutrition": {
+          "calories": 22,
+          "protein": 0.6,
+          "carbs": 0.4,
+          "fat": 1.6,
+          "fiber": 0
+        },
+        "source": "enhanced_ingredient",
+        "mealType": "Evening Snack",
+        "ingredient_data": {
+          "category": "oils_fats",
+          "key": "roasted_mixed_nuts",
+          "measurement": "1_tbsp",
+          "quantity": 0.4
+        },
+        "date": "2025-12-04"
+      }
+    ],
+    "2025-12-03": [
+      {
+        "id": 1764960104071,
+        "description": "Dosa (1.5 servings)",
+        "timestamp": "2025-12-03T18:41:44.000Z",
+        "nutrition": {
+          "calories": 315,
+          "protein": 8.4,
+          "carbs": 59,
+          "fat": 4.4,
+          "fiber": 5.6
+        },
+        "source": "database",
+        "mealType": "Breakfast",
+        "date": "2025-12-03"
+      },
+      {
+        "id": 1764960112952,
+        "description": "Egg (1x 1 medium)",
+        "timestamp": "2025-12-03T18:41:52.000Z",
+        "nutrition": {
+          "calories": 66,
+          "protein": 6,
+          "carbs": 0,
+          "fat": 4,
+          "fiber": 0
+        },
+        "source": "enhanced_ingredient",
+        "mealType": "Breakfast",
+        "ingredient_data": {
+          "category": "other",
+          "key": "egg",
+          "measurement": "1_medium",
+          "quantity": 1
+        },
+        "date": "2025-12-03"
+      },
+      {
+        "id": 1764960132631,
+        "description": "Apple Chia Pudding (0.5 servings)",
+        "timestamp": "2025-12-03T18:42:12.000Z",
+        "nutrition": {
+          "calories": 121,
+          "protein": 3,
+          "carbs": 19.2,
+          "fat": 4.2,
+          "fiber": 3.7
+        },
+        "source": "database",
+        "mealType": "Morning Snack",
+        "date": "2025-12-03"
+      },
+      {
+        "id": 1764960155555,
+        "description": "Roasted Mixed nuts (1x 1 tbsp)",
+        "timestamp": "2025-12-03T18:42:35.000Z",
+        "nutrition": {
+          "calories": 55,
+          "protein": 1.5,
+          "carbs": 1,
+          "fat": 4,
+          "fiber": 0
+        },
+        "source": "enhanced_ingredient",
+        "mealType": "Morning Snack",
+        "ingredient_data": {
+          "category": "oils_fats",
+          "key": "roasted_mixed_nuts",
+          "measurement": "1_tbsp",
+          "quantity": 1
+        },
+        "date": "2025-12-03"
+      },
+      {
+        "id": 1764960184670,
+        "description": "Unsweetened oat milk coffee (1 serving)",
+        "timestamp": "2025-12-03T18:43:04.000Z",
+        "nutrition": {
+          "calories": 41,
+          "protein": 0.5,
+          "carbs": 6.4,
+          "fat": 1,
+          "fiber": 0.3
+        },
+        "source": "database",
+        "mealType": "Morning Snack",
+        "date": "2025-12-03"
+      },
+      {
+        "id": 1764960209074,
+        "description": "Chole Homemade (1 serving)",
+        "timestamp": "2025-12-03T18:43:29.000Z",
+        "nutrition": {
+          "calories": 307,
+          "protein": 14.2,
+          "carbs": 44.9,
+          "fat": 8.6,
+          "fiber": 8.8
+        },
+        "source": "database",
+        "mealType": "Dinner",
+        "date": "2025-12-03"
+      },
+      {
+        "id": 1764960215674,
+        "description": "Roti Homemade (0.6 servings)",
+        "timestamp": "2025-12-03T18:43:35.000Z",
+        "nutrition": {
+          "calories": 76,
+          "protein": 2,
+          "carbs": 14.3,
+          "fat": 1.1,
+          "fiber": 0.5
+        },
+        "source": "database",
+        "mealType": "Dinner",
+        "date": "2025-12-03"
+      },
+      {
+        "id": 1764960226955,
+        "description": "Unsweetened oat milk coffee (1 serving)",
+        "timestamp": "2025-12-03T18:43:46.000Z",
+        "nutrition": {
+          "calories": 41,
+          "protein": 0.5,
+          "carbs": 6.4,
+          "fat": 1,
+          "fiber": 0.3
+        },
+        "source": "database",
+        "mealType": "Evening Snack",
+        "date": "2025-12-03"
+      },
+      {
+        "id": 1764960231665,
+        "description": "Peanut Butter Jam Sandwich (1 serving)",
+        "timestamp": "2025-12-03T18:43:51.000Z",
+        "nutrition": {
+          "calories": 198,
+          "protein": 6.7,
+          "carbs": 28.2,
+          "fat": 8,
+          "fiber": 4.1
+        },
+        "source": "database",
+        "mealType": "Evening Snack",
+        "date": "2025-12-03"
+      },
+      {
+        "id": 1764962280571,
+        "description": "Rava Chowmein Homemade (1.5 servings)",
+        "timestamp": "2025-12-03T19:18:00.000Z",
+        "nutrition": {
+          "calories": 648,
+          "protein": 24,
+          "carbs": 103.5,
+          "fat": 16.7,
+          "fiber": 6.3
+        },
+        "source": "database",
+        "mealType": "Lunch",
+        "date": "2025-12-03"
+      },
+      {
+        "id": 1764962285041,
+        "description": "Rava Chowmein Homemade (1 serving)",
+        "timestamp": "2025-12-03T19:18:05.000Z",
+        "nutrition": {
+          "calories": 432,
+          "protein": 16,
+          "carbs": 69,
+          "fat": 11.1,
+          "fiber": 4.2
+        },
+        "source": "database",
+        "mealType": "Dinner",
+        "date": "2025-12-03"
+      }
+    ],
+    "2025-12-05": [
+      {
+        "id": 1764955575321,
+        "description": "Rice Flour Mix Dosa (1 serving)",
+        "timestamp": "2025-12-05T17:26:15.000Z",
+        "nutrition": {
+          "calories": 296,
+          "protein": 7,
+          "carbs": 58.8,
+          "fat": 3,
+          "fiber": 4.8
+        },
+        "source": "database",
+        "mealType": "Breakfast",
+        "date": "2025-12-05"
+      },
+      {
+        "id": 1764955589071,
+        "description": "Egg (1.2x 1 medium)",
+        "timestamp": "2025-12-05T17:26:29.000Z",
+        "nutrition": {
+          "calories": 79,
+          "protein": 7.2,
+          "carbs": 0,
+          "fat": 4.8,
+          "fiber": 0
+        },
+        "source": "enhanced_ingredient",
+        "mealType": "Breakfast",
+        "ingredient_data": {
+          "category": "other",
+          "key": "egg",
+          "measurement": "1_medium",
+          "quantity": 1.2
+        },
+        "date": "2025-12-05"
+      },
+      {
+        "id": 1764955603192,
+        "description": "Unsweetened oat milk coffee (1 serving)",
+        "timestamp": "2025-12-05T17:26:43.000Z",
+        "nutrition": {
+          "calories": 41,
+          "protein": 0.5,
+          "carbs": 6.4,
+          "fat": 1,
+          "fiber": 0.3
+        },
+        "source": "database",
+        "mealType": "Morning Snack",
+        "date": "2025-12-05"
+      },
+      {
+        "id": 1764961444265,
+        "description": "Apple (0.33x 1 medium)",
+        "timestamp": "2025-12-05T19:04:04.000Z",
+        "nutrition": {
+          "calories": 31,
+          "protein": 0.2,
+          "carbs": 8.3,
+          "fat": 0.1,
+          "fiber": 1.4
+        },
+        "source": "enhanced_ingredient",
+        "mealType": "Morning Snack",
+        "ingredient_data": {
+          "category": "fruits",
+          "key": "apple",
+          "measurement": "1_medium",
+          "quantity": 0.33
+        },
+        "date": "2025-12-05"
+      },
+      {
+        "id": 1764961462283,
+        "description": "Nut butter (0.5x 1 tbsp)",
+        "timestamp": "2025-12-05T19:04:22.000Z",
+        "nutrition": {
+          "calories": 51,
+          "protein": 2,
+          "carbs": 2,
+          "fat": 4.5,
+          "fiber": 0.8
+        },
+        "source": "enhanced_ingredient",
+        "mealType": "Morning Snack",
+        "ingredient_data": {
+          "category": "oils_fats",
+          "key": "nut_butter",
+          "measurement": "1_tbsp",
+          "quantity": 0.5
+        },
+        "date": "2025-12-05"
+      },
+      {
+        "id": 1764961470070,
+        "description": "Greek yogurt low fat (0.125x 1 cup)",
+        "timestamp": "2025-12-05T19:04:30.000Z",
+        "nutrition": {
+          "calories": 23,
+          "protein": 1.8,
+          "carbs": 2,
+          "fat": 0.9,
+          "fiber": 0
+        },
+        "source": "enhanced_ingredient",
+        "mealType": "Morning Snack",
+        "ingredient_data": {
+          "category": "other",
+          "key": "greek_yogurt_low_fat",
+          "measurement": "1_cup",
+          "quantity": 0.125
+        },
+        "date": "2025-12-05"
+      },
+      {
+        "id": 1764961476492,
+        "description": "Dates (1x 1 piece)",
+        "timestamp": "2025-12-05T19:04:36.000Z",
+        "nutrition": {
+          "calories": 66,
+          "protein": 0,
+          "carbs": 16,
+          "fat": 0,
+          "fiber": 1.6
+        },
+        "source": "enhanced_ingredient",
+        "mealType": "Morning Snack",
+        "ingredient_data": {
+          "category": "other",
+          "key": "dates",
+          "measurement": "1 piece",
+          "quantity": 1
+        },
+        "date": "2025-12-05"
+      },
+      {
+        "id": 1764969684592,
+        "description": "Lauki Sambar with potato (0.8 servings)",
+        "timestamp": "2025-12-05T21:21:24.000Z",
+        "nutrition": {
+          "calories": 110,
+          "protein": 4.8,
+          "carbs": 16.6,
+          "fat": 2.8,
+          "fiber": 3.7
+        },
+        "source": "database",
+        "mealType": "Lunch",
+        "date": "2025-12-05"
+      },
+      {
+        "id": 1764969690499,
+        "description": "Aloo Capsicum Sabji (0.4 servings)",
+        "timestamp": "2025-12-05T21:21:30.000Z",
+        "nutrition": {
+          "calories": 33,
+          "protein": 0.8,
+          "carbs": 5.7,
+          "fat": 1.2,
+          "fiber": 1.4
+        },
+        "source": "database",
+        "mealType": "Lunch",
+        "date": "2025-12-05"
+      },
+      {
+        "id": 1764969704333,
+        "description": "Brinjal Sabji (0.5 servings)",
+        "timestamp": "2025-12-05T21:21:44.000Z",
+        "nutrition": {
+          "calories": 23,
+          "protein": 0.6,
+          "carbs": 2.8,
+          "fat": 1.5,
+          "fiber": 1.8
+        },
+        "source": "database",
+        "mealType": "Lunch",
+        "date": "2025-12-05"
+      },
+      {
+        "id": 1764969715299,
+        "description": "Low fat dahi (0.33x 1 cup)",
+        "timestamp": "2025-12-05T21:21:55.000Z",
+        "nutrition": {
+          "calories": 36,
+          "protein": 2.6,
+          "carbs": 3.6,
+          "fat": 1.3,
+          "fiber": 0
+        },
+        "source": "enhanced_ingredient",
+        "mealType": "Lunch",
+        "ingredient_data": {
+          "category": "other",
+          "key": "low_fat_dahi",
+          "measurement": "1_cup",
+          "quantity": 0.33
+        },
+        "date": "2025-12-05"
+      },
+      {
+        "id": 1764969723643,
+        "description": "Quinoa (0.125x 1 cup uncooked)",
+        "timestamp": "2025-12-05T21:22:03.000Z",
+        "nutrition": {
+          "calories": 78,
+          "protein": 3,
+          "carbs": 13.6,
+          "fat": 1.3,
+          "fiber": 1.5
+        },
+        "source": "enhanced_ingredient",
+        "mealType": "Lunch",
+        "ingredient_data": {
+          "category": "grains",
+          "key": "quinoa",
+          "measurement": "1_cup_uncooked",
+          "quantity": 0.125
+        },
+        "date": "2025-12-05"
+      },
+      {
+        "id": 1764969732351,
+        "description": "White Rice (0.0625x 1 cup uncooked)",
+        "timestamp": "2025-12-05T21:22:12.000Z",
+        "nutrition": {
+          "calories": 44,
+          "protein": 0.8,
+          "carbs": 9.7,
+          "fat": 0.1,
+          "fiber": 0.2
+        },
+        "source": "enhanced_ingredient",
+        "mealType": "Lunch",
+        "ingredient_data": {
+          "category": "grains",
+          "key": "white_rice",
+          "measurement": "1_cup_uncooked",
+          "quantity": 0.0625
+        },
+        "date": "2025-12-05"
+      },
+      {
+        "id": 1765002024427,
+        "description": "Starbucks Healthy Hazelnut Latte (1 serving)",
+        "timestamp": "2025-12-05T06:20:24.000Z",
+        "nutrition": {
+          "calories": 75,
+          "protein": 1,
+          "carbs": 11.5,
+          "fat": 2.5,
+          "fiber": 0.5
+        },
+        "source": "database",
+        "mealType": "Evening Snack",
+        "date": "2025-12-05"
+      },
+      {
+        "id": 1765002171943,
+        "description": "Mint Makhana (1x 1 serving)",
+        "timestamp": "2025-12-05T06:22:51.000Z",
+        "nutrition": {
+          "calories": 140,
+          "protein": 2.1,
+          "carbs": 18,
+          "fat": 6.6,
+          "fiber": 2.1
+        },
+        "source": "enhanced_ingredient",
+        "mealType": "Evening Snack",
+        "ingredient_data": {
+          "category": "other",
+          "key": "mint_makhana",
+          "measurement": "1_serving",
+          "quantity": 1
+        },
+        "date": "2025-12-05"
+      },
+      {
+        "id": 1765002182441,
+        "description": "Masala Makhana (0.5x 1 serving)",
+        "timestamp": "2025-12-05T06:23:02.000Z",
+        "nutrition": {
+          "calories": 70,
+          "protein": 1.2,
+          "carbs": 8.3,
+          "fat": 3.2,
+          "fiber": 1.2
+        },
+        "source": "enhanced_ingredient",
+        "mealType": "Evening Snack",
+        "ingredient_data": {
+          "category": "other",
+          "key": "masala_makhana",
+          "measurement": "1_serving",
+          "quantity": 0.5
+        },
+        "date": "2025-12-05"
+      },
+      {
+        "id": 1765002217929,
+        "description": "Millet Pulao (0.75 servings)",
+        "timestamp": "2025-12-05T06:23:37.000Z",
+        "nutrition": {
+          "calories": 496,
+          "protein": 13.5,
+          "carbs": 89.3,
+          "fat": 51.5,
+          "fiber": 10.4
+        },
+        "source": "database",
+        "mealType": "Dinner",
+        "date": "2025-12-05"
+      },
+      {
+        "id": 1765002232676,
+        "description": "Low fat dahi (0.33x 1 cup)",
+        "timestamp": "2025-12-05T06:23:52.000Z",
+        "nutrition": {
+          "calories": 36,
+          "protein": 2.6,
+          "carbs": 3.6,
+          "fat": 1.3,
+          "fiber": 0
+        },
+        "source": "enhanced_ingredient",
+        "mealType": "Dinner",
+        "ingredient_data": {
+          "category": "other",
+          "key": "low_fat_dahi",
+          "measurement": "1_cup",
+          "quantity": 0.33
+        },
+        "date": "2025-12-05"
+      }
+    ]
+  }
+}
