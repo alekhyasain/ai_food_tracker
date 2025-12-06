@@ -4148,6 +4148,7 @@
             addMealToDate(meal);
             updateDailySummary();
             displayMeals();
+            saveMealsToServer('meal_added');
             
             // Reset serving size
             document.getElementById(`servings_${dishKey}`).value = 1;
@@ -4184,6 +4185,7 @@
             addMealToDate(meal);
             updateDailySummary();
             displayMeals();
+            saveMealsToServer('meal_added');
             
             // Clear form
             document.getElementById('customDish').value = '';
@@ -4893,6 +4895,7 @@
             removeMealFromDate(mealId);
             updateDailySummary();
             displayMeals();
+            saveMealsToServer('meal_deleted');
         }
 
         function formatTime(date) {
@@ -5917,6 +5920,7 @@
             addMealToDate(meal);
             updateDailySummary();
             displayMeals();
+            saveMealsToServer('meal_added');
             
             closeMealBuilder();
             showSuccessMessage(`Added "${finalMealName}" to your food log!`);
@@ -6383,40 +6387,94 @@
         // ========================================
 
         // Auto-sync meals to server (runs on page load)
-        async function autoSyncMealsToServer() {
+        // Load meals from server on startup
+        async function loadMealsFromServer() {
             try {
-                console.log('🔄 AUTO_SYNC: Starting automatic meal sync to server...');
+                console.log('📂 LOAD_MEALS: Loading meals from server...');
                 
-                // Check if there are meals to sync
-                const totalMeals = Object.values(mealsByDate || {}).reduce((sum, meals) => sum + (meals?.length || 0), 0);
-                if (totalMeals === 0) {
-                    console.log('ℹ️ AUTO_SYNC: No meals to sync');
-                    return;
+                // First, get local meals from localStorage
+                const localMeals = localStorage.getItem('indianFoodMealsByDate') ? JSON.parse(localStorage.getItem('indianFoodMealsByDate')) : {};
+                console.log('📂 LOAD_MEALS: Local meals loaded:', { dates: Object.keys(localMeals).length });
+                
+                const response = await fetch('/api/load-meals');
+                if (response.ok) {
+                    const result = await response.json();
+                    const serverMeals = result.meals || {};
+                    const totalServerMeals = Object.values(serverMeals).reduce((sum, meals) => sum + (meals?.length || 0), 0);
+                    
+                    console.log('📂 LOAD_MEALS: Server meals loaded:', { totalMeals: totalServerMeals, dates: Object.keys(serverMeals).length });
+                    
+                    // Intelligent merge: combine local and server meals for each date
+                    const mergedMeals = { ...localMeals };
+                    
+                    Object.entries(serverMeals).forEach(([date, serverDayMeals]) => {
+                        if (!mergedMeals[date]) {
+                            // Date doesn't exist locally, use server meals
+                            mergedMeals[date] = serverDayMeals;
+                        } else {
+                            // Date exists locally, merge arrays and deduplicate by meal ID
+                            const localDayMeals = mergedMeals[date];
+                            const mealIds = new Set(localDayMeals.map(m => m.id));
+                            
+                            serverDayMeals.forEach(meal => {
+                                if (!mealIds.has(meal.id)) {
+                                    // Server has a meal that local doesn't have, add it
+                                    localDayMeals.push(meal);
+                                }
+                            });
+                            mergedMeals[date] = localDayMeals;
+                        }
+                    });
+                    
+                    mealsByDate = mergedMeals;
+                    localStorage.setItem('indianFoodMealsByDate', JSON.stringify(mealsByDate));
+                    
+                    const totalMerged = Object.values(mealsByDate).reduce((sum, meals) => sum + (meals?.length || 0), 0);
+                    console.log('✅ LOAD_MEALS: Merge complete:', { totalMeals: totalMerged, dates: Object.keys(mealsByDate).length });
+                } else {
+                    console.log('⚠️ LOAD_MEALS: Server returned error, using local storage only');
+                    mealsByDate = localMeals;
                 }
+            } catch (error) {
+                console.log('ℹ️ LOAD_MEALS: Server not available, using local storage only:', error.message);
+                const localMeals = localStorage.getItem('indianFoodMealsByDate') ? JSON.parse(localStorage.getItem('indianFoodMealsByDate')) : {};
+                mealsByDate = localMeals;
+            }
+        }
+        
+        // Save meals to server whenever they change
+        async function saveMealsToServer(reason = 'update') {
+            try {
+                const totalMeals = Object.values(mealsByDate || {}).reduce((sum, meals) => sum + (meals?.length || 0), 0);
                 
-                const response = await fetch('/api/meals/bulk', {
+                // Always save, even if empty (to sync deletions)
+                console.log('💾 SAVE_MEALS: Saving meals to server (' + reason + ')...');
+                
+                const response = await fetch('/api/save-meals', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        operation: 'sync',
-                        meals: mealsByDate
+                        mealsByDate: mealsByDate
                     })
                 });
                 
                 if (response.ok) {
                     const result = await response.json();
-                    console.log('✅ AUTO_SYNC: Successfully synced meals to server:', {
-                        totalMeals: result.processedCount,
-                        operation: result.operation
-                    });
+                    console.log('✅ SAVE_MEALS: Successfully saved to server:', { totalMeals, reason });
                 } else {
-                    console.log('⚠️ AUTO_SYNC: Server returned error, meals remain in browser');
+                    const error = await response.json();
+                    console.warn('⚠️ SAVE_MEALS: Server returned error:', error);
                 }
             } catch (error) {
-                console.log('ℹ️ AUTO_SYNC: Server not available, using local storage only');
+                console.log('ℹ️ SAVE_MEALS: Server not available, meals saved to browser only:', error.message);
             }
+        }
+        
+        async function autoSyncMealsToServer() {
+            // This is called on page load to sync with server
+            await loadMealsFromServer();
         }
 
         // Quick export - directly download JSON without modal
@@ -7083,6 +7141,7 @@
             addMealToDate(meal);
             updateDailySummary();
             displayMeals();
+            saveMealsToServer('meal_added');
             updateModalContent(); // Update modal content too
             
             // Reset serving size
@@ -7118,6 +7177,7 @@
             addMealToDate(meal);
             updateDailySummary();
             displayMeals();
+            saveMealsToServer('meal_added');
             updateModalContent(); // Update modal content too
             
             // Clear form

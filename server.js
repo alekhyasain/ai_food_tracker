@@ -949,6 +949,53 @@ app.post('/api/import-json', async (req, res) => {
     }
 });
 
+// Save daily meals to meals.json (called whenever meals are added/deleted in the app)
+app.post('/api/save-meals', async (req, res) => {
+    try {
+        const { mealsByDate } = req.body;
+        
+        if (!mealsByDate || typeof mealsByDate !== 'object') {
+            return res.status(400).json({ error: 'Invalid meals data' });
+        }
+        
+        // Write meals to file
+        await fs.writeFile('meals.json', JSON.stringify(mealsByDate, null, 2));
+        
+        // Commit to git
+        await commitChanges(['meals.json'], `📝 Auto-save daily meals`);
+        
+        res.json({
+            success: true,
+            message: 'Meals saved successfully',
+            savedDates: Object.keys(mealsByDate).length
+        });
+        
+        console.log(`✅ Meals auto-saved: ${Object.keys(mealsByDate).length} dates`);
+        
+    } catch (error) {
+        console.error('Error saving meals:', error);
+        res.status(500).json({ error: 'Failed to save meals', details: error.message });
+    }
+});
+
+// Load daily meals from meals.json on startup
+app.get('/api/load-meals', async (req, res) => {
+    try {
+        const data = await fs.readFile('meals.json', 'utf8');
+        const meals = JSON.parse(data);
+        res.json({ success: true, meals });
+        console.log('✅ Loaded meals from meals.json');
+    } catch (error) {
+        if (error.code === 'ENOENT') {
+            // File doesn't exist yet, return empty meals
+            res.json({ success: true, meals: {} });
+        } else {
+            console.error('Error loading meals:', error);
+            res.status(500).json({ error: 'Failed to load meals', details: error.message });
+        }
+    }
+});
+
 // Excel Export API endpoint
 app.post('/api/export-excel', async (req, res) => {
     try {
