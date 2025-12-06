@@ -1037,6 +1037,18 @@
             "fiber": 0
           }
         }
+      },
+      "mint_makhana": {
+        "name": "Mint Makhana",
+        "measurements": {
+          "1_serving": {
+            "calories": 140,
+            "protein": 2.1,
+            "carbs": 18,
+            "fat": 6.6,
+            "fiber": 2.1
+          }
+        }
       }
     }
   }
