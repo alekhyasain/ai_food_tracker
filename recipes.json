@@ -1259,6 +1259,80 @@
         "fat": 2.9,
         "fiber": 3.5
       }
+    },
+    "millet_pulao": {
+      "name": "Millet Pulao",
+      "category": "rice",
+      "servings": 2,
+      "ingredients": [
+        {
+          "key": "grains.barnyard_millet",
+          "name": "Barnyard Millet",
+          "amount": "1.5x 1 cup uncooked",
+          "nutrition": {
+            "calories": 1134,
+            "protein": 33,
+            "carbs": 218.54999999999998,
+            "fat": 126,
+            "fiber": 25.5
+          }
+        },
+        {
+          "key": "vegetables.potato",
+          "name": "Potato",
+          "amount": "0.5x 1 medium",
+          "nutrition": {
+            "calories": 80.5,
+            "protein": 2.15,
+            "carbs": 18.5,
+            "fat": 0.1,
+            "fiber": 1.9
+          }
+        },
+        {
+          "key": "oils_fats.olive_oil",
+          "name": "Olive oil",
+          "amount": "2x 1 tsp",
+          "nutrition": {
+            "calories": 80,
+            "protein": 0,
+            "carbs": 0,
+            "fat": 9,
+            "fiber": 0
+          }
+        },
+        {
+          "key": "oils_fats.peanuts",
+          "name": "Peanuts",
+          "amount": "0.33x 1 tbsp",
+          "nutrition": {
+            "calories": 17.82,
+            "protein": 0.66,
+            "carbs": 0.66,
+            "fat": 1.6500000000000001,
+            "fiber": 0.33
+          }
+        },
+        {
+          "key": "oils_fats.cashews",
+          "name": "Cashews",
+          "amount": "1x 1 piece",
+          "nutrition": {
+            "calories": 10,
+            "protein": 0.25,
+            "carbs": 0.5,
+            "fat": 0.6,
+            "fiber": 0
+          }
+        }
+      ],
+      "total_per_serving": {
+        "calories": 661,
+        "protein": 18,
+        "carbs": 119.1,
+        "fat": 68.7,
+        "fiber": 13.9
+      }
     }
   },
   "ingredients_database": {
