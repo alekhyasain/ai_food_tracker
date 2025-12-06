@@ -1333,6 +1333,44 @@
         "fat": 68.7,
         "fiber": 13.9
       }
+    },
+    "starbucks_healthy_hazelnut_latte": {
+      "name": "Starbucks Healthy Hazelnut Latte",
+      "category": "other",
+      "servings": 1,
+      "ingredients": [
+        {
+          "key": "other.oat_milk",
+          "name": "Oat milk",
+          "amount": "0.5x 1 cup",
+          "nutrition": {
+            "calories": 55,
+            "protein": 1,
+            "carbs": 6.5,
+            "fat": 2.5,
+            "fiber": 0.5
+          }
+        },
+        {
+          "key": "spices_seasonings.starbucks_hazelnut_syrup",
+          "name": "Starbucks Hazelnut Syrup",
+          "amount": "1x 1 pump",
+          "nutrition": {
+            "calories": 20,
+            "protein": 0,
+            "carbs": 5,
+            "fat": 0,
+            "fiber": 0
+          }
+        }
+      ],
+      "total_per_serving": {
+        "calories": 75,
+        "protein": 1,
+        "carbs": 11.5,
+        "fat": 2.5,
+        "fiber": 0.5
+      }
     }
   },
   "ingredients_database": {
