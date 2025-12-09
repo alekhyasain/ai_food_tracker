@@ -768,6 +768,18 @@
             "fiber": 0
           }
         }
+      },
+      "homemade_tamarind_chutney_sweet": {
+        "name": "Homemade tamarind chutney sweet",
+        "measurements": {
+          "1_tbsp": {
+            "calories": 60,
+            "protein": 1,
+            "carbs": 20,
+            "fat": 1,
+            "fiber": 1
+          }
+        }
       }
     },
     "oils_fats": {
