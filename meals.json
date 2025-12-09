@@ -1409,6 +1409,42 @@
       "source": "database",
       "mealType": "Dinner",
       "date": "2025-12-06"
+    },
+    {
+      "id": 1765310262987,
+      "description": "Low fat dahi (0.25x 1 cup)",
+      "timestamp": "2025-12-06T19:57:42.000Z",
+      "nutrition": {
+        "calories": 28,
+        "protein": 2,
+        "carbs": 2.8,
+        "fat": 1,
+        "fiber": 0
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Dinner",
+      "ingredient_data": {
+        "category": "other",
+        "key": "low_fat_dahi",
+        "measurement": "1_cup",
+        "quantity": 0.25
+      },
+      "date": "2025-12-06"
+    },
+    {
+      "id": 1765310274808,
+      "description": "Oat milk coffee (1 serving)",
+      "timestamp": "2025-12-06T19:57:54.000Z",
+      "nutrition": {
+        "calories": 68,
+        "protein": 1,
+        "carbs": 9.9,
+        "fat": 2.5,
+        "fiber": 0.5
+      },
+      "source": "database",
+      "mealType": "Evening Snack",
+      "date": "2025-12-06"
     }
   ]
 }
