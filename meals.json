@@ -1729,6 +1729,21 @@
       "source": "database",
       "mealType": "Evening Snack",
       "date": "2025-12-08"
+    },
+    {
+      "id": 1765310772957,
+      "description": "Pongal (1 serving)",
+      "timestamp": "2025-12-08T20:06:12.000Z",
+      "nutrition": {
+        "calories": 310,
+        "protein": 8.1,
+        "carbs": 48.9,
+        "fat": 7.6,
+        "fiber": 3.6
+      },
+      "source": "database",
+      "mealType": "Dinner",
+      "date": "2025-12-08"
     }
   ]
 }
