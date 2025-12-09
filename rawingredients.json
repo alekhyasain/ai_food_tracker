@@ -146,6 +146,18 @@
             "fiber": 2
           }
         }
+      },
+      "thick_poha": {
+        "name": "Thick Poha",
+        "measurements": {
+          "1_cup": {
+            "calories": 60,
+            "protein": 1,
+            "carbs": 13,
+            "fat": 0,
+            "fiber": 0
+          }
+        }
       }
     },
     "dals_legumes": {
