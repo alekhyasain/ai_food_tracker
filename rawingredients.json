@@ -732,6 +732,18 @@
             "fiber": 0
           }
         }
+      },
+      "nuvvula_podi": {
+        "name": "Nuvvula podi",
+        "measurements": {
+          "1_tbsp": {
+            "calories": 50,
+            "protein": 2,
+            "carbs": 3,
+            "fat": 3,
+            "fiber": 0
+          }
+        }
       }
     },
     "oils_fats": {
