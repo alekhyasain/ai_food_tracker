@@ -1473,6 +1473,20 @@
       },
       "source": "custom",
       "date": "2025-12-06"
+    },
+    {
+      "id": 1765310327657,
+      "description": "Dahi Sev puri with less sweet chutney",
+      "timestamp": "2025-12-06T19:58:47.000Z",
+      "nutrition": {
+        "calories": 160,
+        "protein": 6,
+        "carbs": 22,
+        "fat": 5,
+        "fiber": 3
+      },
+      "source": "custom",
+      "date": "2025-12-06"
     }
   ]
 }
