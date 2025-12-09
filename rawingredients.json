@@ -1169,6 +1169,18 @@
             "fiber": 0
           }
         }
+      },
+      "brown_egg": {
+        "name": "Brown egg",
+        "measurements": {
+          "1_large": {
+            "calories": 70,
+            "protein": 6,
+            "carbs": 0,
+            "fat": 5,
+            "fiber": 0
+          }
+        }
       }
     }
   }
