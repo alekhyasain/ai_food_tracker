@@ -1265,6 +1265,18 @@
             "fiber": 0.6
           }
         }
+      },
+      "costco_roasted_mixed_nuts": {
+        "name": "Costco roasted mixed nuts",
+        "measurements": {
+          "1_tbsp": {
+            "calories": 45,
+            "protein": 1.25,
+            "carbs": 1.75,
+            "fat": 4,
+            "fiber": 0.5
+          }
+        }
       }
     }
   }
