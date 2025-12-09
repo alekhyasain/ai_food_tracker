@@ -1289,6 +1289,18 @@
             "fiber": 0.5
           }
         }
+      },
+      "doodh_peda": {
+        "name": "Doodh peda",
+        "measurements": {
+          "1_piece": {
+            "calories": 133,
+            "protein": 5.4,
+            "carbs": 11.2,
+            "fat": 7.41,
+            "fiber": 0.03
+          }
+        }
       }
     }
   }
