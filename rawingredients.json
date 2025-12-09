@@ -1097,6 +1097,18 @@
             "fiber": 3
           }
         }
+      },
+      "low_fat_paneer_400g": {
+        "name": "Low fat paneer 400g",
+        "measurements": {
+          "1_block": {
+            "calories": 980,
+            "protein": 98,
+            "carbs": 14,
+            "fat": 77,
+            "fiber": 0
+          }
+        }
       }
     }
   }
