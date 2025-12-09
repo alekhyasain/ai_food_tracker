@@ -763,5 +763,43 @@
       },
       "date": "2025-12-05"
     }
+  ],
+  "2025-12-09": [
+    {
+      "id": 1765307586241,
+      "description": "Roasted Mixed nuts (0.6x 1 tbsp)",
+      "timestamp": "2025-12-09T19:13:06.000Z",
+      "nutrition": {
+        "calories": 33,
+        "protein": 0.9,
+        "carbs": 0.6,
+        "fat": 2.4,
+        "fiber": 0
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Morning Snack",
+      "ingredient_data": {
+        "category": "oils_fats",
+        "key": "roasted_mixed_nuts",
+        "measurement": "1_tbsp",
+        "quantity": 0.6
+      },
+      "date": "2025-12-09"
+    },
+    {
+      "id": 1765307592678,
+      "description": "Dosa (1 serving)",
+      "timestamp": "2025-12-09T19:13:12.000Z",
+      "nutrition": {
+        "calories": 210,
+        "protein": 5.6,
+        "carbs": 39.3,
+        "fat": 2.9,
+        "fiber": 3.7
+      },
+      "source": "database",
+      "mealType": "Breakfast",
+      "date": "2025-12-09"
+    }
   ]
 }
