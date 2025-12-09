@@ -851,6 +851,126 @@
       "source": "database",
       "mealType": "Breakfast",
       "date": "2025-12-09"
+    },
+    {
+      "id": 1765310906142,
+      "description": "Costco roasted mixed nuts (1x 1 tbsp)",
+      "timestamp": "2025-12-09T20:08:26.000Z",
+      "nutrition": {
+        "calories": 45,
+        "protein": 1.3,
+        "carbs": 1.8,
+        "fat": 4,
+        "fiber": 0.5
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Morning Snack",
+      "ingredient_data": {
+        "category": "other",
+        "key": "costco_roasted_mixed_nuts",
+        "measurement": "1_tbsp",
+        "quantity": 1
+      },
+      "date": "2025-12-09"
+    },
+    {
+      "id": 1765310917239,
+      "description": "Costco roasted mixed nuts (0.6x 1 tbsp)",
+      "timestamp": "2025-12-09T20:08:37.000Z",
+      "nutrition": {
+        "calories": 27,
+        "protein": 0.8,
+        "carbs": 1.1,
+        "fat": 2.4,
+        "fiber": 0.3
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Morning Snack",
+      "ingredient_data": {
+        "category": "other",
+        "key": "costco_roasted_mixed_nuts",
+        "measurement": "1_tbsp",
+        "quantity": 0.6
+      },
+      "date": "2025-12-09"
+    },
+    {
+      "id": 1765310926032,
+      "description": "Quinoa (0.125x 1 cup uncooked)",
+      "timestamp": "2025-12-09T20:08:46.000Z",
+      "nutrition": {
+        "calories": 78,
+        "protein": 3,
+        "carbs": 13.6,
+        "fat": 1.3,
+        "fiber": 1.5
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Lunch",
+      "ingredient_data": {
+        "category": "grains",
+        "key": "quinoa",
+        "measurement": "1_cup_uncooked",
+        "quantity": 0.125
+      },
+      "date": "2025-12-09"
+    },
+    {
+      "id": 1765310933919,
+      "description": "White Rice (0.0625x 1 cup uncooked)",
+      "timestamp": "2025-12-09T20:08:53.000Z",
+      "nutrition": {
+        "calories": 44,
+        "protein": 0.8,
+        "carbs": 9.7,
+        "fat": 0.1,
+        "fiber": 0.2
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Lunch",
+      "ingredient_data": {
+        "category": "grains",
+        "key": "white_rice",
+        "measurement": "1_cup_uncooked",
+        "quantity": 0.0625
+      },
+      "date": "2025-12-09"
+    },
+    {
+      "id": 1765310943080,
+      "description": "Low fat dahi (0.33x 1 cup)",
+      "timestamp": "2025-12-09T20:09:03.000Z",
+      "nutrition": {
+        "calories": 36,
+        "protein": 2.6,
+        "carbs": 3.6,
+        "fat": 1.3,
+        "fiber": 0
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Lunch",
+      "ingredient_data": {
+        "category": "other",
+        "key": "low_fat_dahi",
+        "measurement": "1_cup",
+        "quantity": 0.33
+      },
+      "date": "2025-12-09"
+    },
+    {
+      "id": 1765310948883,
+      "description": "Brinjal Sabji (1 serving)",
+      "timestamp": "2025-12-09T20:09:08.000Z",
+      "nutrition": {
+        "calories": 45,
+        "protein": 1.1,
+        "carbs": 5.5,
+        "fat": 2.9,
+        "fiber": 3.6
+      },
+      "source": "database",
+      "mealType": "Lunch",
+      "date": "2025-12-09"
     }
   ],
   "2025-12-07": [
@@ -1743,6 +1863,48 @@
       },
       "source": "database",
       "mealType": "Dinner",
+      "date": "2025-12-08"
+    },
+    {
+      "id": 1765310787421,
+      "description": "Costco roasted mixed nuts (0.6x 1 tbsp)",
+      "timestamp": "2025-12-08T20:06:27.000Z",
+      "nutrition": {
+        "calories": 27,
+        "protein": 0.8,
+        "carbs": 1.1,
+        "fat": 2.4,
+        "fiber": 0.3
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Evening Snack",
+      "ingredient_data": {
+        "category": "other",
+        "key": "costco_roasted_mixed_nuts",
+        "measurement": "1_tbsp",
+        "quantity": 0.6
+      },
+      "date": "2025-12-08"
+    },
+    {
+      "id": 1765310867750,
+      "description": "Costco roasted mixed nuts (1x 1 tbsp)",
+      "timestamp": "2025-12-08T20:07:47.000Z",
+      "nutrition": {
+        "calories": 45,
+        "protein": 1.3,
+        "carbs": 1.8,
+        "fat": 4,
+        "fiber": 0.5
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Morning Snack",
+      "ingredient_data": {
+        "category": "other",
+        "key": "costco_roasted_mixed_nuts",
+        "measurement": "1_tbsp",
+        "quantity": 1
+      },
       "date": "2025-12-08"
     }
   ]
