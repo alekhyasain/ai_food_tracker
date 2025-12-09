@@ -1534,6 +1534,42 @@
       "source": "database",
       "mealType": "Breakfast",
       "date": "2025-12-08"
+    },
+    {
+      "id": 1765310457842,
+      "description": "Brown egg (1x 1 large)",
+      "timestamp": "2025-12-08T20:00:57.000Z",
+      "nutrition": {
+        "calories": 70,
+        "protein": 6,
+        "carbs": 0,
+        "fat": 5,
+        "fiber": 0
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Breakfast",
+      "ingredient_data": {
+        "category": "other",
+        "key": "brown_egg",
+        "measurement": "1_large",
+        "quantity": 1
+      },
+      "date": "2025-12-08"
+    },
+    {
+      "id": 1765310464673,
+      "description": "Unsweetened oat milk coffee (1 serving)",
+      "timestamp": "2025-12-08T20:01:04.000Z",
+      "nutrition": {
+        "calories": 41,
+        "protein": 0.5,
+        "carbs": 6.4,
+        "fat": 1,
+        "fiber": 0.3
+      },
+      "source": "database",
+      "mealType": "Morning Snack",
+      "date": "2025-12-08"
     }
   ]
 }
