@@ -1544,6 +1544,22 @@
                     </button>
                 </div>
                 
+                <!-- Search/Filter Box -->
+                <div class="mb-4">
+                    <input 
+                        type="text" 
+                        id="recipeSearchBox" 
+                        placeholder="🔍 Search recipes by name..." 
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        oninput="filterRecipes()"
+                    >
+                </div>
+                
+                <!-- Recipe Count Display -->
+                <div id="recipeCountDisplay" class="text-sm text-gray-600 mb-3">
+                    <!-- Count will be displayed here -->
+                </div>
+                
                 <!-- Recipe List -->
                 <div id="recipeListContainer" class="space-y-4">
                     <!-- Recipes will be populated here -->
@@ -9927,6 +9943,9 @@
         // Open Manage Recipes Modal
         function openManageRecipesModal() {
             document.getElementById('manageRecipesModal').classList.add('active');
+            // Clear search box
+            const searchBox = document.getElementById('recipeSearchBox');
+            if (searchBox) searchBox.value = '';
             loadRecipeList();
         }
 
@@ -9939,11 +9958,103 @@
         function loadRecipeList() {
             const customRecipes = JSON.parse(localStorage.getItem('customRecipes') || '{}');
             const recipeListContainer = document.getElementById('recipeListContainer');
+            const countDisplay = document.getElementById('recipeCountDisplay');
             const emptyState = document.getElementById('emptyRecipeState');
             
             const recipeNames = Object.keys(customRecipes);
             
             if (recipeNames.length === 0) {
+                recipeListContainer.innerHTML = '';
+                countDisplay.textContent = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            // Show total recipe count
+            countDisplay.textContent = `${recipeNames.length} recipe${recipeNames.length !== 1 ? 's' : ''} total`;
+            emptyState.style.display = 'none';
+            
+            recipeListContainer.innerHTML = recipeNames.map(recipeName => {
+                const recipe = customRecipes[recipeName];
+                const totalCalories = recipe.ingredients.reduce((sum, ing) => {
+                    const ingredient = rawIngredients[ing.name] || {};
+                    return sum + ((ingredient.calories || 0) * (ing.quantity || 0) / 100);
+                }, 0);
+                const caloriesPerServing = Math.round(totalCalories / (recipe.servings || 1));
+                const ingredientCount = recipe.ingredients.length;
+                
+                return `
+                    <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-2">${recipeName}</h4>
+                                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm text-gray-600">
+                                    <div class="flex items-center">
+                                        <span class="text-orange-500 mr-1">🔥</span>
+                                        <span>${caloriesPerServing} cal/serving</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <span class="text-blue-500 mr-1">🍽️</span>
+                                        <span>${recipe.servings || 1} servings</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <span class="text-green-500 mr-1">🥬</span>
+                                        <span>${ingredientCount} ingredients</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2 ml-4">
+                                <button onclick="openRecipeEditModal('${recipeName}')"
+                                        class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                                    ✏️ Edit
+                                </button>
+                                <button onclick="deleteRecipeConfirm('${recipeName}')"
+                                        class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm">
+                                    🗑️ Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Filter recipes based on search input
+        function filterRecipes() {
+            const searchInput = document.getElementById('recipeSearchBox').value.toLowerCase();
+            const customRecipes = JSON.parse(localStorage.getItem('customRecipes') || '{}');
+            const recipeListContainer = document.getElementById('recipeListContainer');
+            const countDisplay = document.getElementById('recipeCountDisplay');
+            const emptyState = document.getElementById('emptyRecipeState');
+            
+            // Filter recipes
+            const filteredRecipes = Object.keys(customRecipes).filter(recipeName =>
+                recipeName.toLowerCase().includes(searchInput)
+            );
+            
+            // Update count display
+            if (searchInput.length > 0) {
+                countDisplay.textContent = `Found ${filteredRecipes.length} recipe${filteredRecipes.length !== 1 ? 's' : ''} matching "${searchInput}"`;
+            } else {
+                const totalRecipes = Object.keys(customRecipes).length;
+                countDisplay.textContent = totalRecipes > 0 ? `${totalRecipes} recipe${totalRecipes !== 1 ? 's' : ''} total` : '';
+            }
+            
+            // Show empty state if no results
+            if (filteredRecipes.length === 0 && searchInput.length > 0) {
+                recipeListContainer.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <div class="text-4xl mb-4">🔍</div>
+                        <p>No recipes found matching "${searchInput}"</p>
+                        <p class="text-sm mt-2">Try a different search term</p>
+                    </div>
+                `;
+                emptyState.style.display = 'none';
+                return;
+            }
+            
+            // Display filtered recipes
+            if (filteredRecipes.length === 0 && searchInput.length === 0) {
                 recipeListContainer.innerHTML = '';
                 emptyState.style.display = 'block';
                 return;
@@ -9951,7 +10062,7 @@
             
             emptyState.style.display = 'none';
             
-            recipeListContainer.innerHTML = recipeNames.map(recipeName => {
+            recipeListContainer.innerHTML = filteredRecipes.map(recipeName => {
                 const recipe = customRecipes[recipeName];
                 const totalCalories = recipe.ingredients.reduce((sum, ing) => {
                     const ingredient = rawIngredients[ing.name] || {};
