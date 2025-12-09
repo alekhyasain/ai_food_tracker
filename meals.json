@@ -931,6 +931,42 @@
       "source": "database",
       "mealType": "Dinner",
       "date": "2025-12-07"
+    },
+    {
+      "id": 1765309046021,
+      "description": "Onion (0.125x 1 cup chopped)",
+      "timestamp": "2025-12-07T19:37:26.000Z",
+      "nutrition": {
+        "calories": 8,
+        "protein": 0.2,
+        "carbs": 1.9,
+        "fat": 0,
+        "fiber": 0.3
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Dinner",
+      "ingredient_data": {
+        "category": "vegetables",
+        "key": "onion",
+        "measurement": "1_cup_chopped",
+        "quantity": 0.125
+      },
+      "date": "2025-12-07"
+    },
+    {
+      "id": 1765309281973,
+      "description": "Onion Upma (1 serving)",
+      "timestamp": "2025-12-07T19:41:21.000Z",
+      "nutrition": {
+        "calories": 200,
+        "protein": 8.7,
+        "carbs": 56.8,
+        "fat": 30.2,
+        "fiber": 2.8
+      },
+      "source": "database",
+      "mealType": "Morning Snack",
+      "date": "2025-12-07"
     }
   ]
 }
