@@ -744,6 +744,18 @@
             "fiber": 0
           }
         }
+      },
+      "chaat_masala": {
+        "name": "Chaat masala",
+        "measurements": {
+          "1_tsp": {
+            "calories": 20,
+            "protein": 0,
+            "carbs": 4,
+            "fat": 0,
+            "fiber": 0
+          }
+        }
       }
     },
     "oils_fats": {
