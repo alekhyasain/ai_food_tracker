@@ -852,5 +852,85 @@
       "mealType": "Breakfast",
       "date": "2025-12-09"
     }
+  ],
+  "2025-12-07": [
+    {
+      "id": 1765308970304,
+      "description": "Doodh peda (1x 1 piece)",
+      "timestamp": "2025-12-07T19:36:10.000Z",
+      "nutrition": {
+        "calories": 133,
+        "protein": 5.4,
+        "carbs": 11.2,
+        "fat": 7.4,
+        "fiber": 0
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Morning Snack",
+      "ingredient_data": {
+        "category": "other",
+        "key": "doodh_peda",
+        "measurement": "1_piece",
+        "quantity": 1
+      },
+      "date": "2025-12-07"
+    },
+    {
+      "id": 1765308979803,
+      "description": "Aloo tikki air fried (2x 1 tikki)",
+      "timestamp": "2025-12-07T19:36:19.000Z",
+      "nutrition": {
+        "calories": 300,
+        "protein": 10,
+        "carbs": 50,
+        "fat": 8,
+        "fiber": 8
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Dinner",
+      "ingredient_data": {
+        "category": "other",
+        "key": "aloo_tikki_air_fried",
+        "measurement": "1_tikki",
+        "quantity": 2
+      },
+      "date": "2025-12-07"
+    },
+    {
+      "id": 1765308996419,
+      "description": "Homemade tamarind chutney sweet (1x 1 tbsp)",
+      "timestamp": "2025-12-07T19:36:36.000Z",
+      "nutrition": {
+        "calories": 60,
+        "protein": 1,
+        "carbs": 20,
+        "fat": 1,
+        "fiber": 1
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Dinner",
+      "ingredient_data": {
+        "category": "spices_seasonings",
+        "key": "homemade_tamarind_chutney_sweet",
+        "measurement": "1_tbsp",
+        "quantity": 1
+      },
+      "date": "2025-12-07"
+    },
+    {
+      "id": 1765309014898,
+      "description": "Chole Homemade (2 servings)",
+      "timestamp": "2025-12-07T19:36:54.000Z",
+      "nutrition": {
+        "calories": 614,
+        "protein": 28.4,
+        "carbs": 89.8,
+        "fat": 17.2,
+        "fiber": 17.6
+      },
+      "source": "database",
+      "mealType": "Dinner",
+      "date": "2025-12-07"
+    }
   ]
 }
