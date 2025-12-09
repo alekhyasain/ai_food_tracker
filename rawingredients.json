@@ -708,6 +708,18 @@
             "fiber": 0
           }
         }
+      },
+      "shahi_paneer_masala_spice": {
+        "name": "Shahi paneer masala spice",
+        "measurements": {
+          "1_tsp": {
+            "calories": 20,
+            "protein": 1,
+            "carbs": 3,
+            "fat": 0,
+            "fiber": 0
+          }
+        }
       }
     },
     "oils_fats": {
