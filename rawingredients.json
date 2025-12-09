@@ -1253,6 +1253,18 @@
             "fiber": 1.5
           }
         }
+      },
+      "pitted_dates_nour": {
+        "name": "Pitted dates nour",
+        "measurements": {
+          "1_piece": {
+            "calories": 24,
+            "protein": 0.2,
+            "carbs": 6,
+            "fat": 0,
+            "fiber": 0.6
+          }
+        }
       }
     }
   }
