@@ -820,6 +820,18 @@
             "fiber": 0
           }
         }
+      },
+      "costco_avocado_box": {
+        "name": "Costco Avocado Box",
+        "measurements": {
+          "1_mini_cup": {
+            "calories": 130,
+            "protein": 1,
+            "carbs": 5,
+            "fat": 11,
+            "fiber": 3
+          }
+        }
       }
     },
     "fruits": {
