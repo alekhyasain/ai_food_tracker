@@ -501,6 +501,18 @@
             "fiber": 3
           }
         }
+      },
+      "yellow_bell_pepper": {
+        "name": "Yellow Bell pepper",
+        "measurements": {
+          "1": {
+            "calories": 50,
+            "protein": 1.86,
+            "carbs": 11.76,
+            "fat": 0.39,
+            "fiber": 1.67
+          }
+        }
       }
     },
     "spices_seasonings": {
