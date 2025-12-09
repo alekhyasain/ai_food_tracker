@@ -1679,6 +1679,80 @@
         "fat": 0.2,
         "fiber": 1.3
       }
+    },
+    "sevia_upma": {
+      "name": "Sevia Upma",
+      "category": "other",
+      "servings": 2,
+      "ingredients": [
+        {
+          "key": "grains.roasted_wheat_vermicelli",
+          "name": "Roasted wheat vermicelli",
+          "amount": "0.82x 1 cup",
+          "nutrition": {
+            "calories": 180.39999999999998,
+            "protein": 4.1,
+            "carbs": 32.8,
+            "fat": 0.82,
+            "fiber": 1.64
+          }
+        },
+        {
+          "key": "oils_fats.cashews",
+          "name": "Cashews",
+          "amount": "6x 1 piece",
+          "nutrition": {
+            "calories": 60,
+            "protein": 1.5,
+            "carbs": 3,
+            "fat": 3.5999999999999996,
+            "fiber": 0
+          }
+        },
+        {
+          "key": "oils_fats.olive_oil",
+          "name": "Olive oil",
+          "amount": "2x 1 tsp",
+          "nutrition": {
+            "calories": 80,
+            "protein": 0,
+            "carbs": 0,
+            "fat": 9,
+            "fiber": 0
+          }
+        },
+        {
+          "key": "oils_fats.peanuts",
+          "name": "Peanuts",
+          "amount": "1x 1 tbsp",
+          "nutrition": {
+            "calories": 54,
+            "protein": 2,
+            "carbs": 2,
+            "fat": 5,
+            "fiber": 1
+          }
+        },
+        {
+          "key": "vegetables.onion",
+          "name": "Onion",
+          "amount": "0.67x 1 medium",
+          "nutrition": {
+            "calories": 29.48,
+            "protein": 0.804,
+            "carbs": 6.7,
+            "fat": 0.067,
+            "fiber": 1.273
+          }
+        }
+      ],
+      "total_per_serving": {
+        "calories": 202,
+        "protein": 4.2,
+        "carbs": 22.3,
+        "fat": 9.2,
+        "fiber": 2
+      }
     }
   },
   "ingredients_database": {
