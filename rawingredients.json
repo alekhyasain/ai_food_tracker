@@ -1229,6 +1229,18 @@
             "fiber": 3
           }
         }
+      },
+      "protein_bhujia": {
+        "name": "Protein bhujia",
+        "measurements": {
+          "1_serving": {
+            "calories": 113,
+            "protein": 3.7,
+            "carbs": 16,
+            "fat": 3.7,
+            "fiber": 4.5
+          }
+        }
       }
     }
   }
