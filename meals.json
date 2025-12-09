@@ -952,6 +952,21 @@
         "quantity": 0.125
       },
       "date": "2025-12-07"
+    },
+    {
+      "id": 1765309301385,
+      "description": "Onion Upma (0.8 servings)",
+      "timestamp": "2025-12-07T19:41:41.000Z",
+      "nutrition": {
+        "calories": 160,
+        "protein": 7,
+        "carbs": 45.4,
+        "fat": 24.2,
+        "fiber": 2.2
+      },
+      "source": "database",
+      "mealType": "Breakfast",
+      "date": "2025-12-07"
     }
   ]
 }
