@@ -1481,6 +1481,56 @@
         "fat": 18.3,
         "fiber": 1.9
       }
+    },
+    "pumpkin_chutney": {
+      "name": "Pumpkin chutney",
+      "category": "sabji",
+      "servings": 5,
+      "ingredients": [
+        {
+          "key": "vegetables.pumpkin",
+          "name": "Pumpkin",
+          "amount": "1x 1 cut pack",
+          "nutrition": {
+            "calories": 174,
+            "protein": 7,
+            "carbs": 45,
+            "fat": 0.8,
+            "fiber": 3
+          }
+        },
+        {
+          "key": "oils_fats.olive_oil",
+          "name": "Olive oil",
+          "amount": "2x 1 tsp",
+          "nutrition": {
+            "calories": 80,
+            "protein": 0,
+            "carbs": 0,
+            "fat": 9,
+            "fiber": 0
+          }
+        },
+        {
+          "key": "oils_fats.peanuts",
+          "name": "Peanuts",
+          "amount": "1.5x 1 tbsp",
+          "nutrition": {
+            "calories": 81,
+            "protein": 3,
+            "carbs": 3,
+            "fat": 7.5,
+            "fiber": 1.5
+          }
+        }
+      ],
+      "total_per_serving": {
+        "calories": 67,
+        "protein": 2,
+        "carbs": 9.6,
+        "fat": 3.5,
+        "fiber": 0.9
+      }
     }
   },
   "ingredients_database": {
