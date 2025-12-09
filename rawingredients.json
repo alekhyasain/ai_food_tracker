@@ -1217,6 +1217,18 @@
             "fiber": 8
           }
         }
+      },
+      "good_and_gather_unsweetned_oat_milk": {
+        "name": "Good and gather unsweetned oat milk",
+        "measurements": {
+          "1_cup": {
+            "calories": 60,
+            "protein": 1,
+            "carbs": 5,
+            "fat": 3.5,
+            "fiber": 3
+          }
+        }
       }
     }
   }
