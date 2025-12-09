@@ -489,6 +489,18 @@
             "fiber": 7
           }
         }
+      },
+      "pumpkin": {
+        "name": "Pumpkin",
+        "measurements": {
+          "1_cut_pack": {
+            "calories": 174,
+            "protein": 7,
+            "carbs": 45,
+            "fat": 0.8,
+            "fiber": 3
+          }
+        }
       }
     },
     "spices_seasonings": {
