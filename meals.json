@@ -1117,6 +1117,43 @@
       "source": "database",
       "mealType": "Lunch",
       "date": "2025-12-07"
+    },
+    {
+      "id": 1765309872024,
+      "description": "Suji Halwa Homemade (0.3x 1 serving)",
+      "timestamp": "2025-12-07T19:51:12.000Z",
+      "nutrition": {
+        "calories": 30,
+        "protein": 0.9,
+        "carbs": 6,
+        "fat": 1.2,
+        "fiber": 0
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Evening Snack",
+      "ingredient_data": {
+        "category": "other",
+        "key": "suji_halwa_homemade",
+        "measurement": "1_serving",
+        "quantity": 0.3
+      },
+      "date": "2025-12-07"
+    }
+  ],
+  "2025-12-06": [
+    {
+      "id": 1765309926330,
+      "description": "Paneer Balti",
+      "timestamp": "2025-12-06T19:52:06.000Z",
+      "nutrition": {
+        "calories": 350,
+        "protein": 13,
+        "carbs": 48,
+        "fat": 12,
+        "fiber": 7
+      },
+      "source": "custom",
+      "date": "2025-12-06"
     }
   ]
 }
