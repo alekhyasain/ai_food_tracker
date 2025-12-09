@@ -1337,6 +1337,18 @@
             "fiber": 0
           }
         }
+      },
+      "three_bridges_cheddar__chive_potatoes": {
+        "name": "Three Bridges Cheddar & Chive Potatoes",
+        "measurements": {
+          "1_piece": {
+            "calories": 220,
+            "protein": 12,
+            "carbs": 16,
+            "fat": 13,
+            "fiber": 2
+          }
+        }
       }
     }
   }
