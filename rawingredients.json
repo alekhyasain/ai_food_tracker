@@ -573,6 +573,18 @@
             "fiber": 1.96
           }
         }
+      },
+      "spring_mix": {
+        "name": "spring mix",
+        "measurements": {
+          "1_box": {
+            "calories": 35,
+            "protein": 3,
+            "carbs": 5,
+            "fat": 0,
+            "fiber": 2
+          }
+        }
       }
     },
     "spices_seasonings": {
