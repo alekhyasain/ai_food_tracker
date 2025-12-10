@@ -1050,6 +1050,18 @@
             "fiber": 3.32
           }
         }
+      },
+      "blueberries": {
+        "name": "Blueberries",
+        "measurements": {
+          "1_cup_sliced": {
+            "calories": 84,
+            "protein": 1,
+            "carbs": 21,
+            "fat": 0.5,
+            "fiber": 4
+          }
+        }
       }
     },
     "other": {
