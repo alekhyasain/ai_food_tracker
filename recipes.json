@@ -2226,14 +2226,38 @@
             "fat": 0.066,
             "fiber": 0.46199999999999997
           }
+        },
+        {
+          "key": "vegetables.cucumber",
+          "name": "Cucumber",
+          "amount": "0.125x 1 large",
+          "nutrition": {
+            "calories": 4.25,
+            "protein": 0.20625,
+            "carbs": 0.75,
+            "fat": 0.05625,
+            "fiber": 0.245
+          }
+        },
+        {
+          "key": "vegetables.spring_mix",
+          "name": "spring mix",
+          "amount": "0.1x 1 box",
+          "nutrition": {
+            "calories": 3.5,
+            "protein": 0.30000000000000004,
+            "carbs": 0.5,
+            "fat": 0,
+            "fiber": 0.2
+          }
         }
       ],
       "total_per_serving": {
-        "calories": 202,
-        "protein": 6.4,
-        "carbs": 28.1,
+        "calories": 210,
+        "protein": 6.9,
+        "carbs": 29.3,
         "fat": 8.6,
-        "fiber": 5
+        "fiber": 5.4
       }
     }
   },
