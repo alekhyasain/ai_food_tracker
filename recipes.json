@@ -1865,6 +1865,68 @@
         "fat": 4.5,
         "fiber": 6.3
       }
+    },
+    "millet_khichdi": {
+      "name": "Millet Khichdi",
+      "category": "rice",
+      "servings": 2,
+      "ingredients": [
+        {
+          "key": "grains.barnyard_millet",
+          "name": "Barnyard Millet",
+          "amount": "0.58x 1 cup uncooked",
+          "nutrition": {
+            "calories": 438.47999999999996,
+            "protein": 12.76,
+            "carbs": 84.50599999999999,
+            "fat": 48.72,
+            "fiber": 9.86
+          }
+        },
+        {
+          "key": "dals_legumes.moong_dal",
+          "name": "Moong Dal",
+          "amount": "0.33x 1 cup uncooked",
+          "nutrition": {
+            "calories": 114.51,
+            "protein": 7.92,
+            "carbs": 19.470000000000002,
+            "fat": 0.396,
+            "fiber": 5.28
+          }
+        },
+        {
+          "key": "oils_fats.peanuts",
+          "name": "Peanuts",
+          "amount": "1x 1 tbsp",
+          "nutrition": {
+            "calories": 54,
+            "protein": 2,
+            "carbs": 2,
+            "fat": 5,
+            "fiber": 1
+          }
+        },
+        {
+          "key": "oils_fats.cashews",
+          "name": "Cashews",
+          "amount": "6x 1 piece",
+          "nutrition": {
+            "calories": 60,
+            "protein": 1.5,
+            "carbs": 3,
+            "fat": 3.5999999999999996,
+            "fiber": 0
+          }
+        }
+      ],
+      "total_per_serving": {
+        "calories": 333,
+        "protein": 12.1,
+        "carbs": 54.5,
+        "fat": 28.9,
+        "fiber": 8.1
+      }
     }
   },
   "ingredients_database": {
