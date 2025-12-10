@@ -832,6 +832,7 @@
                             <option value="Morning Snack">🥨 Morning Snack</option>
                             <option value="Lunch" selected>🍽️ Lunch</option>
                             <option value="Evening Snack">🍪 Evening Snack</option>
+                            <option value="Dessert">🍪 Dessert</option>
                             <option value="Dinner">🌙 Dinner</option>
                         </select>
                         <button onclick="setTimeBasedMealType()" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm transition duration-200" title="Auto-select based on current time">
@@ -866,6 +867,18 @@
             <div id="addTabContent">
                 <!-- Quick Dishes Tab -->
                 <div id="quickDishesContent" class="add-tab-content">
+                    <!-- Recipe Search Box -->
+                    <div class="mb-4">
+                        <label for="recipeSearchBox" class="block text-sm font-medium text-gray-700 mb-1">Search Recipe:</label>
+                        <input type="text" id="recipeSearchBox" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Type recipe name..." autocomplete="off" oninput="showRecipeSuggestions()">
+                        <div id="recipeSuggestions" class="absolute z-20 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto hidden"></div>
+                        <div id="selectedRecipeActions" class="mt-2 hidden flex gap-2">
+                            <div class="flex flex-col gap-2 w-full">
+                                <button id="addRecipeToLogBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 text-lg">✅ Add to Daily Log</button>
+                                <button id="editRecipeBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 text-lg">📝 Edit Recipe</button>
+                            </div>
+                        </div>
+                    </div>
                     <div class="space-y-3" id="quickDishesInModal">
                         <!-- Will be populated by JavaScript -->
                     </div>
@@ -1574,6 +1587,178 @@
     </div>
 
     <script>
+                // --- Recipe Search & Suggestion Logic for Quick Dishes ---
+                let recipeSearchSelected = null;
+                function showRecipeSuggestions() {
+                    const input = document.getElementById('recipeSearchBox');
+                    const suggestionsDiv = document.getElementById('recipeSuggestions');
+                    const actionsDiv = document.getElementById('selectedRecipeActions');
+                    const addBtn = document.getElementById('addRecipeToLogBtn');
+                    const editBtn = document.getElementById('editRecipeBtn');
+                    const query = input.value.trim().toLowerCase();
+                    recipeSearchSelected = null;
+                    actionsDiv.classList.add('hidden');
+                    if (!query) {
+                        suggestionsDiv.innerHTML = '';
+                        suggestionsDiv.classList.add('hidden');
+                        return;
+                    }
+                    // Get all recipe names from customRecipes and (if available) from recipes.json loaded in foodDatabase
+                    let recipeNames = [];
+                    if (typeof customRecipes === 'object') {
+                        recipeNames = recipeNames.concat(Object.keys(customRecipes));
+                    }
+                    if (foodDatabase && foodDatabase.recipes) {
+                        recipeNames = recipeNames.concat(Object.keys(foodDatabase.recipes));
+                    }
+                    // Remove duplicates
+                    recipeNames = [...new Set(recipeNames)];
+                    // Filter by query
+                    const matches = recipeNames.filter(name => name.toLowerCase().includes(query));
+                    if (matches.length === 0) {
+                        suggestionsDiv.innerHTML = '<div class="px-3 py-2 text-gray-500">No recipes found.</div>';
+                        suggestionsDiv.classList.remove('hidden');
+                        return;
+                    }
+                    suggestionsDiv.innerHTML = matches.map(name => `<div class='px-3 py-2 hover:bg-blue-100 cursor-pointer' onclick='selectRecipeSuggestion("${name.replace(/"/g, "&quot;")}")'>${name}</div>`).join('');
+                    suggestionsDiv.classList.remove('hidden');
+                }
+
+                function selectRecipeSuggestion(recipeName) {
+                    const input = document.getElementById('recipeSearchBox');
+                    const suggestionsDiv = document.getElementById('recipeSuggestions');
+                    const actionsDiv = document.getElementById('selectedRecipeActions');
+                    recipeSearchSelected = recipeName;
+                    input.value = recipeName;
+                    suggestionsDiv.classList.add('hidden');
+                    actionsDiv.classList.remove('hidden');
+                }
+
+                // Add Recipe from Search - uses same logic as addQuickDishFromModal
+                function addRecipeFromSearch() {
+                    if (!recipeSearchSelected) {
+                        showErrorMessage('Please select a recipe first');
+                        return;
+                    }
+                    
+                    // Find the recipe in either customRecipes or foodDatabase.dishes
+                    let recipe = null;
+                    let recipeKey = recipeSearchSelected;
+                    
+                    if (customRecipes && customRecipes[recipeKey]) {
+                        recipe = customRecipes[recipeKey];
+                    } else if (foodDatabase && foodDatabase.dishes && foodDatabase.dishes[recipeKey]) {
+                        recipe = foodDatabase.dishes[recipeKey];
+                    } else {
+                        // Try to find by name
+                        if (customRecipes) {
+                            for (let key in customRecipes) {
+                                if (customRecipes[key].name === recipeSearchSelected) {
+                                    recipe = customRecipes[key];
+                                    recipeKey = key;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!recipe && foodDatabase && foodDatabase.dishes) {
+                            for (let key in foodDatabase.dishes) {
+                                if (foodDatabase.dishes[key].name === recipeSearchSelected) {
+                                    recipe = foodDatabase.dishes[key];
+                                    recipeKey = key;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    
+                    if (!recipe) {
+                        showErrorMessage('Recipe not found');
+                        return;
+                    }
+                    
+                    // Use the same logic as addQuickDishFromModal
+                    const servings = 1; // Default to 1 serving
+                    const selectedMealType = document.getElementById('mealTypeSelector')?.value || 'Lunch';
+                    
+                    const nutrition = recipe.total_per_serving;
+                    const meal = {
+                        id: Date.now(),
+                        description: `${recipe.name} (${servings} serving${servings !== 1 ? 's' : ''})`,
+                        timestamp: new Date().toISOString(),
+                        nutrition: {
+                            calories: Math.round(nutrition.calories * servings),
+                            protein: Math.round(nutrition.protein * servings * 10) / 10,
+                            carbs: Math.round(nutrition.carbs * servings * 10) / 10,
+                            fat: Math.round(nutrition.fat * servings * 10) / 10,
+                            fiber: Math.round(nutrition.fiber * servings * 10) / 10
+                        },
+                        source: 'database',
+                        mealType: selectedMealType
+                    };
+                    
+                    addMealToDate(meal);
+                    updateDailySummary();
+                    displayMeals();
+                    saveMealsToServer('meal_added');
+                    updateModalContent();
+                    
+                    showSuccessMessage(`Added ${recipe.name} to ${selectedMealType}!`);
+                    
+                    // Reset the search
+                    document.getElementById('recipeSearchBox').value = '';
+                    document.getElementById('selectedRecipeActions').classList.add('hidden');
+                    recipeSearchSelected = null;
+                }
+                
+                // Edit Recipe from Search - uses same function as quickDishes
+                function editRecipeFromSearch() {
+                    if (!recipeSearchSelected) {
+                        showErrorMessage('Please select a recipe first');
+                        return;
+                    }
+                    
+                    // Find the recipe key
+                    let recipeKey = recipeSearchSelected;
+                    
+                    // Check if it's in customRecipes
+                    if (customRecipes && customRecipes[recipeKey]) {
+                        editRecipe(recipeKey);
+                    } else {
+                        // Try to find by name
+                        let found = false;
+                        if (customRecipes) {
+                            for (let key in customRecipes) {
+                                if (customRecipes[key].name === recipeSearchSelected) {
+                                    editRecipe(key);
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if (!found) {
+                            showErrorMessage('Only custom recipes can be edited. This recipe is from the database.');
+                        }
+                    }
+                    
+                    // Close the modal after opening the recipe editor
+                    setTimeout(() => {
+                        closeUnifiedAddModal();
+                    }, 200);
+                }
+                
+                // Attach event listeners for recipe search buttons
+                document.addEventListener('DOMContentLoaded', function() {
+                    const addBtn = document.getElementById('addRecipeToLogBtn');
+                    const editBtn = document.getElementById('editRecipeBtn');
+                    
+                    if (addBtn) {
+                        addBtn.onclick = addRecipeFromSearch;
+                    }
+                    if (editBtn) {
+                        editBtn.onclick = editRecipeFromSearch;
+                    }
+                });
         // Global variables
         let foodDatabase = {};
         let rawIngredients = {};
@@ -4658,7 +4843,7 @@
             }
 
             // Group meals by meal type
-            const mealTypes = ['Breakfast', 'Morning Snack', 'Lunch', 'Evening Snack', 'Dinner'];
+            const mealTypes = ['Breakfast', 'Morning Snack', 'Lunch', 'Evening Snack','Dessert', 'Dinner'];
             const groupedMeals = {};
             
             // Initialize all meal types
@@ -9647,6 +9832,8 @@
                 mealType = 'Lunch';
             } else if (hour >= 15 && hour < 18) {
                 mealType = 'Evening Snack';
+            } else if (hour >= 18 && hour < 20) {
+                mealType = 'Dessert';
             } else {
                 mealType = 'Dinner';
             }
