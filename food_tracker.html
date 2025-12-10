@@ -373,18 +373,61 @@
                                 🔄 Reload Ingredients
                             </button>
                         </div>
-                        <div class="space-y-3">
-                            <div class="grid grid-cols-3 gap-2">
-                                <select id="recipeIngredientSelect" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    <option value="">Select ingredient...</option>
-                                </select>
-                                <select id="recipeMeasurementSelect" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" disabled>
-                                    <option value="">Select ingredient first...</option>
-                                </select>
-                                <input type="number" id="recipeQuantity" placeholder="Qty" value="1" min="0.25" step="0.25" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <button onclick="addRecipeIngredient()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition duration-200">Add</button>
+                        
+                        <!-- Quick Search Ingredient Selector -->
+                        <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                            <h5 class="font-semibold text-gray-800 mb-3">🔍 Quick Add Ingredients</h5>
+                            <div class="space-y-3">
+                                <!-- Search Box -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Search Ingredient:</label>
+                                    <input type="text" id="recipeIngredientSearch" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Type ingredient name (e.g., onion, tomato, lentil)..." oninput="filterRecipeIngredients()">
+                                    <div id="recipeIngredientDropdown" class="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto hidden mt-1"></div>
+                                </div>
+                                
+                                <!-- Selected Ingredient Display -->
+                                <div id="selectedRecipeIngredientDisplay" class="hidden bg-white p-3 rounded border border-gray-300">
+                                    <div class="flex justify-between items-center">
+                                        <span id="selectedRecipeIngredientName" class="font-medium text-gray-800"></span>
+                                        <button onclick="clearRecipeIngredientSelection()" class="text-red-500 hover:text-red-700 text-sm">Clear</button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Measurement and Quantity -->
+                                <div id="recipeIngredientMeasurementSection" class="hidden space-y-2">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Measurement:</label>
+                                        <select id="recipeIngredientMeasurement" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <option value="">Select measurement...</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Quantity:</label>
+                                        <input type="number" id="recipeIngredientQuantity" value="1" min="0.25" step="0.25" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    </div>
+                                    <button onclick="addRecipeIngredientFromSearch()" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
+                                        ➕ Add to Recipe
+                                    </button>
+                                </div>
                             </div>
                         </div>
+                        
+                        <!-- Original Dropdown Method (Optional) -->
+                        <details class="mb-4 p-3 bg-gray-50 rounded border border-gray-200">
+                            <summary class="cursor-pointer font-medium text-gray-700">📋 Or use dropdown selector</summary>
+                            <div class="mt-3 space-y-3">
+                                <div class="grid grid-cols-3 gap-2">
+                                    <select id="recipeIngredientSelect" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <option value="">Select ingredient...</option>
+                                    </select>
+                                    <select id="recipeMeasurementSelect" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" disabled>
+                                        <option value="">Select ingredient first...</option>
+                                    </select>
+                                    <input type="number" id="recipeQuantity" placeholder="Qty" value="1" min="0.25" step="0.25" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <button onclick="addRecipeIngredient()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition duration-200">Add</button>
+                                </div>
+                            </div>
+                        </details>
                     </div>
 
                     <!-- Recipe Actions -->
@@ -872,7 +915,14 @@
                         <label for="recipeSearchBox" class="block text-sm font-medium text-gray-700 mb-1">Search Recipe:</label>
                         <input type="text" id="recipeSearchBox" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Type recipe name..." autocomplete="off" oninput="showRecipeSuggestions()">
                         <div id="recipeSuggestions" class="absolute z-20 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto hidden"></div>
-                        <div id="selectedRecipeActions" class="mt-2 hidden flex gap-2">
+                        <div id="selectedRecipeActions" class="mt-4 hidden">
+                            <!-- Quantity Section -->
+                            <div class="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                <label for="recipeQuantity" class="block text-sm font-medium text-gray-700 mb-2">Servings:</label>
+                                <input type="number" id="recipeQuantity" value="1" min="0.25" step="0.25" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <p class="text-xs text-gray-500 mt-1">How many servings to add?</p>
+                            </div>
+                            <!-- Action Buttons -->
                             <div class="flex flex-col gap-2 w-full">
                                 <button id="addRecipeToLogBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 text-lg">✅ Add to Daily Log</button>
                                 <button id="editRecipeBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 text-lg">📝 Edit Recipe</button>
@@ -1676,8 +1726,8 @@
                         return;
                     }
                     
-                    // Use the same logic as addQuickDishFromModal
-                    const servings = 1; // Default to 1 serving
+                    // Get servings from the quantity input
+                    const servings = parseFloat(document.getElementById('recipeQuantity')?.value) || 1;
                     const selectedMealType = document.getElementById('mealTypeSelector')?.value || 'Lunch';
                     
                     const nutrition = recipe.total_per_serving;
@@ -1704,8 +1754,9 @@
                     
                     showSuccessMessage(`Added ${recipe.name} to ${selectedMealType}!`);
                     
-                    // Reset the search
+                    // Reset the search and quantity
                     document.getElementById('recipeSearchBox').value = '';
+                    document.getElementById('recipeQuantity').value = '1';
                     document.getElementById('selectedRecipeActions').classList.add('hidden');
                     recipeSearchSelected = null;
                 }
@@ -4056,6 +4107,130 @@
                     </div>
                 </div>
             `).join('');
+        }
+
+        // --- Recipe Ingredient Search Functions ---
+        let selectedRecipeIngredient = null;
+        
+        function filterRecipeIngredients() {
+            const input = document.getElementById('recipeIngredientSearch');
+            const dropdown = document.getElementById('recipeIngredientDropdown');
+            const query = input.value.trim().toLowerCase();
+            
+            selectedRecipeIngredient = null;
+            
+            if (!query) {
+                dropdown.classList.add('hidden');
+                return;
+            }
+            
+            if (!rawIngredients || Object.keys(rawIngredients).length === 0) {
+                dropdown.innerHTML = '<div class="px-3 py-2 text-gray-500">Loading ingredients...</div>';
+                dropdown.classList.remove('hidden');
+                return;
+            }
+            
+            // Search through all ingredients
+            const matches = [];
+            Object.entries(rawIngredients).forEach(([category, items]) => {
+                Object.entries(items).forEach(([key, item]) => {
+                    if (item.name.toLowerCase().includes(query)) {
+                        matches.push({
+                            key: `${category}.${key}`,
+                            name: item.name,
+                            category: category,
+                            ingredient: item
+                        });
+                    }
+                });
+            });
+            
+            if (matches.length === 0) {
+                dropdown.innerHTML = '<div class="px-3 py-2 text-gray-500">No ingredients found</div>';
+                dropdown.classList.remove('hidden');
+                return;
+            }
+            
+            dropdown.innerHTML = matches.map(match => 
+                `<div class='px-3 py-2 hover:bg-blue-100 cursor-pointer' onclick='selectRecipeIngredient("${match.key}", "${match.name.replace(/"/g, "&quot;")}", "${match.category}")'>${match.name}</div>`
+            ).join('');
+            dropdown.classList.remove('hidden');
+        }
+        
+        function selectRecipeIngredient(ingredientKey, ingredientName, category) {
+            const [cat, key] = ingredientKey.split('.');
+            selectedRecipeIngredient = {
+                key: ingredientKey,
+                name: ingredientName,
+                category: cat,
+                ingredient: rawIngredients[cat][key]
+            };
+            
+            // Update UI
+            document.getElementById('recipeIngredientSearch').value = ingredientName;
+            document.getElementById('recipeIngredientDropdown').classList.add('hidden');
+            document.getElementById('selectedRecipeIngredientDisplay').classList.remove('hidden');
+            document.getElementById('selectedRecipeIngredientName').textContent = ingredientName;
+            
+            // Populate measurements
+            const measurementSelect = document.getElementById('recipeIngredientMeasurement');
+            let options = '<option value="">Select measurement...</option>';
+            Object.entries(selectedRecipeIngredient.ingredient.measurements).forEach(([measurementKey, nutrition]) => {
+                const displayName = measurementKey.replace(/_/g, ' ').replace(/(\d+)/, '$1 ');
+                options += `<option value="${measurementKey}">${displayName}</option>`;
+            });
+            measurementSelect.innerHTML = options;
+            
+            // Show measurement section
+            document.getElementById('recipeIngredientMeasurementSection').classList.remove('hidden');
+            document.getElementById('recipeIngredientQuantity').value = '1';
+        }
+        
+        function clearRecipeIngredientSelection() {
+            selectedRecipeIngredient = null;
+            document.getElementById('recipeIngredientSearch').value = '';
+            document.getElementById('selectedRecipeIngredientDisplay').classList.add('hidden');
+            document.getElementById('recipeIngredientMeasurementSection').classList.add('hidden');
+            document.getElementById('recipeIngredientDropdown').classList.add('hidden');
+        }
+        
+        function addRecipeIngredientFromSearch() {
+            if (!selectedRecipeIngredient) {
+                alert('Please select an ingredient');
+                return;
+            }
+            
+            const measurementSelect = document.getElementById('recipeIngredientMeasurement');
+            const quantityInput = document.getElementById('recipeIngredientQuantity');
+            
+            if (!measurementSelect.value) {
+                alert('Please select a measurement');
+                return;
+            }
+            
+            const quantity = parseFloat(quantityInput.value);
+            const measurement = selectedRecipeIngredient.ingredient.measurements[measurementSelect.value];
+            
+            const ingredientEntry = {
+                key: selectedRecipeIngredient.key,
+                name: selectedRecipeIngredient.name,
+                amount: `${quantity}x ${measurementSelect.options[measurementSelect.selectedIndex].text}`,
+                nutrition: {
+                    calories: measurement.calories * quantity,
+                    protein: measurement.protein * quantity,
+                    carbs: measurement.carbs * quantity,
+                    fat: measurement.fat * quantity,
+                    fiber: measurement.fiber * quantity
+                }
+            };
+            
+            currentRecipeIngredients.push(ingredientEntry);
+            
+            // Clear and reset
+            clearRecipeIngredientSelection();
+            updateRecipePreview();
+            
+            showSuccessMessage(`Added ${selectedRecipeIngredient.name} to recipe!`);
         }
 
         function populateIngredientSelect() {
