@@ -76,7 +76,7 @@
             <h1 class="text-4xl font-bold text-gray-800 mb-2">🍛 Indian Food Diary</h1>
             <p class="text-lg text-gray-600">Volume-Based Tracking - Cups, Tablespoons & More!</p>
             
-            <!-- Date Navigation -->
+            <!-- Date Navigation & Meal Type -->
             <div class="bg-white rounded-lg shadow-lg p-4 mt-4 mb-4">
                 <div class="flex items-center justify-center space-x-4 mb-3">
                     <button onclick="navigateDate(-1)" class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded-lg transition duration-200">
@@ -90,13 +90,15 @@
                         Next Day →
                     </button>
                 </div>
-                <div class="flex justify-center space-x-2">
-                    <button onclick="goToToday()" class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded text-sm transition duration-200">
-                        Today
-                    </button>
-                    <button onclick="goToYesterday()" class="bg-gray-400 hover:bg-gray-500 text-white px-3 py-1 rounded text-sm transition duration-200">
-                        Yesterday
-                    </button>
+                <div class="flex justify-center items-center gap-4">
+                    <div class="flex space-x-2">
+                        <button onclick="goToToday()" class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded text-sm transition duration-200">
+                            Today
+                        </button>
+                        <button onclick="goToYesterday()" class="bg-gray-400 hover:bg-gray-500 text-white px-3 py-1 rounded text-sm transition duration-200">
+                            Yesterday
+                        </button>
+                    </div>
                 </div>
             </div>
             
@@ -875,7 +877,7 @@
                             <option value="Morning Snack">🥨 Morning Snack</option>
                             <option value="Lunch" selected>🍽️ Lunch</option>
                             <option value="Evening Snack">🍪 Evening Snack</option>
-                            <option value="Dessert">🍪 Dessert</option>
+                            <option value="Dessert">🍰 Dessert</option>
                             <option value="Dinner">🌙 Dinner</option>
                         </select>
                         <button onclick="setTimeBasedMealType()" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm transition duration-200" title="Auto-select based on current time">
@@ -7195,8 +7197,6 @@
                 // Populate quick dishes in modal
                 populateQuickDishesInModal();
             }
-            // Auto-select meal type based on current time
-            setTimeBasedMealType();
         }
 
         function closeUnifiedAddModal() {
