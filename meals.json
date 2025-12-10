@@ -2192,21 +2192,6 @@
       "date": "2025-12-10"
     },
     {
-      "id": 1765403579878,
-      "description": "Chole Homemade (1 serving)",
-      "timestamp": "2025-12-10T21:52:59.000Z",
-      "nutrition": {
-        "calories": 307,
-        "protein": 14.2,
-        "carbs": 44.9,
-        "fat": 8.6,
-        "fiber": 8.8
-      },
-      "source": "database",
-      "mealType": "Lunch",
-      "date": "2025-12-10"
-    },
-    {
       "id": 1765404187756,
       "description": "Brocolli Sabji (0.33 servings)",
       "timestamp": "2025-12-10T22:03:07.000Z",
