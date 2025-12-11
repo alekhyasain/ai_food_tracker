@@ -2525,6 +2525,42 @@
       "source": "database",
       "mealType": "Breakfast",
       "date": "2025-12-11"
+    },
+    {
+      "id": 1765493121389,
+      "description": "Brown egg (1x 1 large)",
+      "timestamp": "2025-12-11T22:45:21.000Z",
+      "nutrition": {
+        "calories": 70,
+        "protein": 6,
+        "carbs": 0,
+        "fat": 5,
+        "fiber": 0
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Breakfast",
+      "ingredient_data": {
+        "category": "other",
+        "key": "brown_egg",
+        "measurement": "1_large",
+        "quantity": 1
+      },
+      "date": "2025-12-11"
+    },
+    {
+      "id": 1765493130648,
+      "description": "Apple Chia Pudding (1 serving)",
+      "timestamp": "2025-12-11T22:45:30.000Z",
+      "nutrition": {
+        "calories": 183,
+        "protein": 5.5,
+        "carbs": 27.8,
+        "fat": 6.8,
+        "fiber": 6.1
+      },
+      "source": "database",
+      "mealType": "Morning Snack",
+      "date": "2025-12-11"
     }
   ]
 }
