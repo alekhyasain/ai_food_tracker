@@ -2307,6 +2307,21 @@
       "source": "custom",
       "mealType": "Dinner",
       "date": "2025-12-10"
+    },
+    {
+      "id": 1765492066147,
+      "description": "Pear and spring mix salad with sweet vinaegrette",
+      "timestamp": "2025-12-10T22:27:46.000Z",
+      "nutrition": {
+        "calories": 100,
+        "protein": 4,
+        "carbs": 14,
+        "fat": 3,
+        "fiber": 2
+      },
+      "source": "custom",
+      "mealType": "Dinner",
+      "date": "2025-12-10"
     }
   ]
 }
