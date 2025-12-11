@@ -2250,6 +2250,62 @@
       "source": "database",
       "mealType": "Evening Snack",
       "date": "2025-12-10"
+    },
+    {
+      "id": 1765491577585,
+      "description": "Protein bhujia (0.5x 1 serving)",
+      "timestamp": "2025-12-10T22:19:37.000Z",
+      "nutrition": {
+        "calories": 57,
+        "protein": 1.9,
+        "carbs": 8,
+        "fat": 1.9,
+        "fiber": 2.3
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Evening Snack",
+      "ingredient_data": {
+        "category": "other",
+        "key": "protein_bhujia",
+        "measurement": "1_serving",
+        "quantity": 0.5
+      },
+      "date": "2025-12-10"
+    },
+    {
+      "id": 1765491583747,
+      "description": "Low fat dahi (0.25x 1 cup)",
+      "timestamp": "2025-12-10T22:19:43.000Z",
+      "nutrition": {
+        "calories": 28,
+        "protein": 2,
+        "carbs": 2.8,
+        "fat": 1,
+        "fiber": 0
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Evening Snack",
+      "ingredient_data": {
+        "category": "other",
+        "key": "low_fat_dahi",
+        "measurement": "1_cup",
+        "quantity": 0.25
+      },
+      "date": "2025-12-10"
+    },
+    {
+      "id": 1765491622311,
+      "description": "1/2 cup spring mix and pear salad (w/ oil & sweet vinaigrette)",
+      "timestamp": "2025-12-10T22:20:22.000Z",
+      "nutrition": {
+        "calories": 70,
+        "protein": 3,
+        "carbs": 10,
+        "fat": 2,
+        "fiber": 1
+      },
+      "source": "custom",
+      "date": "2025-12-10"
     }
   ]
 }
