@@ -2772,21 +2772,6 @@
       "date": "2025-12-12"
     },
     {
-      "id": 1765736565601,
-      "description": "Restaurant Kandi Podi Idli",
-      "timestamp": "2025-12-12T18:22:45.000Z",
-      "nutrition": {
-        "calories": 700,
-        "protein": 26,
-        "carbs": 96,
-        "fat": 23,
-        "fiber": 14
-      },
-      "source": "custom",
-      "mealType": "Lunch",
-      "date": "2025-12-12"
-    },
-    {
       "id": 1765736573568,
       "description": "Sambar and chutnies",
       "timestamp": "2025-12-12T18:22:53.000Z",
