@@ -2383,6 +2383,44 @@
         "fat": 2.7,
         "fiber": 1.7
       }
+    },
+    "homemade_oat_milk_mocha": {
+      "name": "Homemade oat milk mocha",
+      "category": "other",
+      "servings": 1,
+      "ingredients": [
+        {
+          "key": "other.oat_milk",
+          "name": "Oat milk",
+          "amount": "0.75x 1 cup",
+          "nutrition": {
+            "calories": 82.5,
+            "protein": 1.5,
+            "carbs": 9.75,
+            "fat": 3.75,
+            "fiber": 0.75
+          }
+        },
+        {
+          "key": "spices_seasonings.sugar",
+          "name": "Sugar",
+          "amount": "1.5x 1 tsp",
+          "nutrition": {
+            "calories": 24,
+            "protein": 0,
+            "carbs": 6.300000000000001,
+            "fat": 0,
+            "fiber": 0
+          }
+        }
+      ],
+      "total_per_serving": {
+        "calories": 107,
+        "protein": 1.5,
+        "carbs": 16.1,
+        "fat": 3.8,
+        "fiber": 0.8
+      }
     }
   },
   "ingredients_database": {
