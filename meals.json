@@ -2666,6 +2666,21 @@
       "source": "custom",
       "mealType": "Dessert",
       "date": "2025-12-11"
+    },
+    {
+      "id": 1765755020515,
+      "description": "Millet Khichdi (0.8 servings)",
+      "timestamp": "2025-12-11T23:30:20.000Z",
+      "nutrition": {
+        "calories": 314,
+        "protein": 10.6,
+        "carbs": 46.6,
+        "fat": 26.7,
+        "fiber": 7.4
+      },
+      "source": "database",
+      "mealType": "Dinner",
+      "date": "2025-12-11"
     }
   ],
   "2025-12-12": [
