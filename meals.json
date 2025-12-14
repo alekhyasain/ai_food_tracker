@@ -2653,6 +2653,21 @@
       "source": "database",
       "mealType": "Breakfast",
       "date": "2025-12-12"
+    },
+    {
+      "id": 1765735889417,
+      "description": "Coriander Chutney (1 serving)",
+      "timestamp": "2025-12-12T18:11:29.000Z",
+      "nutrition": {
+        "calories": 41,
+        "protein": 1.6,
+        "carbs": 6.2,
+        "fat": 2.1,
+        "fiber": 2.2
+      },
+      "source": "database",
+      "mealType": "Breakfast",
+      "date": "2025-12-12"
     }
   ]
 }
