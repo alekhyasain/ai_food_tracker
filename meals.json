@@ -2668,6 +2668,63 @@
       "source": "database",
       "mealType": "Breakfast",
       "date": "2025-12-12"
+    },
+    {
+      "id": 1765735895533,
+      "description": "Brown egg (1x 1 large)",
+      "timestamp": "2025-12-12T18:11:35.000Z",
+      "nutrition": {
+        "calories": 70,
+        "protein": 6,
+        "carbs": 0,
+        "fat": 5,
+        "fiber": 0
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Breakfast",
+      "ingredient_data": {
+        "category": "other",
+        "key": "brown_egg",
+        "measurement": "1_large",
+        "quantity": 1
+      },
+      "date": "2025-12-12"
+    },
+    {
+      "id": 1765735902687,
+      "description": "Costco roasted mixed nuts (1x 1 tbsp)",
+      "timestamp": "2025-12-12T18:11:42.000Z",
+      "nutrition": {
+        "calories": 45,
+        "protein": 1.3,
+        "carbs": 1.8,
+        "fat": 4,
+        "fiber": 0.5
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Morning Snack",
+      "ingredient_data": {
+        "category": "other",
+        "key": "costco_roasted_mixed_nuts",
+        "measurement": "1_tbsp",
+        "quantity": 1
+      },
+      "date": "2025-12-12"
+    },
+    {
+      "id": 1765735917179,
+      "description": "Oat milk coffee (1 serving)",
+      "timestamp": "2025-12-12T18:11:57.000Z",
+      "nutrition": {
+        "calories": 68,
+        "protein": 1,
+        "carbs": 9.9,
+        "fat": 2.5,
+        "fiber": 0.5
+      },
+      "source": "database",
+      "mealType": "Morning Snack",
+      "date": "2025-12-12"
     }
   ]
 }
