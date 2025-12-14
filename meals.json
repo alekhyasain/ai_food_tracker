@@ -2785,6 +2785,21 @@
       "source": "custom",
       "mealType": "Lunch",
       "date": "2025-12-12"
+    },
+    {
+      "id": 1765736573568,
+      "description": "Sambar and chutnies",
+      "timestamp": "2025-12-12T18:22:53.000Z",
+      "nutrition": {
+        "calories": 100,
+        "protein": 4,
+        "carbs": 14,
+        "fat": 3,
+        "fiber": 2
+      },
+      "source": "custom",
+      "mealType": "Lunch",
+      "date": "2025-12-12"
     }
   ]
 }
