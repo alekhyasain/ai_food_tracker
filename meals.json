@@ -2725,6 +2725,21 @@
       "source": "database",
       "mealType": "Morning Snack",
       "date": "2025-12-12"
+    },
+    {
+      "id": 1765736378737,
+      "description": "Restaurant Paneer tikka dosa",
+      "timestamp": "2025-12-12T18:19:38.000Z",
+      "nutrition": {
+        "calories": 900,
+        "protein": 34,
+        "carbs": 124,
+        "fat": 30,
+        "fiber": 18
+      },
+      "source": "custom",
+      "mealType": "Lunch",
+      "date": "2025-12-12"
     }
   ]
 }
