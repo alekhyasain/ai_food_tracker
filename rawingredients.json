@@ -158,6 +158,18 @@
             "fiber": 0
           }
         }
+      },
+      "roasted_upma_rava_mix_whole_grain": {
+        "name": "Roasted upma rava mix whole grain",
+        "measurements": {
+          "1_cup": {
+            "calories": 480,
+            "protein": 12,
+            "carbs": 108,
+            "fat": 0,
+            "fiber": 4
+          }
+        }
       }
     },
     "dals_legumes": {
