@@ -2412,14 +2412,26 @@
             "fat": 0,
             "fiber": 0
           }
+        },
+        {
+          "key": "spices_seasonings.cocoa_powder_unsweetned",
+          "name": "Cocoa powder unsweetned",
+          "amount": "0.5x 1 tbsp",
+          "nutrition": {
+            "calories": 6,
+            "protein": 0.5,
+            "carbs": 1.5,
+            "fat": 0.35,
+            "fiber": 1
+          }
         }
       ],
       "total_per_serving": {
-        "calories": 107,
-        "protein": 1.5,
-        "carbs": 16.1,
-        "fat": 3.8,
-        "fiber": 0.8
+        "calories": 113,
+        "protein": 2,
+        "carbs": 17.6,
+        "fat": 4.1,
+        "fiber": 1.8
       }
     }
   },
