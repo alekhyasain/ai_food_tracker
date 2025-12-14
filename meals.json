@@ -3119,6 +3119,105 @@
       "source": "database",
       "mealType": "Breakfast",
       "date": "2025-12-14"
+    },
+    {
+      "id": 1765755592635,
+      "description": "Brown egg (1x 1 large)",
+      "timestamp": "2025-12-14T23:39:52.000Z",
+      "nutrition": {
+        "calories": 70,
+        "protein": 6,
+        "carbs": 0,
+        "fat": 5,
+        "fiber": 0
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Breakfast",
+      "ingredient_data": {
+        "category": "other",
+        "key": "brown_egg",
+        "measurement": "1_large",
+        "quantity": 1
+      },
+      "date": "2025-12-14"
+    },
+    {
+      "id": 1765755600117,
+      "description": "Costco roasted mixed nuts (1x 1 tbsp)",
+      "timestamp": "2025-12-14T23:40:00.000Z",
+      "nutrition": {
+        "calories": 45,
+        "protein": 1.3,
+        "carbs": 1.8,
+        "fat": 4,
+        "fiber": 0.5
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Morning Snack",
+      "ingredient_data": {
+        "category": "other",
+        "key": "costco_roasted_mixed_nuts",
+        "measurement": "1_tbsp",
+        "quantity": 1
+      },
+      "date": "2025-12-14"
+    },
+    {
+      "id": 1765755672916,
+      "description": "1 persimmon (0.5x 1 medium)",
+      "timestamp": "2025-12-14T23:41:12.000Z",
+      "nutrition": {
+        "calories": 60,
+        "protein": 0.5,
+        "carbs": 15,
+        "fat": 0,
+        "fiber": 3
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Morning Snack",
+      "ingredient_data": {
+        "category": "fruits",
+        "key": "1_persimmon",
+        "measurement": "1_medium",
+        "quantity": 0.5
+      },
+      "date": "2025-12-14"
+    },
+    {
+      "id": 1765755684166,
+      "description": "Dragon fruit (0.33x 1 large)",
+      "timestamp": "2025-12-14T23:41:24.000Z",
+      "nutrition": {
+        "calories": 20,
+        "protein": 0.3,
+        "carbs": 4.3,
+        "fat": 1,
+        "fiber": 1
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Morning Snack",
+      "ingredient_data": {
+        "category": "fruits",
+        "key": "dragon_fruit",
+        "measurement": "1_large",
+        "quantity": 0.33
+      },
+      "date": "2025-12-14"
+    },
+    {
+      "id": 1765755694312,
+      "description": "Pav Bhaji (1 serving)",
+      "timestamp": "2025-12-14T23:41:34.000Z",
+      "nutrition": {
+        "calories": 106,
+        "protein": 3,
+        "carbs": 19.3,
+        "fat": 2.6,
+        "fiber": 3.5
+      },
+      "source": "database",
+      "mealType": "Lunch",
+      "date": "2025-12-14"
     }
   ]
 }
