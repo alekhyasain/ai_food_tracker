@@ -1158,6 +1158,18 @@
             "fiber": 4
           }
         }
+      },
+      "dragon_fruit": {
+        "name": "Dragon fruit",
+        "measurements": {
+          "1_large": {
+            "calories": 60,
+            "protein": 1,
+            "carbs": 13,
+            "fat": 3,
+            "fiber": 3
+          }
+        }
       }
     },
     "other": {
