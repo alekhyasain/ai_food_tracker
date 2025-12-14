@@ -2817,6 +2817,63 @@
       "source": "database",
       "mealType": "Breakfast",
       "date": "2025-12-13"
+    },
+    {
+      "id": 1765739949881,
+      "description": "Brown egg (1x 1 large)",
+      "timestamp": "2025-12-13T19:19:09.000Z",
+      "nutrition": {
+        "calories": 70,
+        "protein": 6,
+        "carbs": 0,
+        "fat": 5,
+        "fiber": 0
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Breakfast",
+      "ingredient_data": {
+        "category": "other",
+        "key": "brown_egg",
+        "measurement": "1_large",
+        "quantity": 1
+      },
+      "date": "2025-12-13"
+    },
+    {
+      "id": 1765739970789,
+      "description": "Costco roasted mixed nuts (1x 1 tbsp)",
+      "timestamp": "2025-12-13T19:19:30.000Z",
+      "nutrition": {
+        "calories": 45,
+        "protein": 1.3,
+        "carbs": 1.8,
+        "fat": 4,
+        "fiber": 0.5
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Morning Snack",
+      "ingredient_data": {
+        "category": "other",
+        "key": "costco_roasted_mixed_nuts",
+        "measurement": "1_tbsp",
+        "quantity": 1
+      },
+      "date": "2025-12-13"
+    },
+    {
+      "id": 1765739981702,
+      "description": "Berry smoothie (1 serving)",
+      "timestamp": "2025-12-13T19:19:41.000Z",
+      "nutrition": {
+        "calories": 132,
+        "protein": 4.1,
+        "carbs": 25,
+        "fat": 2.6,
+        "fiber": 4.3
+      },
+      "source": "database",
+      "mealType": "Morning Snack",
+      "date": "2025-12-13"
     }
   ]
 }
