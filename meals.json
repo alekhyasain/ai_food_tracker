@@ -2979,6 +2979,63 @@
       "source": "custom",
       "mealType": "Dinner",
       "date": "2025-12-13"
+    },
+    {
+      "id": 1765740448069,
+      "description": "Costco roasted mixed nuts (1x 1 tbsp)",
+      "timestamp": "2025-12-13T19:27:28.000Z",
+      "nutrition": {
+        "calories": 45,
+        "protein": 1.3,
+        "carbs": 1.8,
+        "fat": 4,
+        "fiber": 0.5
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Morning Snack",
+      "ingredient_data": {
+        "category": "other",
+        "key": "costco_roasted_mixed_nuts",
+        "measurement": "1_tbsp",
+        "quantity": 1
+      },
+      "date": "2025-12-13"
+    },
+    {
+      "id": 1765742226511,
+      "description": "Masala Makhana (0.5x 1 serving)",
+      "timestamp": "2025-12-13T19:57:06.000Z",
+      "nutrition": {
+        "calories": 70,
+        "protein": 1.2,
+        "carbs": 8.3,
+        "fat": 3.2,
+        "fiber": 1.2
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Evening Snack",
+      "ingredient_data": {
+        "category": "other",
+        "key": "masala_makhana",
+        "measurement": "1_serving",
+        "quantity": 0.5
+      },
+      "date": "2025-12-13"
+    },
+    {
+      "id": 1765742253540,
+      "description": "Oat milk coffee (1 serving)",
+      "timestamp": "2025-12-13T19:57:33.000Z",
+      "nutrition": {
+        "calories": 68,
+        "protein": 1,
+        "carbs": 9.9,
+        "fat": 2.5,
+        "fiber": 0.5
+      },
+      "source": "database",
+      "mealType": "Morning Snack",
+      "date": "2025-12-13"
     }
   ]
 }
