@@ -2581,6 +2581,68 @@
         "fat": 2.6,
         "fiber": 3.5
       }
+    },
+    "spring_mix_salad": {
+      "name": "Spring mix salad",
+      "category": "other",
+      "servings": 2,
+      "ingredients": [
+        {
+          "key": "vegetables.spring_mix",
+          "name": "spring mix",
+          "amount": "0.33x 1 box",
+          "nutrition": {
+            "calories": 11.55,
+            "protein": 0.99,
+            "carbs": 1.6500000000000001,
+            "fat": 0,
+            "fiber": 0.66
+          }
+        },
+        {
+          "key": "vegetables.cherry_tomato",
+          "name": "Cherry tomato",
+          "amount": "16x 1",
+          "nutrition": {
+            "calories": 32,
+            "protein": 0.8,
+            "carbs": 4.8,
+            "fat": 0.16,
+            "fiber": 1.6
+          }
+        },
+        {
+          "key": "vegetables.cucumber",
+          "name": "Cucumber",
+          "amount": "0.33x 1 large",
+          "nutrition": {
+            "calories": 11.22,
+            "protein": 0.5445,
+            "carbs": 1.98,
+            "fat": 0.14850000000000002,
+            "fiber": 0.6468
+          }
+        },
+        {
+          "key": "oils_fats.olive_oil",
+          "name": "Olive oil",
+          "amount": "1.5x 1 tsp",
+          "nutrition": {
+            "calories": 60,
+            "protein": 0,
+            "carbs": 0,
+            "fat": 6.75,
+            "fiber": 0
+          }
+        }
+      ],
+      "total_per_serving": {
+        "calories": 57,
+        "protein": 1.2,
+        "carbs": 4.2,
+        "fat": 3.5,
+        "fiber": 1.5
+      }
     }
   },
   "ingredients_database": {
