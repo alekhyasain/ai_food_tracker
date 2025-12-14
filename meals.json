@@ -2919,6 +2919,21 @@
       "source": "database",
       "mealType": "Lunch",
       "date": "2025-12-13"
+    },
+    {
+      "id": 1765740359711,
+      "description": "Brocolli Sabji (0.3 servings)",
+      "timestamp": "2025-12-13T19:25:59.000Z",
+      "nutrition": {
+        "calories": 22,
+        "protein": 1,
+        "carbs": 2.1,
+        "fat": 1.3,
+        "fiber": 0.8
+      },
+      "source": "database",
+      "mealType": "Lunch",
+      "date": "2025-12-13"
     }
   ]
 }
