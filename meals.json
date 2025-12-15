@@ -3329,6 +3329,63 @@
       "source": "custom",
       "mealType": "Dinner",
       "date": "2025-12-14"
+    },
+    {
+      "id": 1765778152623,
+      "description": "White Rice (0.167x 1 cup uncooked)",
+      "timestamp": "2025-12-14T05:55:52.000Z",
+      "nutrition": {
+        "calories": 117,
+        "protein": 2.2,
+        "carbs": 25.8,
+        "fat": 0.2,
+        "fiber": 0.7
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Evening Snack",
+      "ingredient_data": {
+        "category": "grains",
+        "key": "white_rice",
+        "measurement": "1_cup_uncooked",
+        "quantity": 0.167
+      },
+      "date": "2025-12-14"
+    },
+    {
+      "id": 1765778166076,
+      "description": "White Rice (0.167x 1 cup uncooked)",
+      "timestamp": "2025-12-14T05:56:06.000Z",
+      "nutrition": {
+        "calories": 117,
+        "protein": 2.2,
+        "carbs": 25.8,
+        "fat": 0.2,
+        "fiber": 0.7
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Dinner",
+      "ingredient_data": {
+        "category": "grains",
+        "key": "white_rice",
+        "measurement": "1_cup_uncooked",
+        "quantity": 0.167
+      },
+      "date": "2025-12-14"
+    },
+    {
+      "id": 1765778181505,
+      "description": "Whole grain rava upma (0.33 servings)",
+      "timestamp": "2025-12-14T05:56:21.000Z",
+      "nutrition": {
+        "calories": 104,
+        "protein": 2.4,
+        "carbs": 17.1,
+        "fat": 2.9,
+        "fiber": 1
+      },
+      "source": "database",
+      "mealType": "Dinner",
+      "date": "2025-12-14"
     }
   ]
 }
