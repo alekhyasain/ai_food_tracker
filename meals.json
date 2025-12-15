@@ -3299,6 +3299,21 @@
       "source": "custom",
       "mealType": "Evening Snack",
       "date": "2025-12-14"
+    },
+    {
+      "id": 1765778111427,
+      "description": "Aloo Vepudu",
+      "timestamp": "2025-12-14T05:55:11.000Z",
+      "nutrition": {
+        "calories": 100,
+        "protein": 4,
+        "carbs": 14,
+        "fat": 3,
+        "fiber": 2
+      },
+      "source": "custom",
+      "mealType": "Dinner",
+      "date": "2025-12-14"
     }
   ]
 }
