@@ -3284,6 +3284,21 @@
       "source": "custom",
       "mealType": "Evening Snack",
       "date": "2025-12-14"
+    },
+    {
+      "id": 1765778031661,
+      "description": "Ghee Idli with Chutney",
+      "timestamp": "2025-12-14T05:53:51.000Z",
+      "nutrition": {
+        "calories": 200,
+        "protein": 8,
+        "carbs": 28,
+        "fat": 7,
+        "fiber": 4
+      },
+      "source": "custom",
+      "mealType": "Evening Snack",
+      "date": "2025-12-14"
     }
   ]
 }
