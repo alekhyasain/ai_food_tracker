@@ -3610,6 +3610,21 @@
       "source": "database",
       "mealType": "Evening Snack",
       "date": "2025-12-15"
+    },
+    {
+      "id": 1765905711910,
+      "description": "1 fry and 1/5th roti",
+      "timestamp": "2025-12-15T17:21:51.000Z",
+      "nutrition": {
+        "calories": 45,
+        "protein": 2,
+        "carbs": 6,
+        "fat": 2,
+        "fiber": 1
+      },
+      "source": "custom",
+      "mealType": "Evening Snack",
+      "date": "2025-12-15"
     }
   ]
 }
