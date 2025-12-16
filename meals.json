@@ -3565,6 +3565,21 @@
       "source": "database",
       "mealType": "Evening Snack",
       "date": "2025-12-15"
+    },
+    {
+      "id": 1765847558888,
+      "description": "Espresso",
+      "timestamp": "2025-12-15T01:12:38.000Z",
+      "nutrition": {
+        "calories": 15,
+        "protein": 1,
+        "carbs": 2,
+        "fat": 1,
+        "fiber": 0
+      },
+      "source": "custom",
+      "mealType": "Evening Snack",
+      "date": "2025-12-15"
     }
   ]
 }
