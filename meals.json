@@ -3640,6 +3640,44 @@
       "source": "database",
       "mealType": "Dinner",
       "date": "2025-12-15"
+    },
+    {
+      "id": 1765905738410,
+      "description": "Orgain vegan protein powder (0.6x 1 serving)",
+      "timestamp": "2025-12-15T17:22:18.000Z",
+      "nutrition": {
+        "calories": 96,
+        "protein": 12.6,
+        "carbs": 12,
+        "fat": 2.7,
+        "fiber": 4.8
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Evening Snack",
+      "ingredient_data": {
+        "category": "other",
+        "key": "orgain_vegan_protein_powder",
+        "measurement": "1_serving",
+        "quantity": 0.6
+      },
+      "date": "2025-12-15"
+    }
+  ],
+  "2025-12-16": [
+    {
+      "id": 1765905771201,
+      "description": "Dosa (1.5 servings)",
+      "timestamp": "2025-12-16T17:22:51.000Z",
+      "nutrition": {
+        "calories": 315,
+        "protein": 8.4,
+        "carbs": 59,
+        "fat": 4.4,
+        "fiber": 5.6
+      },
+      "source": "database",
+      "mealType": "Breakfast",
+      "date": "2025-12-16"
     }
   ]
 }
