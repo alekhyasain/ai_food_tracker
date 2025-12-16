@@ -3475,6 +3475,21 @@
       "source": "database",
       "mealType": "Breakfast",
       "date": "2025-12-15"
+    },
+    {
+      "id": 1765847515208,
+      "description": "Unsweetened oat milk coffee (1 serving)",
+      "timestamp": "2025-12-15T01:11:55.000Z",
+      "nutrition": {
+        "calories": 41,
+        "protein": 0.5,
+        "carbs": 6.4,
+        "fat": 1,
+        "fiber": 0.3
+      },
+      "source": "database",
+      "mealType": "Morning Snack",
+      "date": "2025-12-15"
     }
   ]
 }
