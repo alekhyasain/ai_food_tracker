@@ -3789,6 +3789,42 @@
       "source": "custom",
       "mealType": "Evening Snack",
       "date": "2025-12-16"
+    },
+    {
+      "id": 1765998230552,
+      "description": "Whole wheat bread oroweat (1.75x 1 slice)",
+      "timestamp": "2025-12-16T19:03:50.000Z",
+      "nutrition": {
+        "calories": 193,
+        "protein": 7,
+        "carbs": 36.8,
+        "fat": 3.5,
+        "fiber": 5.3
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Dinner",
+      "ingredient_data": {
+        "category": "grains",
+        "key": "whole_wheat_bread_oroweat",
+        "measurement": "1_slice",
+        "quantity": 1.75
+      },
+      "date": "2025-12-16"
+    },
+    {
+      "id": 1765998239888,
+      "description": "Avyaan Veggie Roti (0.5 servings)",
+      "timestamp": "2025-12-16T19:03:59.000Z",
+      "nutrition": {
+        "calories": 109,
+        "protein": 1.6,
+        "carbs": 8.7,
+        "fat": 7.2,
+        "fiber": 1.7
+      },
+      "source": "database",
+      "mealType": "Dinner",
+      "date": "2025-12-16"
     }
   ]
 }
