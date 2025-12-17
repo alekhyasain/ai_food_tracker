@@ -2717,6 +2717,92 @@
         "fat": 8.9,
         "fiber": 3.1
       }
+    },
+    "avyaan_veggie_roti": {
+      "name": "Avyaan Veggie Roti",
+      "category": "other",
+      "servings": 10,
+      "ingredients": [
+        {
+          "key": "grains.aashirvaad_multigrain_atta",
+          "name": "Aashirvaad Multigrain atta",
+          "amount": "1.75x 1 cup",
+          "nutrition": {
+            "calories": 665,
+            "protein": 24.5,
+            "carbs": 127.75,
+            "fat": 3.5,
+            "fiber": 28
+          }
+        },
+        {
+          "key": "vegetables.potato",
+          "name": "Potato",
+          "amount": "1x 1 medium",
+          "nutrition": {
+            "calories": 161,
+            "protein": 4.3,
+            "carbs": 37,
+            "fat": 0.2,
+            "fiber": 3.8
+          }
+        },
+        {
+          "key": "vegetables.frozen_carrots_and_peas",
+          "name": "Frozen Carrots and Peas",
+          "amount": "0.5x 1 cup",
+          "nutrition": {
+            "calories": 37.5,
+            "protein": 2.25,
+            "carbs": 7.5,
+            "fat": 0,
+            "fiber": 2.25
+          }
+        },
+        {
+          "key": "vegetables.spinach",
+          "name": "Spinach",
+          "amount": "0.33x 1 cup fresh",
+          "nutrition": {
+            "calories": 2.31,
+            "protein": 0.29700000000000004,
+            "carbs": 0.36300000000000004,
+            "fat": 0.033,
+            "fiber": 0.23099999999999998
+          }
+        },
+        {
+          "key": "oils_fats.ghee",
+          "name": "Ghee",
+          "amount": "10x 1 tsp",
+          "nutrition": {
+            "calories": 500,
+            "protein": 0,
+            "carbs": 0,
+            "fat": 50,
+            "fiber": 0
+          }
+        },
+        {
+          "key": "oils_fats.olive_oil",
+          "name": "Olive oil",
+          "amount": "20x 1 tsp",
+          "nutrition": {
+            "calories": 800,
+            "protein": 0,
+            "carbs": 0,
+            "fat": 90,
+            "fiber": 0
+          }
+        }
+      ],
+      "total_per_serving": {
+        "calories": 217,
+        "protein": 3.1,
+        "carbs": 17.3,
+        "fat": 14.4,
+        "fiber": 3.4
+      }
     }
   },
   "ingredients_database": {
