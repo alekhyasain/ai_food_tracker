@@ -182,6 +182,18 @@
             "fiber": 3
           }
         }
+      },
+      "aashirvaad_multigrain_atta": {
+        "name": "Aashirvaad Multigrain atta",
+        "measurements": {
+          "1_cup": {
+            "calories": 380,
+            "protein": 14,
+            "carbs": 73,
+            "fat": 2,
+            "fiber": 16
+          }
+        }
       }
     },
     "dals_legumes": {
