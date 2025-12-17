@@ -3759,6 +3759,21 @@
       "source": "custom",
       "mealType": "Lunch",
       "date": "2025-12-16"
+    },
+    {
+      "id": 1765997924209,
+      "description": "2 tbsp raita",
+      "timestamp": "2025-12-16T18:58:44.000Z",
+      "nutrition": {
+        "calories": 45,
+        "protein": 2,
+        "carbs": 6,
+        "fat": 2,
+        "fiber": 1
+      },
+      "source": "custom",
+      "mealType": "Lunch",
+      "date": "2025-12-16"
     }
   ]
 }
