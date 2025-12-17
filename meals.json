@@ -4016,21 +4016,6 @@
       "source": "database",
       "mealType": "Lunch",
       "date": "2025-12-17"
-    },
-    {
-      "id": 1766012478693,
-      "description": "Lauki Sambar (0.8 servings)",
-      "timestamp": "2025-12-17T23:01:18.000Z",
-      "nutrition": {
-        "calories": 102,
-        "protein": 4.6,
-        "carbs": 14.7,
-        "fat": 2.8,
-        "fiber": 3.5
-      },
-      "source": "database",
-      "mealType": "Lunch",
-      "date": "2025-12-17"
     }
   ]
 }
