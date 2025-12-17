@@ -3744,6 +3744,21 @@
       "source": "custom",
       "mealType": "Lunch",
       "date": "2025-12-16"
+    },
+    {
+      "id": 1765997897102,
+      "description": "1/2 plain naan",
+      "timestamp": "2025-12-16T18:58:17.000Z",
+      "nutrition": {
+        "calories": 140,
+        "protein": 5,
+        "carbs": 19,
+        "fat": 5,
+        "fiber": 3
+      },
+      "source": "custom",
+      "mealType": "Lunch",
+      "date": "2025-12-16"
     }
   ]
 }
