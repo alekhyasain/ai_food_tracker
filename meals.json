@@ -4062,5 +4062,127 @@
       "mealType": "Evening Snack",
       "date": "2025-12-17"
     }
+  ],
+  "2025-12-18": [
+    {
+      "id": 1766086424971,
+      "description": "Costco roasted mixed nuts (1x 1 tbsp)",
+      "timestamp": "2025-12-18T19:33:44.000Z",
+      "nutrition": {
+        "calories": 45,
+        "protein": 1.3,
+        "carbs": 1.8,
+        "fat": 4,
+        "fiber": 0.5
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Morning Snack",
+      "ingredient_data": {
+        "category": "other",
+        "key": "costco_roasted_mixed_nuts",
+        "measurement": "1_tbsp",
+        "quantity": 1
+      },
+      "date": "2025-12-18"
+    },
+    {
+      "id": 1766086430082,
+      "description": "Pitted dates nour (1x 1 piece)",
+      "timestamp": "2025-12-18T19:33:50.000Z",
+      "nutrition": {
+        "calories": 24,
+        "protein": 0.2,
+        "carbs": 6,
+        "fat": 0,
+        "fiber": 0.6
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Morning Snack",
+      "ingredient_data": {
+        "category": "other",
+        "key": "pitted_dates_nour",
+        "measurement": "1_piece",
+        "quantity": 1
+      },
+      "date": "2025-12-18"
+    },
+    {
+      "id": 1766086439193,
+      "description": "Orgain vegan protein powder (0.5x 1 serving)",
+      "timestamp": "2025-12-18T19:33:59.000Z",
+      "nutrition": {
+        "calories": 80,
+        "protein": 10.5,
+        "carbs": 10,
+        "fat": 2.3,
+        "fiber": 4
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Morning Snack",
+      "ingredient_data": {
+        "category": "other",
+        "key": "orgain_vegan_protein_powder",
+        "measurement": "1_serving",
+        "quantity": 0.5
+      },
+      "date": "2025-12-18"
+    },
+    {
+      "id": 1766086451305,
+      "description": "Egg (1x 1 medium)",
+      "timestamp": "2025-12-18T19:34:11.000Z",
+      "nutrition": {
+        "calories": 66,
+        "protein": 6,
+        "carbs": 0,
+        "fat": 4,
+        "fiber": 0
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Breakfast",
+      "ingredient_data": {
+        "category": "other",
+        "key": "egg",
+        "measurement": "1_medium",
+        "quantity": 1
+      },
+      "date": "2025-12-18"
+    },
+    {
+      "id": 1766086501077,
+      "description": "Egg white (1x 1)",
+      "timestamp": "2025-12-18T19:35:01.000Z",
+      "nutrition": {
+        "calories": 17,
+        "protein": 3.6,
+        "carbs": 0,
+        "fat": 0,
+        "fiber": 0
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Breakfast",
+      "ingredient_data": {
+        "category": "other",
+        "key": "egg_white",
+        "measurement": "1",
+        "quantity": 1
+      },
+      "date": "2025-12-18"
+    },
+    {
+      "id": 1766086508410,
+      "description": "Dosa (0.75 servings)",
+      "timestamp": "2025-12-18T19:35:08.000Z",
+      "nutrition": {
+        "calories": 158,
+        "protein": 4.2,
+        "carbs": 29.5,
+        "fat": 2.2,
+        "fiber": 2.8
+      },
+      "source": "database",
+      "mealType": "Breakfast",
+      "date": "2025-12-18"
+    }
   ]
 }
