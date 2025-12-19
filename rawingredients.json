@@ -645,6 +645,18 @@
             "fiber": 20
           }
         }
+      },
+      "dondakaya": {
+        "name": "Dondakaya",
+        "measurements": {
+          "1_box": {
+            "calories": 143,
+            "protein": 8.2,
+            "carbs": 24.5,
+            "fat": 1.4,
+            "fiber": 10.9
+          }
+        }
       }
     },
     "spices_seasonings": {
