@@ -4303,6 +4303,21 @@
       "source": "database",
       "mealType": "Evening Snack",
       "date": "2025-12-18"
+    },
+    {
+      "id": 1766182376930,
+      "description": "Bell pepper Salad (1 serving)",
+      "timestamp": "2025-12-18T22:12:56.000Z",
+      "nutrition": {
+        "calories": 38,
+        "protein": 1.2,
+        "carbs": 7.6,
+        "fat": 0.2,
+        "fiber": 1.3
+      },
+      "source": "database",
+      "mealType": "Evening Snack",
+      "date": "2025-12-18"
     }
   ]
 }
