@@ -4449,6 +4449,105 @@
       "source": "database",
       "mealType": "Morning Snack",
       "date": "2025-12-19"
+    },
+    {
+      "id": 1766184168472,
+      "description": "Apple (0.25x 1 medium)",
+      "timestamp": "2025-12-19T22:42:48.000Z",
+      "nutrition": {
+        "calories": 24,
+        "protein": 0.1,
+        "carbs": 6.3,
+        "fat": 0.1,
+        "fiber": 1.1
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Morning Snack",
+      "ingredient_data": {
+        "category": "fruits",
+        "key": "apple",
+        "measurement": "1_medium",
+        "quantity": 0.25
+      },
+      "date": "2025-12-19"
+    },
+    {
+      "id": 1766184175161,
+      "description": "Pear (0.5x 1 medium)",
+      "timestamp": "2025-12-19T22:42:55.000Z",
+      "nutrition": {
+        "calories": 50,
+        "protein": 0.3,
+        "carbs": 13.5,
+        "fat": 0.1,
+        "fiber": 3
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Morning Snack",
+      "ingredient_data": {
+        "category": "fruits",
+        "key": "pear",
+        "measurement": "1_medium",
+        "quantity": 0.5
+      },
+      "date": "2025-12-19"
+    },
+    {
+      "id": 1766184182019,
+      "description": "Greek yogurt low fat (0.5x 1 cup)",
+      "timestamp": "2025-12-19T22:43:02.000Z",
+      "nutrition": {
+        "calories": 93,
+        "protein": 7.3,
+        "carbs": 8.2,
+        "fat": 3.5,
+        "fiber": 0
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Morning Snack",
+      "ingredient_data": {
+        "category": "other",
+        "key": "greek_yogurt_low_fat",
+        "measurement": "1_cup",
+        "quantity": 0.5
+      },
+      "date": "2025-12-19"
+    },
+    {
+      "id": 1766184188238,
+      "description": "Pitted dates nour (2x 1 piece)",
+      "timestamp": "2025-12-19T22:43:08.000Z",
+      "nutrition": {
+        "calories": 48,
+        "protein": 0.4,
+        "carbs": 12,
+        "fat": 0,
+        "fiber": 1.2
+      },
+      "source": "enhanced_ingredient",
+      "mealType": "Morning Snack",
+      "ingredient_data": {
+        "category": "other",
+        "key": "pitted_dates_nour",
+        "measurement": "1_piece",
+        "quantity": 2
+      },
+      "date": "2025-12-19"
+    },
+    {
+      "id": 1766184219431,
+      "description": "Lunch quinoa-rice with dahi (1 serving)",
+      "timestamp": "2025-12-19T22:43:39.000Z",
+      "nutrition": {
+        "calories": 177,
+        "protein": 7.8,
+        "carbs": 28.8,
+        "fat": 3.4,
+        "fiber": 1.7
+      },
+      "source": "database",
+      "mealType": "Lunch",
+      "date": "2025-12-19"
     }
   ]
 }
