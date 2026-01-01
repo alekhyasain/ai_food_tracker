@@ -7,6 +7,8 @@ const { execSync } = require('child_process');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const INGREDIENTS_PATH = path.join(__dirname, 'rawingredients.json');
+const RECIPES_PATH = path.join(__dirname, 'recipes.json');
 
 // Git helper function to commit changes
 async function commitChanges(files, message) {
@@ -39,12 +41,12 @@ app.get('/', (req, res) => {
 // API Routes for ingredient management
 app.get('/api/ingredients', async (req, res) => {
     try {
-        const data = await fs.readFile('rawingredients.json', 'utf8');
+        const data = await fs.readFile(INGREDIENTS_PATH, 'utf8');
         const ingredients = JSON.parse(data);
         res.json(ingredients);
     } catch (error) {
         console.error('Error reading ingredients:', error);
-        res.status(500).json({ error: 'Failed to read ingredients' });
+        res.status(500).json({ error: 'Failed to read ingredients', detail: error.message });
     }
 });
 
@@ -62,7 +64,7 @@ app.post('/api/ingredients', async (req, res) => {
         }
         
         // Read current ingredients
-        const data = await fs.readFile('rawingredients.json', 'utf8');
+        const data = await fs.readFile(INGREDIENTS_PATH, 'utf8');
         const ingredients = JSON.parse(data);
         
         // Ensure category exists
@@ -74,7 +76,7 @@ app.post('/api/ingredients', async (req, res) => {
         ingredients.basic_ingredients[category][ingredientKey] = ingredientData;
         
         // Write back to file
-        await fs.writeFile('rawingredients.json', JSON.stringify(ingredients, null, 2));
+        await fs.writeFile(INGREDIENTS_PATH, JSON.stringify(ingredients, null, 2));
         await commitChanges(['rawingredients.json'], `✏️ Add ingredient: ${ingredientData.name}`);
         
         res.json({ 
@@ -85,7 +87,7 @@ app.post('/api/ingredients', async (req, res) => {
         
     } catch (error) {
         console.error('Error adding ingredient:', error);
-        res.status(500).json({ error: 'Failed to add ingredient' });
+        res.status(500).json({ error: 'Failed to add ingredient', detail: error.message });
     }
 });
 
@@ -100,7 +102,7 @@ app.put('/api/ingredients/:category/:ingredientKey', async (req, res) => {
         }
         
         // Read current ingredients
-        const data = await fs.readFile('rawingredients.json', 'utf8');
+        const data = await fs.readFile(INGREDIENTS_PATH, 'utf8');
         const ingredients = JSON.parse(data);
         
         // Check if ingredient exists
@@ -112,7 +114,7 @@ app.put('/api/ingredients/:category/:ingredientKey', async (req, res) => {
         ingredients.basic_ingredients[category][ingredientKey] = ingredientData;
         
         // Write back to file
-        await fs.writeFile('rawingredients.json', JSON.stringify(ingredients, null, 2));
+        await fs.writeFile(INGREDIENTS_PATH, JSON.stringify(ingredients, null, 2));
         await commitChanges(['rawingredients.json'], `📝 Update ingredient: ${ingredientData.name}`);
         
         res.json({ 
@@ -123,7 +125,7 @@ app.put('/api/ingredients/:category/:ingredientKey', async (req, res) => {
         
     } catch (error) {
         console.error('Error updating ingredient:', error);
-        res.status(500).json({ error: 'Failed to update ingredient' });
+        res.status(500).json({ error: 'Failed to update ingredient', detail: error.message });
     }
 });
 
@@ -132,7 +134,7 @@ app.delete('/api/ingredients/:category/:ingredientKey', async (req, res) => {
         const { category, ingredientKey } = req.params;
         
         // Read current ingredients
-        const data = await fs.readFile('rawingredients.json', 'utf8');
+        const data = await fs.readFile(INGREDIENTS_PATH, 'utf8');
         const ingredients = JSON.parse(data);
         
         // Check if ingredient exists
@@ -146,7 +148,7 @@ app.delete('/api/ingredients/:category/:ingredientKey', async (req, res) => {
         delete ingredients.basic_ingredients[category][ingredientKey];
         
         // Write back to file
-        await fs.writeFile('rawingredients.json', JSON.stringify(ingredients, null, 2));
+        await fs.writeFile(INGREDIENTS_PATH, JSON.stringify(ingredients, null, 2));
         await commitChanges(['rawingredients.json'], `🗑️ Delete ingredient: ${ingredientName}`);
         
         res.json({ 
@@ -156,7 +158,7 @@ app.delete('/api/ingredients/:category/:ingredientKey', async (req, res) => {
         
     } catch (error) {
         console.error('Error deleting ingredient:', error);
-        res.status(500).json({ error: 'Failed to delete ingredient' });
+        res.status(500).json({ error: 'Failed to delete ingredient', detail: error.message });
     }
 });
 
@@ -176,12 +178,12 @@ app.get('/api/categories', async (req, res) => {
 // Recipe Management API Routes
 app.get('/api/recipes', async (req, res) => {
     try {
-        const data = await fs.readFile('recipes.json', 'utf8');
+        const data = await fs.readFile(RECIPES_PATH, 'utf8');
         const recipes = JSON.parse(data);
         res.json(recipes);
     } catch (error) {
         console.error('Error reading recipes:', error);
-        res.status(500).json({ error: 'Failed to read recipes' });
+        res.status(500).json({ error: 'Failed to read recipes', detail: error.message });
     }
 });
 
@@ -199,7 +201,7 @@ app.post('/api/recipes', async (req, res) => {
         }
         
         // Read current recipes
-        const data = await fs.readFile('recipes.json', 'utf8');
+        const data = await fs.readFile(RECIPES_PATH, 'utf8');
         const recipes = JSON.parse(data);
         
         // Ensure dishes section exists
@@ -211,7 +213,7 @@ app.post('/api/recipes', async (req, res) => {
         recipes.dishes[recipeKey] = recipeData;
         
         // Write back to file
-        await fs.writeFile('recipes.json', JSON.stringify(recipes, null, 2));
+        await fs.writeFile(RECIPES_PATH, JSON.stringify(recipes, null, 2));
         await commitChanges(['recipes.json'], `🍳 Add recipe: ${recipeData.name}`);
         
         res.json({
@@ -222,7 +224,7 @@ app.post('/api/recipes', async (req, res) => {
         
     } catch (error) {
         console.error('Error adding recipe:', error);
-        res.status(500).json({ error: 'Failed to add recipe' });
+        res.status(500).json({ error: 'Failed to add recipe', detail: error.message });
     }
 });
 
@@ -237,7 +239,7 @@ app.put('/api/recipes/:key', async (req, res) => {
         }
         
         // Read current recipes
-        const data = await fs.readFile('recipes.json', 'utf8');
+        const data = await fs.readFile(RECIPES_PATH, 'utf8');
         const recipes = JSON.parse(data);
         
         // Check if recipe exists
@@ -249,7 +251,7 @@ app.put('/api/recipes/:key', async (req, res) => {
         recipes.dishes[key] = recipeData;
         
         // Write back to file
-        await fs.writeFile('recipes.json', JSON.stringify(recipes, null, 2));
+        await fs.writeFile(RECIPES_PATH, JSON.stringify(recipes, null, 2));
         await commitChanges(['recipes.json'], `🔄 Update recipe: ${recipeData.name}`);
         
         res.json({
@@ -260,7 +262,7 @@ app.put('/api/recipes/:key', async (req, res) => {
         
     } catch (error) {
         console.error('Error updating recipe:', error);
-        res.status(500).json({ error: 'Failed to update recipe' });
+        res.status(500).json({ error: 'Failed to update recipe', detail: error.message });
     }
 });
 
@@ -269,7 +271,7 @@ app.delete('/api/recipes/:key', async (req, res) => {
         const { key } = req.params;
         
         // Read current recipes
-        const data = await fs.readFile('recipes.json', 'utf8');
+        const data = await fs.readFile(RECIPES_PATH, 'utf8');
         const recipes = JSON.parse(data);
         
         // Check if recipe exists
@@ -283,7 +285,7 @@ app.delete('/api/recipes/:key', async (req, res) => {
         delete recipes.dishes[key];
         
         // Write back to file
-        await fs.writeFile('recipes.json', JSON.stringify(recipes, null, 2));
+        await fs.writeFile(RECIPES_PATH, JSON.stringify(recipes, null, 2));
         await commitChanges(['recipes.json'], `🗑️ Delete recipe: ${key}`);
         
         res.json({
@@ -293,7 +295,7 @@ app.delete('/api/recipes/:key', async (req, res) => {
         
     } catch (error) {
         console.error('Error deleting recipe:', error);
-        res.status(500).json({ error: 'Failed to delete recipe' });
+        res.status(500).json({ error: 'Failed to delete recipe', detail: error.message });
     }
 });
 

@@ -94,7 +94,27 @@ app.post('/api/ingredients', requireDB, async (req, res) => {
         });
     } catch (error) {
         console.error('Error adding ingredient:', error);
-        res.status(500).json({ error: 'Failed to add ingredient' });
+        const msg = String(error.message || '').toLowerCase();
+        if (msg.includes('ingredient already exists')) {
+            // Upsert: merge measurements into existing ingredient
+            try {
+                const { category, ingredientKey, ingredientData } = req.body;
+                const existing = await db.getIngredient(category, ingredientKey);
+                if (!existing) {
+                    return res.status(500).json({ error: 'Ingredient exists but could not be retrieved' });
+                }
+                const merged = { ...existing.measurements, ...(ingredientData.measurements || {}) };
+                await db.updateIngredient(category, ingredientKey, {
+                    name: ingredientData.name || existing.name,
+                    measurements: merged
+                });
+                return res.json({ success: true, message: 'Ingredient updated with new measurements (merged)' });
+            } catch (mergeErr) {
+                console.error('Error merging measurements on duplicate add:', mergeErr);
+                return res.status(500).json({ error: mergeErr.message || 'Failed to merge measurements' });
+            }
+        }
+        res.status(500).json({ error: error.message || 'Failed to add ingredient' });
     }
 });
 

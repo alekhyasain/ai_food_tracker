@@ -15,6 +15,43 @@
         }
         .modal {
             display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 200; /* Above other UI including AI panel */
+            overflow: auto; /* Allow overlay to scroll on small screens */
+        }
+
+        /* Ensure all modal cards auto-fit viewport across devices */
+        .modal > div {
+            box-sizing: border-box;
+            width: 95vw;
+            max-width: 95vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            margin: 1rem;
+        }
+        /* Modal content layout: header + scrollable body */
+        .modal-card {
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-card .modal-body {
+            flex: 1 1 auto;
+            overflow-y: auto;
+            min-height: 0; /* Enables flex scrolling */
+        }
+        @media (min-width: 1024px) {
+            .modal > div {
+                max-width: 64rem; /* ~max-w-4xl */
+                width: auto;
+            }
+        }
+
+        /* Ingredient dropdown should not exceed viewport */
+        #recipeIngredientDropdown {
+            max-height: 30vh !important;
+            overflow-y: auto;
         }
         
         /* Recipe management specific styles */
@@ -23,10 +60,12 @@
         }
         
         #recipeEditModal {
-            z-index: 70; /* Higher than manage recipes modal */
+            z-index: 200; /* Ensure edit modal is above other modals/UI */
         }
         .modal.active, #manageRecipesModal.active, #recipeEditModal.active, #jsonExportModal.active, #jsonImportModal.active {
             display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         /* Tab styling */
@@ -334,13 +373,13 @@
 
     <!-- Recipe Builder Modal -->
     <div id="recipeModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="modal-card bg-white rounded-lg p-4">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-2xl font-semibold text-gray-800">Create New Recipe</h3>
                 <button onclick="closeRecipeBuilder()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
             </div>
             
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="modal-body grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Recipe Details -->
                 <div>
                     <div class="space-y-4">
@@ -474,13 +513,13 @@
         </div>
     <!-- Ingredient Management Modal -->
     <div id="ingredientModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="modal-card bg-white rounded-lg p-4">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-2xl font-semibold text-gray-800">Ingredient Management</h3>
                 <button onclick="closeIngredientModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
             </div>
             
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="modal-body grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Add New Ingredient Form -->
                 <div>
                     <h4 class="text-lg font-semibold text-gray-800 mb-3">Add New Ingredient</h4>
@@ -3731,68 +3770,29 @@
                     console.log('🔄 LOADDB: Starting ingredient loading process...');
                     updateLoadingIndicator('Loading ingredients...');
                     
-                    // Try API first, then fallback to file
+                    // DB-only: Load ingredients via API (no JSON fallback)
                     let rawData;
-                    try {
-                        console.log('🔄 LOADDB: Attempting API load...');
-                        const apiResponse = await fetch('/api/ingredients', {
-                            timeout: 10000 // 10 second timeout
-                        });
-                        if (apiResponse.ok) {
-                            const apiData = await apiResponse.json();
-                            console.log('✅ LOADDB: API load successful');
-                            rawData = { basic_ingredients: apiData.basic_ingredients };
-                        } else {
-                            throw new Error(`API failed: ${apiResponse.status} ${apiResponse.statusText}`);
-                        }
-                    } catch (apiError) {
-                        console.log('⚠️ LOADDB: API failed, trying file load:', apiError.message);
-                        updateLoadingIndicator('API unavailable, loading from local files...');
-                        try {
-                            const fileResponse = await fetch(`rawingredients.json?v=${timestamp}`);
-                            if (!fileResponse.ok) {
-                                throw new Error(`File load failed: ${fileResponse.status} ${fileResponse.statusText}`);
-                            }
-                            rawData = await fileResponse.json();
-                            console.log('✅ LOADDB: File load successful');
-                        } catch (fileError) {
-                            console.error('❌ LOADDB: Both API and file loading failed');
-                            hideLoadingIndicator();
-                            throw new Error(`Failed to load ingredients: API error (${apiError.message}), File error (${fileError.message})`);
-                        }
+                    console.log('🔄 LOADDB: Loading ingredients via API...');
+                    const apiResponse = await fetch('/api/ingredients', { timeout: 10000 });
+                    if (!apiResponse.ok) {
+                        hideLoadingIndicator();
+                        throw new Error(`Ingredients API failed: ${apiResponse.status} ${apiResponse.statusText}`);
                     }
+                    const apiData = await apiResponse.json();
+                    console.log('✅ LOADDB: Ingredients API load successful');
+                    rawData = { basic_ingredients: apiData.basic_ingredients || apiData };
                     
-                    // Load recipes from server API first, then fallback to file
-                    console.log('🔄 LOADDB: Loading recipes database...');
+                    // DB-only: Load recipes via API (no JSON fallback)
+                    console.log('🔄 LOADDB: Loading recipes via API...');
                     updateLoadingIndicator('Loading recipes...');
                     let foodData;
-                    try {
-                        console.log('🔄 LOADDB: Attempting recipes API load...');
-                        const recipesApiResponse = await fetch('/api/recipes', {
-                            timeout: 10000 // 10 second timeout
-                        });
-                        if (recipesApiResponse.ok) {
-                            foodData = await recipesApiResponse.json();
-                            console.log('✅ LOADDB: Recipes API load successful');
-                        } else {
-                            throw new Error(`Recipes API failed: ${recipesApiResponse.status} ${recipesApiResponse.statusText}`);
-                        }
-                    } catch (recipesApiError) {
-                        console.log('⚠️ LOADDB: Recipes API failed, trying file load:', recipesApiError.message);
-                        updateLoadingIndicator('Loading recipes from local files...');
-                        try {
-                            const foodResponse = await fetch(`recipes.json?v=${timestamp}`);
-                            if (!foodResponse.ok) {
-                                throw new Error(`Failed to load recipes.json: ${foodResponse.status} ${foodResponse.statusText}`);
-                            }
-                            foodData = await foodResponse.json();
-                            console.log('✅ LOADDB: Recipes file load successful');
-                        } catch (fileError) {
-                            console.error('❌ LOADDB: Both recipes API and file loading failed');
-                            hideLoadingIndicator();
-                            throw new Error(`Failed to load recipes: API error (${recipesApiError.message}), File error (${fileError.message})`);
-                        }
+                    const recipesApiResponse = await fetch('/api/recipes', { timeout: 10000 });
+                    if (!recipesApiResponse.ok) {
+                        hideLoadingIndicator();
+                        throw new Error(`Recipes API failed: ${recipesApiResponse.status} ${recipesApiResponse.statusText}`);
                     }
+                    foodData = await recipesApiResponse.json();
+                    console.log('✅ LOADDB: Recipes API load successful');
                     
                     return { rawData, foodData };
                 })
@@ -5915,17 +5915,22 @@
                         ingredientData
                     })
                 });
+                let result;
+                try {
+                    result = await response.json();
+                } catch (e) {
+                    result = { error: 'Invalid server response' };
+                }
                 
-                const result = await response.json();
-                
-                if (response.ok) {
+                if (response.ok && result && result.success) {
                     showSuccessMessage(`Ingredient "${name}" added successfully!`);
                     clearIngredientForm();
                     loadExistingIngredients();
                     // Reload ingredients in the main app
                     reloadIngredients();
                 } else {
-                    throw new Error(result.error || 'Failed to save ingredient');
+                    const detail = result && result.error ? result.error : `HTTP ${response.status}`;
+                    throw new Error(detail || 'Failed to save ingredient');
                 }
             } catch (error) {
                 console.error('Error saving ingredient:', error);
@@ -8037,7 +8042,7 @@
             simpleDisplayIngredients();
         }
         
-        // Simple add ingredient function
+        // Simple add/update ingredient function (handles duplicates by updating)
         async function simpleAddIngredient() {
             const name = document.getElementById('simpleIngredientName').value.trim();
             const category = document.getElementById('simpleIngredientCategory').value;
@@ -8054,45 +8059,61 @@
             }
             
             const ingredientKey = name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
-            const ingredientData = {
-                name: name,
-                measurements: {
-                    [measurementKey]: {
-                        calories: calories,
-                        protein: protein,
-                        carbs: carbs,
-                        fat: fat,
-                        fiber: fiber
-                    }
-                }
+            
+            // Ensure we have the latest ingredients loaded
+            if (!simpleIngredientsData) {
+                try { await simpleLoadIngredients(); } catch (_) {}
+            }
+            
+            const exists = simpleIngredientsData
+                && simpleIngredientsData[category]
+                && simpleIngredientsData[category][ingredientKey];
+            
+            // Build base measurement payload from form
+            const newMeasurement = {
+                [measurementKey]: { calories, protein, carbs, fat, fiber }
             };
             
             try {
-                const response = await fetch('/api/ingredients', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        category: category,
-                        ingredientKey: ingredientKey,
-                        ingredientData: ingredientData
-                    })
-                });
-                
-                const result = await response.json();
-                
-                if (response.ok) {
-                    showSuccessMessage(`✅ Ingredient "${name}" added successfully!`);
-                    simpleClearForm();
-                    simpleReloadIngredients();
+                if (!exists) {
+                    // Create new ingredient
+                    const ingredientData = { name, measurements: newMeasurement };
+                    const response = await fetch('/api/ingredients', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ category, ingredientKey, ingredientData })
+                    });
+                    let result; try { result = await response.json(); } catch { result = { error: 'Invalid server response' }; }
+                    if (response.ok && result && result.success) {
+                        showSuccessMessage(`✅ Ingredient "${name}" added successfully!`);
+                        simpleClearForm();
+                        simpleReloadIngredients();
+                    } else {
+                        const detail = result && result.error ? result.error : `HTTP ${response.status}`;
+                        throw new Error(detail || 'Failed to add ingredient');
+                    }
                 } else {
-                    throw new Error(result.error || 'Failed to add ingredient');
+                    // Update existing ingredient by merging measurements
+                    const existing = simpleIngredientsData[category][ingredientKey];
+                    const mergedMeasurements = { ...existing.measurements, ...newMeasurement };
+                    const response = await fetch(`/api/ingredients/${category}/${ingredientKey}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ingredientData: { name, measurements: mergedMeasurements } })
+                    });
+                    let result; try { result = await response.json(); } catch { result = { error: 'Invalid server response' }; }
+                    if (response.ok && result && result.success) {
+                        showSuccessMessage(`✅ Ingredient "${name}" updated successfully!`);
+                        simpleClearForm();
+                        simpleReloadIngredients();
+                    } else {
+                        const detail = result && result.error ? result.error : `HTTP ${response.status}`;
+                        throw new Error(detail || 'Failed to update ingredient');
+                    }
                 }
-                
             } catch (error) {
-                console.error('❌ SIMPLE: Failed to add ingredient:', error);
-                showErrorMessage('Failed to add ingredient: ' + error.message);
+                console.error('❌ SIMPLE: Add/Update ingredient failed:', error);
+                showErrorMessage((exists ? 'Failed to update ingredient: ' : 'Failed to add ingredient: ') + error.message);
             }
         }
         
@@ -8142,7 +8163,7 @@
                 document.getElementById('simpleFiber').value = nutrition.fiber;
             }
             
-            showSuccessMessage(`📝 Loaded "${ingredient.name}" for editing. Modify and click "Add Ingredient" to update.`);
+            showSuccessMessage(`📝 Loaded "${ingredient.name}" for editing. Modify and click "Add Ingredient" to add/merge measurements.`);
         }
         
         // Simple clear form function
@@ -11130,14 +11151,13 @@
             </div>
         </div>
 
-        <!-- Chat Messages -->
+        <!-- Results -->
         <div id="aiChatMessages" class="overflow-y-auto p-4 space-y-3" style="height: 320px;">
-            <!-- Welcome message -->
+            <!-- Info message -->
             <div class="bg-gradient-to-r from-purple-50 to-blue-50 p-3 rounded-lg">
                 <p class="text-sm text-gray-700">
-                    👋 Hi! I'm your AI nutrition assistant. I can help you analyze your meals, track your progress, and give personalized nutrition suggestions.
+                    👋 Hi! Use the quick actions above to analyze a date, view weekly trends, or see your 14-day summary.
                 </p>
-                <p class="text-xs text-gray-500 mt-2">Select a date above and click "Analyze Date", or ask me anything below!</p>
             </div>
         </div>
 
@@ -11149,17 +11169,7 @@
             </div>
         </div>
 
-        <!-- Chat Input -->
-        <div class="border-t p-3">
-            <div class="flex space-x-2">
-                <input type="text" id="aiChatInput" placeholder="Ask me anything about nutrition..." class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" onkeypress="if(event.key==='Enter') handleAIChatInput()">
-                <button onclick="handleAIChatInput()" class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                    </svg>
-                </button>
-            </div>
-        </div>
+        <!-- Chat Input removed by request -->
     </div>
 
     <!-- AI Assistant Scripts -->
@@ -11208,159 +11218,7 @@
             document.getElementById('aiLoadingIndicator').style.display = show ? 'block' : 'none';
         }
 
-        // Handle chat input
-        async function handleAIChatInput() {
-            const input = document.getElementById('aiChatInput');
-            const message = input.value.trim();
-            
-            if (!message) return;
-            
-            if (!aiPanelOpen) {
-                toggleAIAssistant();
-            }
-            
-            // Display user message
-            addAIMessage(message, 'user');
-            input.value = '';
-            
-            // Show loading state
-            showAILoading(true);
-            
-            try {
-                // Get current date and nutrition data for context
-                const date = document.getElementById('aiDateSelector').value || getCurrentDate();
-                let nutritionData = null;
-                
-                // Try to get nutrition data from localStorage (standardized key with legacy fallback)
-                const mealsByDate = getMealsByDateStorage();
-                const todaysMeals = mealsByDate[date] || [];
-                
-                if (todaysMeals.length > 0) {
-                    nutritionData = {
-                        summary: {
-                            meal_count: todaysMeals.length,
-                            total_calories: todaysMeals.reduce((sum, m) => sum + (m.nutrition?.calories || 0), 0),
-                            total_protein: todaysMeals.reduce((sum, m) => sum + (m.nutrition?.protein || 0), 0),
-                            total_carbs: todaysMeals.reduce((sum, m) => sum + (m.nutrition?.carbs || 0), 0),
-                            total_fat: todaysMeals.reduce((sum, m) => sum + (m.nutrition?.fat || 0), 0),
-                            total_fiber: todaysMeals.reduce((sum, m) => sum + (m.nutrition?.fiber || 0), 0)
-                        }
-                    };
-                }
-                
-                // Call Gemini API
-                const response = await fetch('/api/ai/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        message, 
-                        date,
-                        nutritionData 
-                    })
-                });
-                
-                const data = await response.json();
-                showAILoading(false);
-                
-                if (data.fallback) {
-                    // Fallback to pattern matching if Gemini is unavailable
-                    handleFallbackChat(message);
-                } else {
-                    // Display Gemini's response
-                    addAIMessage(data.response, 'assistant');
-                }
-                
-            } catch (error) {
-                showAILoading(false);
-                console.error('Error in chat:', error);
-                addAIMessage('❌ Sorry, I could not process your message. Please try again.', 'warning');
-            }
-        }
-        
-        // Fallback chat handler (pattern matching) when Gemini is unavailable
-        function handleFallbackChat(message) {
-            const lowerMessage = message.toLowerCase();
-            
-            // Better keyword matching with more natural patterns
-            if (lowerMessage.match(/\b(analy[sz]e|check|show|view|see|what|how).*(today|date|day|meal|nutrition|eat|ate)\b/) ||
-                lowerMessage.match(/\b(today|date).*(analy[sz]e|nutrition|summary|breakdown|data)\b/) ||
-                lowerMessage.includes('analyze') || lowerMessage.includes('today') || lowerMessage.includes('todays')) {
-                analyzeSelectedDate();
-                
-            } else if (lowerMessage.match(/\b(week|weekly|7.?day|past week|last week).*(progress|trend|summary|average|data)\b/) ||
-                       lowerMessage.match(/\b(show|view|check|see).*(week|weekly|progress|trend)\b/) ||
-                       lowerMessage.includes('weekly progress')) {
-                getWeeklyProgress();
-                
-            } else if (lowerMessage.match(/\b(tip|tips|suggest|advice|recommend|help me|what should|how to|improve|better)\b/) ||
-                       lowerMessage.includes('give me') || lowerMessage.includes('need help') || 
-                       lowerMessage.includes('guidance') || lowerMessage.includes('ideas')) {
-                getRecommendations();
-                
-            } else if (lowerMessage.match(/\b(protein|calorie|calories|carb|carbs|fat|fats|fiber|fibre|macro|macros|nutrient)\b/) &&
-                       !lowerMessage.match(/\b(tip|suggest|recommend|advice|help|how to|what to)\b/)) {
-                // Specific nutrient question - analyze the selected date
-                addAIMessage(`Let me analyze the selected date to show you the nutritional breakdown...`, 'assistant');
-                analyzeSelectedDate();
-                
-            } else if (lowerMessage.match(/\b(view|show|see).*(all|days|summary|table|history)\b/) ||
-                       lowerMessage.includes('all days') || lowerMessage.includes('view summary')) {
-                addAIMessage(`Great! Click the "View All Days" button above to see your 14-day nutrition history in a table format.`, 'info');
-                
-            } else if (lowerMessage.includes('sync') || lowerMessage.includes('database') || 
-                       lowerMessage.includes('save') || lowerMessage.includes('backup')) {
-                addAIMessage(`To sync your meals to the database, click the "Sync to Database" button (orange) at the top of the page. This will ensure all your localStorage meals are backed up to the database.`, 'info');
-                
-            } else if (lowerMessage.match(/\b(hello|hi|hey|yo|sup|greetings)\b/)) {
-                const greetings = [
-                    `Hello! 👋 I'm your nutrition assistant. How can I help you today?`,
-                    `Hi there! 😊 Ready to analyze your nutrition? Just ask!`,
-                    `Hey! 🌟 What would you like to know about your nutrition?`
-                ];
-                addAIMessage(greetings[Math.floor(Math.random() * greetings.length)], 'assistant');
-                
-            } else if (lowerMessage.match(/\b(help|what can you|capabilities|what do you)\b/)) {
-                addAIMessage(`
-                    <strong>🤖 I'm your AI Nutrition Assistant!</strong><br><br>
-                    <strong>I can help you with:</strong><br><br>
-                    📊 <strong>Daily Analysis</strong><br>
-                    • "Analyze today" or "Check my nutrition"<br>
-                    • "What did I eat today?"<br>
-                    • "Show me protein/calories/carbs"<br><br>
-                    📈 <strong>Weekly Trends</strong><br>
-                    • "Show weekly progress"<br>
-                    • "How's my week going?"<br><br>
-                    💡 <strong>Nutrition Tips</strong><br>
-                    • "Give me tips"<br>
-                    • "How can I improve?"<br>
-                    • "Nutrition advice please"<br><br>
-                    📋 <strong>View History</strong><br>
-                    • "Show all days"<br>
-                    • "View summary table"<br><br>
-                    Just ask naturally, and I'll do my best to help! 😊
-                `, 'info');
-                
-            } else if (lowerMessage.match(/\b(thank|thanks|thx|appreciate)\b/)) {
-                const responses = [
-                    `You're welcome! 😊 Happy to help!`,
-                    `Anytime! Keep up the good work! 💪`,
-                    `My pleasure! Let me know if you need anything else! 🌟`
-                ];
-                addAIMessage(responses[Math.floor(Math.random() * responses.length)], 'success');
-                
-            } else {
-                // More helpful fallback response
-                addAIMessage(`
-                    I'm not sure I understood that. Here are some things you can try:<br><br>
-                    💬 <strong>Try asking:</strong><br>
-                    • "Analyze today" - See your daily nutrition<br>
-                    • "Show weekly progress" - View 7-day trends<br>
-                    • "Give me tips" - Get nutrition advice<br>
-                    • "Help" - See all my capabilities<br><br>
-                    Or use the quick action buttons at the top! ✨
-                `, 'assistant');
-            }
-        }
+        // Chat removed by request: input and message parsing handlers deleted
 
         function analyzeSelectedDate() {
             const date = document.getElementById('aiDateSelector').value;

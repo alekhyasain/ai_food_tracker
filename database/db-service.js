@@ -111,31 +111,46 @@ class DatabaseService {
             categoryRow = { id: result.lastID };
         }
         
-        // Insert ingredient
-        const ingredientResult = await this.run(
-            'INSERT INTO ingredients (category_id, key, name) VALUES (?, ?, ?)',
-            [categoryRow.id, ingredientKey, ingredientData.name]
-        );
+        // Insert ingredient (handle duplicates gracefully)
+        let ingredientResult;
+        try {
+            ingredientResult = await this.run(
+                'INSERT INTO ingredients (category_id, key, name) VALUES (?, ?, ?)',
+                [categoryRow.id, ingredientKey, ingredientData.name]
+            );
+        } catch (err) {
+            if (String(err.message || '').includes('UNIQUE') && String(err.message || '').includes('ingredients.category_id, ingredients.key')) {
+                throw new Error('Ingredient already exists in this category');
+            }
+            throw err;
+        }
         
         const ingredientId = ingredientResult.lastID;
         
         // Insert measurements
         if (ingredientData.measurements) {
             for (const [measureKey, nutrition] of Object.entries(ingredientData.measurements)) {
-                await this.run(
-                    `INSERT INTO ingredient_measurements 
-                    (ingredient_id, measurement_key, calories, protein, carbs, fat, fiber) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?)`,
-                    [
-                        ingredientId,
-                        measureKey,
-                        nutrition.calories || 0,
-                        nutrition.protein || 0,
-                        nutrition.carbs || 0,
-                        nutrition.fat || 0,
-                        nutrition.fiber || 0
-                    ]
-                );
+                try {
+                    await this.run(
+                        `INSERT INTO ingredient_measurements 
+                        (ingredient_id, measurement_key, calories, protein, carbs, fat, fiber) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                        [
+                            ingredientId,
+                            measureKey,
+                            nutrition.calories || 0,
+                            nutrition.protein || 0,
+                            nutrition.carbs || 0,
+                            nutrition.fat || 0,
+                            nutrition.fiber || 0
+                        ]
+                    );
+                } catch (err) {
+                    if (String(err.message || '').includes('UNIQUE') && String(err.message || '').includes('ingredient_measurements')) {
+                        throw new Error('Measurement key already exists for this ingredient');
+                    }
+                    throw err;
+                }
             }
         }
         
@@ -214,6 +229,42 @@ class DatabaseService {
     async getCategories() {
         const rows = await this.all('SELECT name FROM categories ORDER BY name');
         return rows.map(r => r.name);
+    }
+
+    // Get a single ingredient with its measurements
+    async getIngredient(category, ingredientKey) {
+        const categoryRow = await this.get('SELECT id FROM categories WHERE name = ?', [category]);
+        if (!categoryRow) {
+            return null;
+        }
+
+        const ingredient = await this.get(
+            'SELECT id, name FROM ingredients WHERE category_id = ? AND key = ?',
+            [categoryRow.id, ingredientKey]
+        );
+
+        if (!ingredient) {
+            return null;
+        }
+
+        const measurements = await this.all(
+            `SELECT measurement_key, calories, protein, carbs, fat, fiber 
+             FROM ingredient_measurements WHERE ingredient_id = ?`,
+            [ingredient.id]
+        );
+
+        const measurementsObj = {};
+        measurements.forEach(m => {
+            measurementsObj[m.measurement_key] = {
+                calories: m.calories,
+                protein: m.protein,
+                carbs: m.carbs,
+                fat: m.fat,
+                fiber: m.fiber
+            };
+        });
+
+        return { id: ingredient.id, name: ingredient.name, key: ingredientKey, measurements: measurementsObj };
     }
 
     // ============= RECIPES METHODS =============
