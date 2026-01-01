@@ -137,6 +137,9 @@
                         <button onclick="goToYesterday()" class="bg-gray-400 hover:bg-gray-500 text-white px-3 py-1 rounded text-sm transition duration-200">
                             Yesterday
                         </button>
+                        <button onclick="refreshMealsFromDB()" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition duration-200">
+                            Refresh from DB
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1919,24 +1922,17 @@
 
         // Date management functions
         function formatDateKey(date) {
-            // Enhanced date validation and logging
+            // Use local timezone components to avoid UTC day shifts
             if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
-                console.warn('⚠️ DATE_KEY: Invalid date provided, using current date as fallback:', date);
+                console.warn('⚠️ DATE_KEY: Invalid date provided, using current local date as fallback:', date);
                 console.warn('⚠️ DATE_KEY: Stack trace:', new Error().stack);
                 date = new Date();
             }
-            
-            const dateKey = date.toISOString().split('T')[0]; // YYYY-MM-DD format
-            console.log('📅 DATE_KEY: Generated date key:', dateKey, 'from date:', date.toISOString());
-            
-            // Validate the generated key format
-            if (!/^\d{4}-\d{2}-\d{2}$/.test(dateKey)) {
-                console.error('❌ DATE_KEY: Invalid date key format generated:', dateKey);
-                const fallbackKey = new Date().toISOString().split('T')[0];
-                console.log('📅 DATE_KEY: Using fallback key:', fallbackKey);
-                return fallbackKey;
-            }
-            
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const dateKey = `${year}-${month}-${day}`;
+            console.log('📅 DATE_KEY: Generated local date key:', dateKey);
             return dateKey;
         }
 
@@ -1965,12 +1961,11 @@
             console.log('📅 DATE_INIT: Current time:', new Date().toISOString());
             console.log('📅 DATE_INIT: User timezone:', Intl.DateTimeFormat().resolvedOptions().timeZone);
             
-            // Ensure selectedDate is properly initialized to yesterday
+            // Ensure selectedDate is properly initialized to today (local)
             if (!selectedDate || !(selectedDate instanceof Date) || isNaN(selectedDate.getTime())) {
-                console.log('📅 DATE_INIT: selectedDate was invalid, setting to yesterday');
+                console.log('📅 DATE_INIT: selectedDate was invalid, setting to today');
                 selectedDate = new Date();
-                selectedDate.setDate(selectedDate.getDate() - 1); // Set to yesterday
-                console.log('📅 DATE_INIT: New selectedDate set to:', selectedDate.toISOString());
+                console.log('📅 DATE_INIT: New selectedDate set to:', selectedDate.toString());
             } else {
                 console.log('📅 DATE_INIT: selectedDate already valid:', selectedDate.toISOString().split('T')[0]);
             }
@@ -1985,6 +1980,8 @@
             
             // Update UI
             updateDateDisplay();
+            // Auto-refresh initial date from DB
+            refreshMealsFromDB();
             updateDailySummary();
             displayMeals();
             displayTodaysExercises();
@@ -2097,6 +2094,8 @@
         function navigateDate(days) {
             selectedDate.setDate(selectedDate.getDate() + days);
             updateDateDisplay();
+            // Auto-refresh from DB for the new date
+            refreshMealsFromDB();
             updateDailySummary();
             displayMeals();
             displayTodaysExercises();
@@ -2104,8 +2103,17 @@
 
         function selectDate() {
             const dateSelector = document.getElementById('dateSelector');
-            selectedDate = new Date(dateSelector.value + 'T00:00:00');
+            // Parse as local date to avoid timezone confusion
+            const [y, m, d] = (dateSelector.value || '').split('-').map(Number);
+            if (!isNaN(y) && !isNaN(m) && !isNaN(d)) {
+                selectedDate = new Date(y, m - 1, d);
+            } else {
+                console.warn('⚠️ selectDate: Invalid date value in selector, falling back to today');
+                selectedDate = new Date();
+            }
             updateDateDisplay();
+            // Auto-refresh from DB when date is selected
+            refreshMealsFromDB();
             updateDailySummary();
             displayMeals();
             displayTodaysExercises();
@@ -2114,6 +2122,8 @@
         function goToToday() {
             selectedDate = new Date();
             updateDateDisplay();
+            // Auto-refresh today from DB
+            refreshMealsFromDB();
             updateDailySummary();
             displayMeals();
             displayTodaysExercises();
@@ -2123,6 +2133,8 @@
             selectedDate = new Date();
             selectedDate.setDate(selectedDate.getDate() - 1);
             updateDateDisplay();
+            // Auto-refresh yesterday from DB
+            refreshMealsFromDB();
             updateDailySummary();
             displayMeals();
             displayTodaysExercises();
@@ -2178,6 +2190,43 @@
             
             console.log('📅 GET_MEALS: No meals found for date, returning empty array');
             return meals;
+        }
+
+        // Fetch meals for the selected date from the server and update local state
+        async function refreshMealsFromDB() {
+            try {
+                const safeDate = getSafeSelectedDate();
+                const dateKey = formatDateKey(safeDate);
+                console.log('🔄 REFRESH_DB: Fetching meals for date', dateKey);
+
+                const resp = await fetch(`/api/meals?date=${encodeURIComponent(dateKey)}`);
+                if (!resp.ok) {
+                    console.warn('⚠️ REFRESH_DB: Failed to fetch meals from server:', resp.status);
+                    return;
+                }
+                const data = await resp.json();
+                
+                // Handle API response format: can be array or {date: [meals]}
+                let meals = [];
+                if (Array.isArray(data)) {
+                    meals = data;
+                } else if (data && typeof data === 'object' && data[dateKey]) {
+                    meals = data[dateKey];
+                } else {
+                    console.warn('⚠️ REFRESH_DB: Unexpected response format', data);
+                    return;
+                }
+
+                // Update local storage structure and UI
+                mealsByDate[dateKey] = meals;
+                saveMealsToStorage();
+                console.log('✅ REFRESH_DB: Updated mealsByDate for', dateKey, 'count:', meals.length);
+
+                displayMeals();
+                updateDailySummary();
+            } catch (err) {
+                console.error('❌ REFRESH_DB: Error refreshing from DB:', err);
+            }
         }
 
         function addMealToDate(meal) {
@@ -5422,11 +5471,10 @@
             console.log('🚀 INIT: rawIngredients state:', rawIngredients ? 'EXISTS' : 'NULL');
             console.log('🚀 INIT: foodDatabase state:', foodDatabase ? 'EXISTS' : 'NULL');
             
-            // Ensure selectedDate is set to yesterday before initializing
+            // Ensure selectedDate exists; default to today
             if (!selectedDate || !(selectedDate instanceof Date) || isNaN(selectedDate.getTime())) {
                 selectedDate = new Date();
-                selectedDate.setDate(selectedDate.getDate() - 1); // Set to yesterday
-                console.log('🚀 INIT: Set selectedDate to yesterday:', selectedDate.toISOString().split('T')[0]);
+                console.log('🚀 INIT: Set selectedDate to today:', selectedDate.toString());
             }
             
             // Initialize the date-based system FIRST to prevent race conditions

@@ -246,7 +246,7 @@ app.get('/api/meals', requireDB, async (req, res) => {
         
         if (date) {
             const meals = await db.getMealsByDate(date);
-            res.json({ [date]: meals });
+            res.json(meals); // Return flat array for single date
         } else if (startDate && endDate) {
             const meals = await db.getMealsByDateRange(startDate, endDate);
             res.json(meals);
@@ -390,6 +390,68 @@ app.post('/api/meals/bulk', requireDB, async (req, res) => {
     } catch (error) {
         console.error('Error in bulk operation:', error);
         res.status(500).json({ error: 'Bulk operation failed' });
+    }
+});
+
+// Copy all meals from one date to another (creates new IDs)
+app.post('/api/meals/copy', requireDB, async (req, res) => {
+    try {
+        const { sourceDate, targetDate } = req.body;
+        if (!sourceDate || !targetDate) {
+            return res.status(400).json({ error: 'Missing required fields: sourceDate, targetDate' });
+        }
+        if (sourceDate === targetDate) {
+            return res.status(400).json({ error: 'sourceDate and targetDate must differ' });
+        }
+
+        const sourceMeals = await db.getMealsByDate(sourceDate);
+        let copied = 0;
+        for (const meal of sourceMeals) {
+            const { description, mealType, source, nutrition, ingredient_data } = meal;
+            const newMeal = {
+                description,
+                mealType,
+                date: targetDate,
+                timestamp: new Date().toISOString(),
+                source: source || '',
+                nutrition,
+                ingredient_data
+            };
+            try {
+                await db.addMeal(newMeal);
+                copied++;
+            } catch (err) {
+                console.error(`Error copying meal id=${meal.id} to ${targetDate}:`, err);
+            }
+        }
+        res.json({ success: true, sourceDate, targetDate, copied, total: sourceMeals.length });
+    } catch (error) {
+        console.error('Error copying meals:', error);
+        res.status(500).json({ error: 'Failed to copy meals' });
+    }
+});
+
+// Delete all meals for a given date
+app.delete('/api/meals/by-date/:date', requireDB, async (req, res) => {
+    try {
+        const { date } = req.params;
+        if (!date) {
+            return res.status(400).json({ error: 'Missing required field: date' });
+        }
+        const meals = await db.getMealsByDate(date);
+        let deleted = 0;
+        for (const meal of meals) {
+            try {
+                await db.deleteMeal(meal.id);
+                deleted++;
+            } catch (err) {
+                console.error(`Error deleting meal id=${meal.id} for ${date}:`, err);
+            }
+        }
+        res.json({ success: true, date, deleted });
+    } catch (error) {
+        console.error('Error deleting meals by date:', error);
+        res.status(500).json({ error: 'Failed to delete meals by date' });
     }
 });
 
