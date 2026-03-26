@@ -10,16 +10,99 @@ class DatabaseService {
     // Initialize database connection
     connect() {
         return new Promise((resolve, reject) => {
-            this.db = new sqlite3.Database(this.dbPath, (err) => {
+            this.db = new sqlite3.Database(this.dbPath, async (err) => {
                 if (err) {
                     console.error('Error connecting to database:', err);
                     reject(err);
                 } else {
                     console.log('Connected to SQLite database');
-                    resolve();
+                    try {
+                        await this._initHabitTables();
+                        resolve();
+                    } catch (initErr) {
+                        console.error('Error initializing habit tables:', initErr);
+                        reject(initErr);
+                    }
                 }
             });
         });
+    }
+
+    // Create habit/mood tables and seed built-in habits
+    async _initHabitTables() {
+        await this.run(`CREATE TABLE IF NOT EXISTS habit_definitions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            emoji TEXT NOT NULL DEFAULT '✅',
+            type TEXT NOT NULL DEFAULT 'toggle',
+            built_in INTEGER NOT NULL DEFAULT 0,
+            sort_order INTEGER NOT NULL DEFAULT 0,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`);
+
+        await this.run(`CREATE TABLE IF NOT EXISTS habit_entries (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            habit_id INTEGER NOT NULL,
+            date TEXT NOT NULL,
+            value INTEGER NOT NULL DEFAULT 0,
+            text_value TEXT DEFAULT '',
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (habit_id) REFERENCES habit_definitions(id) ON DELETE CASCADE,
+            UNIQUE(habit_id, date)
+        )`);
+
+        // Add text_value column if missing (migration for existing databases)
+        try {
+            await this.run(`ALTER TABLE habit_entries ADD COLUMN text_value TEXT DEFAULT ''`);
+        } catch (e) {
+            // Column already exists — ignore
+        }
+
+        await this.run(`CREATE TABLE IF NOT EXISTS mood_entries (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            date TEXT NOT NULL UNIQUE,
+            mood INTEGER NOT NULL DEFAULT 3,
+            diary TEXT DEFAULT '',
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`);
+
+        await this.run(`CREATE INDEX IF NOT EXISTS idx_habit_entries_date ON habit_entries(date)`);
+        await this.run(`CREATE INDEX IF NOT EXISTS idx_mood_entries_date ON mood_entries(date)`);
+
+        // Migration: remove "Daily Cooking" and rename "Learnt Something Good" → "Study Something"
+        // Run BEFORE seeding so the seed loop doesn't create duplicates
+        await this.run(`DELETE FROM habit_entries WHERE habit_id IN (SELECT id FROM habit_definitions WHERE name = 'Daily Cooking' AND built_in = 1)`);
+        await this.run(`DELETE FROM habit_definitions WHERE name = 'Daily Cooking' AND built_in = 1`);
+        const learntHabit = await this.get(`SELECT id FROM habit_definitions WHERE name = 'Learnt Something Good' AND built_in = 1`);
+        if (learntHabit) {
+            await this.run(`UPDATE habit_definitions SET name = 'Study Something', type = 'text' WHERE id = ?`, [learntHabit.id]);
+        }
+
+        // Seed built-in habits (insert any missing ones)
+        const builtIns = [
+            ['Water', '💧', 'counter', 1, 1],
+            ['Nail Biting', '💅', 'counter', 1, 2],
+            ['Crappy Food', '🍔', 'toggle', 1, 3],
+            ['Period', '🔴', 'toggle', 1, 4],
+            ['Study Something', '📚', 'text', 1, 5],
+            ['Dopamine Check', '🧠', 'counter', 1, 6],
+            ['Taught Son Something', '👨‍👦', 'toggle', 1, 7],
+            ['Cooking Plan', '🍳', 'text', 1, 8],
+            ['Multivitamins', '💊', 'toggle', 1, 9],
+            ['Iron Tablet', '💊', 'toggle', 1, 10],
+            ['Thyroid Medicine', '💊', 'toggle', 1, 11],
+            ['Sleep On Time', '🌙', 'toggle', 1, 12],
+            ['Woke Up On Time', '⏰', 'toggle', 1, 13],
+        ];
+        for (const [name, emoji, type, builtIn, sortOrder] of builtIns) {
+            const existing = await this.get(`SELECT id FROM habit_definitions WHERE name = ? AND built_in = 1`, [name]);
+            if (!existing) {
+                await this.run(
+                    `INSERT INTO habit_definitions (name, emoji, type, built_in, sort_order) VALUES (?, ?, ?, ?, ?)`,
+                    [name, emoji, type, builtIn, sortOrder]
+                );
+            }
+        }
     }
 
     // Helper methods for database operations
@@ -597,6 +680,70 @@ class DatabaseService {
         );
         
         return summaries;
+    }
+
+    // ============= HABIT DEFINITIONS METHODS =============
+
+    async getHabitDefinitions() {
+        return this.all(`SELECT * FROM habit_definitions ORDER BY sort_order, id`);
+    }
+
+    async addHabitDefinition(name, emoji, type) {
+        const maxOrder = await this.get(`SELECT MAX(sort_order) as max_order FROM habit_definitions`);
+        const sortOrder = (maxOrder?.max_order || 0) + 1;
+        const result = await this.run(
+            `INSERT INTO habit_definitions (name, emoji, type, built_in, sort_order) VALUES (?, ?, ?, 0, ?)`,
+            [name, emoji || '✅', type || 'toggle', sortOrder]
+        );
+        return { id: result.lastID, name, emoji: emoji || '✅', type: type || 'toggle', built_in: 0, sort_order: sortOrder };
+    }
+
+    async deleteHabitDefinition(id) {
+        const habit = await this.get(`SELECT * FROM habit_definitions WHERE id = ?`, [id]);
+        if (!habit) throw new Error('Habit not found');
+        if (habit.built_in === 1) throw new Error('Cannot delete built-in habit');
+        await this.run(`DELETE FROM habit_definitions WHERE id = ?`, [id]);
+        return { success: true, name: habit.name };
+    }
+
+    // ============= HABIT ENTRIES METHODS =============
+
+    async getHabitEntriesByDate(date) {
+        return this.all(`
+            SELECT hd.id as habit_id, hd.name, hd.emoji, hd.type, hd.built_in, hd.sort_order,
+                   COALESCE(he.value, 0) as value, COALESCE(he.text_value, '') as text_value, he.id as entry_id
+            FROM habit_definitions hd
+            LEFT JOIN habit_entries he ON hd.id = he.habit_id AND he.date = ?
+            ORDER BY hd.sort_order, hd.id
+        `, [date]);
+    }
+
+    async upsertHabitEntry(habitId, date, value, textValue) {
+        const tv = textValue || '';
+        await this.run(
+            `INSERT INTO habit_entries (habit_id, date, value, text_value, updated_at)
+             VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+             ON CONFLICT(habit_id, date) DO UPDATE SET value = ?, text_value = ?, updated_at = CURRENT_TIMESTAMP`,
+            [habitId, date, value, tv, value, tv]
+        );
+        return { success: true };
+    }
+
+    // ============= MOOD ENTRIES METHODS =============
+
+    async getMoodEntry(date) {
+        const entry = await this.get(`SELECT * FROM mood_entries WHERE date = ?`, [date]);
+        return entry || { date, mood: 3, diary: '' };
+    }
+
+    async upsertMoodEntry(date, mood, diary) {
+        await this.run(
+            `INSERT INTO mood_entries (date, mood, diary, updated_at)
+             VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+             ON CONFLICT(date) DO UPDATE SET mood = ?, diary = ?, updated_at = CURRENT_TIMESTAMP`,
+            [date, mood, diary, mood, diary]
+        );
+        return { success: true };
     }
 
     // Close database connection

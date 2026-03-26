@@ -102,12 +102,45 @@ CREATE TABLE IF NOT EXISTS daily_summary (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Custom habit definitions
+CREATE TABLE IF NOT EXISTS habit_definitions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    emoji TEXT NOT NULL DEFAULT '✅',
+    type TEXT NOT NULL DEFAULT 'toggle',  -- 'toggle' or 'counter'
+    built_in INTEGER NOT NULL DEFAULT 0,  -- 1 = system habit, can't delete
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Daily habit entries (one row per habit per date)
+CREATE TABLE IF NOT EXISTS habit_entries (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    habit_id INTEGER NOT NULL,
+    date TEXT NOT NULL,
+    value INTEGER NOT NULL DEFAULT 0,  -- toggle: 0/1, counter: count
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (habit_id) REFERENCES habit_definitions(id) ON DELETE CASCADE,
+    UNIQUE(habit_id, date)
+);
+
+-- Daily mood diary (one per date)
+CREATE TABLE IF NOT EXISTS mood_entries (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date TEXT NOT NULL UNIQUE,
+    mood INTEGER NOT NULL DEFAULT 3,     -- 1-5 scale
+    diary TEXT DEFAULT '',               -- free-text journal
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Indexes for better query performance
 CREATE INDEX IF NOT EXISTS idx_ingredients_category ON ingredients(category_id);
 CREATE INDEX IF NOT EXISTS idx_meals_date ON meals(date);
 CREATE INDEX IF NOT EXISTS idx_meals_meal_type ON meals(meal_type);
 CREATE INDEX IF NOT EXISTS idx_daily_summary_date ON daily_summary(date);
 CREATE INDEX IF NOT EXISTS idx_recipe_ingredients_recipe ON recipe_ingredients(recipe_id);
+CREATE INDEX IF NOT EXISTS idx_habit_entries_date ON habit_entries(date);
+CREATE INDEX IF NOT EXISTS idx_mood_entries_date ON mood_entries(date);
 
 -- Triggers to update daily summary
 CREATE TRIGGER IF NOT EXISTS update_daily_summary_on_insert

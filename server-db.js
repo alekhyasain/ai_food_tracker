@@ -1,34 +1,15 @@
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
+const ExcelJS = require('exceljs');
+const fs = require('fs').promises;
 const DatabaseService = require('./database/db-service');
-const AIAssistantService = require('./database/ai-assistant');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Initialize Gemini AI
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'YOUR_API_KEY_HERE';
-let genAI = null;
-let geminiModel = null;
-
-if (GEMINI_API_KEY && GEMINI_API_KEY !== 'YOUR_API_KEY_HERE') {
-    try {
-        genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-        geminiModel = genAI.getGenerativeModel({ model: 'gemini-pro' });
-        console.log('✅ Gemini AI initialized');
-    } catch (error) {
-        console.error('❌ Failed to initialize Gemini AI:', error.message);
-    }
-} else {
-    console.warn('⚠️  Gemini API key not set. AI chat will use fallback responses.');
-    console.warn('   Set GEMINI_API_KEY environment variable to enable AI chat.');
-}
-
 // Initialize database service
 const db = new DatabaseService();
-const aiAssistant = new AIAssistantService(db);
 
 // Middleware
 app.use(cors());
@@ -457,6 +438,89 @@ app.delete('/api/meals/by-date/:date', requireDB, async (req, res) => {
 
 // ============= ANALYTICS API =============
 
+// ============= HABITS API =============
+
+app.get('/api/habits', requireDB, async (req, res) => {
+    try {
+        const habits = await db.getHabitDefinitions();
+        res.json(habits);
+    } catch (error) {
+        console.error('Error reading habits:', error);
+        res.status(500).json({ error: 'Failed to read habits' });
+    }
+});
+
+app.post('/api/habits', requireDB, async (req, res) => {
+    try {
+        const { name, emoji, type } = req.body;
+        if (!name) return res.status(400).json({ error: 'Name is required' });
+        const habit = await db.addHabitDefinition(name, emoji, type);
+        res.json(habit);
+    } catch (error) {
+        console.error('Error adding habit:', error);
+        res.status(500).json({ error: 'Failed to add habit' });
+    }
+});
+
+app.delete('/api/habits/:id', requireDB, async (req, res) => {
+    try {
+        const result = await db.deleteHabitDefinition(parseInt(req.params.id));
+        res.json(result);
+    } catch (error) {
+        console.error('Error deleting habit:', error);
+        const status = error.message.includes('not found') ? 404 : error.message.includes('built-in') ? 400 : 500;
+        res.status(status).json({ error: error.message });
+    }
+});
+
+app.get('/api/habits/entries/:date', requireDB, async (req, res) => {
+    try {
+        const entries = await db.getHabitEntriesByDate(req.params.date);
+        res.json(entries);
+    } catch (error) {
+        console.error('Error reading habit entries:', error);
+        res.status(500).json({ error: 'Failed to read habit entries' });
+    }
+});
+
+app.put('/api/habits/entries/:habitId', requireDB, async (req, res) => {
+    try {
+        const { date, value, textValue } = req.body;
+        if (!date || value === undefined) return res.status(400).json({ error: 'date and value required' });
+        const result = await db.upsertHabitEntry(parseInt(req.params.habitId), date, value, textValue);
+        res.json(result);
+    } catch (error) {
+        console.error('Error upserting habit entry:', error);
+        res.status(500).json({ error: 'Failed to save habit entry' });
+    }
+});
+
+// ============= MOOD API =============
+
+app.get('/api/mood/:date', requireDB, async (req, res) => {
+    try {
+        const entry = await db.getMoodEntry(req.params.date);
+        res.json(entry);
+    } catch (error) {
+        console.error('Error reading mood entry:', error);
+        res.status(500).json({ error: 'Failed to read mood entry' });
+    }
+});
+
+app.put('/api/mood/:date', requireDB, async (req, res) => {
+    try {
+        const { mood, diary } = req.body;
+        if (mood === undefined) return res.status(400).json({ error: 'mood is required' });
+        const result = await db.upsertMoodEntry(req.params.date, mood, diary || '');
+        res.json(result);
+    } catch (error) {
+        console.error('Error saving mood entry:', error);
+        res.status(500).json({ error: 'Failed to save mood entry' });
+    }
+});
+
+// ============= ANALYTICS API (continued) =============
+
 app.get('/api/analytics/daily/:date', requireDB, async (req, res) => {
     try {
         const { date } = req.params;
@@ -484,112 +548,336 @@ app.get('/api/analytics/weekly', requireDB, async (req, res) => {
     }
 });
 
-// ============= AI ASSISTANT API =============
+// ============= EXCEL EXPORT API =============
 
-// AI Chat endpoint with Gemini
-app.post('/api/ai/chat', async (req, res) => {
+app.post('/api/export-excel', requireDB, async (req, res) => {
     try {
-        const { message, date, nutritionData } = req.body;
-        
-        if (!message) {
-            return res.status(400).json({ error: 'Message is required' });
+        const { mealsByDate, startDate, endDate, filename } = req.body;
+
+        if (!mealsByDate || typeof mealsByDate !== 'object') {
+            return res.status(400).json({ error: 'Invalid meal data provided' });
         }
 
-        // If Gemini is not available, use fallback
-        if (!geminiModel) {
-            return res.json({
-                response: "I'm currently unavailable. Please set the GEMINI_API_KEY environment variable to enable AI chat. In the meantime, use the quick action buttons above for nutrition analysis.",
-                fallback: true
+        const dates = Object.keys(mealsByDate).sort();
+        if (dates.length === 0) {
+            return res.status(400).json({ error: 'No meal data found for export' });
+        }
+
+        // Generate filename
+        let exportFilename = filename;
+        if (!exportFilename) {
+            const firstDate = dates[0];
+            const date = new Date(firstDate + 'T00:00:00');
+            const yearMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            exportFilename = `${yearMonth}.xlsx`;
+        }
+
+        const trackersDir = path.join(__dirname, 'trackers');
+        try { await fs.mkdir(trackersDir, { recursive: true }); } catch (e) { /* exists */ }
+        const filePath = path.join(trackersDir, exportFilename);
+
+        // Check if file already exists
+        let workbook;
+        let fileExistedAtStart = false;
+        let isNewFileCreation = false;
+
+        try {
+            await fs.access(filePath);
+            fileExistedAtStart = true;
+            workbook = new ExcelJS.Workbook();
+            await workbook.xlsx.readFile(filePath);
+        } catch (error) {
+            fileExistedAtStart = false;
+            isNewFileCreation = true;
+            workbook = new ExcelJS.Workbook();
+            workbook.creator = 'Food Diary App';
+            workbook.lastModifiedBy = 'Food Diary App';
+            workbook.created = new Date();
+            workbook.modified = new Date();
+        }
+
+        // Generate list of ALL dates including missing ones
+        const sortedDates = dates.sort();
+        let allDatesToProcess = [];
+
+        if (sortedDates.length > 0) {
+            const firstDate = new Date(sortedDates[0] + 'T00:00:00');
+            const lastDate = new Date(sortedDates[sortedDates.length - 1] + 'T00:00:00');
+            const currentDate = new Date(firstDate);
+            while (currentDate <= lastDate) {
+                allDatesToProcess.push(currentDate.toISOString().split('T')[0]);
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+        }
+
+        // Fetch habit definitions and mood emoji map for tracker sections
+        const habitDefs = await db.getHabitDefinitions();
+        const moodEmojis = { 1: '😢', 2: '😕', 3: '😐', 4: '🙂', 5: '😄' };
+
+        let totalMealsProcessed = 0;
+        let mealsAppended = 0;
+        let newSheetsCreated = 0;
+        let missingSheetsAdded = 0;
+
+        // Collect tracker data for summary sheet
+        const trackerSummaryData = {};
+
+        for (const dateKey of allDatesToProcess) {
+            try {
+                const meals = mealsByDate[dateKey] || [];
+                const hasMeals = meals.length > 0;
+                const date = new Date(dateKey + 'T00:00:00');
+                const sheetName = dateKey;
+
+                // Remove existing sheet if appending
+                let worksheet = fileExistedAtStart ? workbook.getWorksheet(sheetName) : null;
+                if (worksheet) {
+                    workbook.removeWorksheet(worksheet.id);
+                }
+
+                worksheet = workbook.addWorksheet(sheetName);
+                newSheetsCreated++;
+                if (!hasMeals) missingSheetsAdded++;
+
+                // Set up columns
+                worksheet.columns = [
+                    { header: 'Time', key: 'time', width: 10 },
+                    { header: 'Meal Type', key: 'mealType', width: 15 },
+                    { header: 'Meal Description', key: 'description', width: 40 },
+                    { header: 'Calories', key: 'calories', width: 10 },
+                    { header: 'Protein (g)', key: 'protein', width: 12 },
+                    { header: 'Carbs (g)', key: 'carbs', width: 12 },
+                    { header: 'Fat (g)', key: 'fat', width: 10 },
+                    { header: 'Fiber (g)', key: 'fiber', width: 10 },
+                    { header: 'Source', key: 'source', width: 15 },
+                    { header: 'Ingredients', key: 'ingredients', width: 50 }
+                ];
+
+                // Style header row
+                const headerRow = worksheet.getRow(1);
+                headerRow.font = { bold: true, color: { argb: 'FFFFFF' } };
+                headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '4472C4' } };
+                headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
+                headerRow.height = 25;
+
+                // Date header row
+                const dateHeaderRow = worksheet.addRow({
+                    time: '', mealType: '',
+                    description: `📅 ${date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`,
+                    calories: '', protein: '', carbs: '', fat: '', fiber: '', source: '', ingredients: ''
+                });
+                dateHeaderRow.font = { bold: true, size: 14 };
+                dateHeaderRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'F2F2F2' } };
+
+                worksheet.addRow({});
+
+                // Day totals
+                let dayTotals = { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
+
+                if (hasMeals) {
+                    meals.forEach(meal => {
+                        const mealTime = new Date(meal.timestamp).toLocaleTimeString('en-US', {
+                            hour: '2-digit', minute: '2-digit', hour12: false
+                        });
+
+                        let ingredientsList = '';
+                        if (meal.ingredients) {
+                            if (Array.isArray(meal.ingredients) && meal.ingredients.length > 0) {
+                                ingredientsList = meal.ingredients.map(ing =>
+                                    `${ing.name} (${ing.quantity}x ${ing.measurement})`
+                                ).join('; ');
+                            } else if (typeof meal.ingredients === 'string' && meal.ingredients.trim()) {
+                                ingredientsList = meal.ingredients.trim();
+                            }
+                        }
+
+                        const row = worksheet.addRow({
+                            time: mealTime,
+                            mealType: meal.mealType || 'Lunch',
+                            description: meal.description,
+                            calories: meal.nutrition.calories,
+                            protein: meal.nutrition.protein,
+                            carbs: meal.nutrition.carbs,
+                            fat: meal.nutrition.fat,
+                            fiber: meal.nutrition.fiber,
+                            source: meal.source === 'database' ? 'Database' :
+                                   meal.source === 'ingredients' ? 'Custom Recipe' : 'Manual Entry',
+                            ingredients: ingredientsList
+                        });
+                        row.alignment = { vertical: 'top', wrapText: true };
+                        row.height = Math.max(20, Math.ceil(ingredientsList.length / 50) * 15);
+
+                        dayTotals.calories += meal.nutrition.calories;
+                        dayTotals.protein += meal.nutrition.protein;
+                        dayTotals.carbs += meal.nutrition.carbs;
+                        dayTotals.fat += meal.nutrition.fat;
+                        dayTotals.fiber += meal.nutrition.fiber;
+                    });
+                    mealsAppended += meals.length;
+                }
+
+                // Summary row
+                worksheet.addRow({});
+                const summaryRow = worksheet.addRow({
+                    time: '', mealType: '',
+                    description: `📊 Daily Total (${meals.length} meals)`,
+                    calories: Math.round(dayTotals.calories),
+                    protein: Math.round(dayTotals.protein * 10) / 10,
+                    carbs: Math.round(dayTotals.carbs * 10) / 10,
+                    fat: Math.round(dayTotals.fat * 10) / 10,
+                    fiber: Math.round(dayTotals.fiber * 10) / 10,
+                    source: 'SUMMARY', ingredients: ''
+                });
+                summaryRow.font = { bold: true, color: { argb: 'FFFFFF' } };
+                summaryRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '4472C4' } };
+
+                // ── Tracker section per date sheet ──
+                const habitEntries = await db.getHabitEntriesByDate(dateKey);
+                const moodEntry = await db.getMoodEntry(dateKey);
+
+                // Store for summary sheet
+                trackerSummaryData[dateKey] = { habits: habitEntries, mood: moodEntry };
+
+                // Blank row separator
+                worksheet.addRow({});
+                worksheet.addRow({});
+
+                // Tracker header
+                const trackerHeaderRow = worksheet.addRow({
+                    time: '📋 Daily Trackers', mealType: '', description: '', calories: '', protein: '', carbs: '', fat: '', fiber: '', source: '', ingredients: ''
+                });
+                trackerHeaderRow.font = { bold: true, size: 12 };
+                trackerHeaderRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '6A1B9A' } };
+                trackerHeaderRow.font = { bold: true, size: 12, color: { argb: 'FFFFFF' } };
+
+                // Habit sub-header
+                const habitSubHeader = worksheet.addRow({
+                    time: 'Habit', mealType: 'Value', description: '', calories: '', protein: '', carbs: '', fat: '', fiber: '', source: '', ingredients: ''
+                });
+                habitSubHeader.font = { bold: true };
+                habitSubHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'E1BEE7' } };
+
+                // Habit entries
+                habitEntries.forEach(h => {
+                    let displayValue;
+                    if (h.type === 'text') {
+                        displayValue = h.text_value || '';
+                    } else if (h.type === 'toggle') {
+                        displayValue = h.value ? 'YES' : '';
+                    } else {
+                        displayValue = h.value || 0;
+                    }
+                    const habitRow = worksheet.addRow({
+                        time: `${h.emoji} ${h.name}`, mealType: displayValue,
+                        description: '', calories: '', protein: '', carbs: '', fat: '', fiber: '', source: '', ingredients: ''
+                    });
+                    habitRow.getCell(1).alignment = { horizontal: 'left' };
+                });
+
+                // Mood + diary
+                worksheet.addRow({});
+                const moodRow = worksheet.addRow({
+                    time: `😊 Mood: ${moodEmojis[moodEntry.mood] || '😐'}`, mealType: '',
+                    description: '', calories: '', protein: '', carbs: '', fat: '', fiber: '', source: '', ingredients: ''
+                });
+                moodRow.font = { bold: true };
+
+                if (moodEntry.diary) {
+                    const diaryRow = worksheet.addRow({
+                        time: `📝 Diary:`, mealType: moodEntry.diary,
+                        description: '', calories: '', protein: '', carbs: '', fat: '', fiber: '', source: '', ingredients: ''
+                    });
+                    diaryRow.getCell(2).alignment = { wrapText: true };
+                }
+
+                // Borders
+                worksheet.eachRow((row) => {
+                    row.eachCell((cell) => {
+                        cell.border = {
+                            top: { style: 'thin' }, left: { style: 'thin' },
+                            bottom: { style: 'thin' }, right: { style: 'thin' }
+                        };
+                    });
+                });
+
+                worksheet.views = [{ state: 'frozen', ySplit: 1 }];
+                totalMealsProcessed += meals.length;
+            } catch (dateError) {
+                console.error('Error processing date sheet:', dateKey, dateError.message);
+            }
+        }
+
+        // ── Summary Trackers sheet ──
+        // Remove existing Trackers sheet if present
+        const existingTrackSheet = workbook.getWorksheet('Trackers');
+        if (existingTrackSheet) {
+            workbook.removeWorksheet(existingTrackSheet.id);
+        }
+
+        const trackSheet = workbook.addWorksheet('Trackers');
+        const trackHeaders = ['Date', ...habitDefs.map(h => `${h.emoji} ${h.name}`), 'Mood', 'Diary'];
+        const trackColWidths = [14, ...habitDefs.map(() => 14), 8, 40];
+        trackColWidths.forEach((w, i) => { trackSheet.getColumn(i + 1).width = w; });
+
+        const tHeader = trackSheet.getRow(1);
+        tHeader.values = trackHeaders;
+        tHeader.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        tHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF6A1B9A' } };
+        tHeader.alignment = { horizontal: 'center' };
+
+        const trackerDates = Object.keys(trackerSummaryData).sort();
+        trackerDates.forEach((dateKey, idx) => {
+            const data = trackerSummaryData[dateKey];
+            const row = trackSheet.getRow(idx + 2);
+            const values = [dateKey];
+            habitDefs.forEach(h => {
+                const entry = data.habits.find(e => e.habit_id === h.id);
+                if (!entry || entry.value === 0) {
+                    values.push(h.type === 'toggle' ? '' : (h.type === 'text' ? '' : 0));
+                } else if (h.type === 'text') {
+                    values.push(entry.text_value || '');
+                } else {
+                    values.push(h.type === 'toggle' ? 'YES' : entry.value);
+                }
             });
-        }
+            values.push(moodEmojis[data.mood.mood] || '😐');
+            values.push(data.mood.diary || '');
+            row.values = values;
+            if (idx % 2 === 0) {
+                row.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF3E5F5' } };
+            }
+            row.commit();
+        });
 
-        // Build context from user's nutrition data
-        let context = 'You are a helpful nutrition assistant. ';
-        
-        if (nutritionData && nutritionData.summary) {
-            const s = nutritionData.summary;
-            context += `The user has logged ${s.meal_count || 0} meals today (${date || 'today'}) with ${Math.round(s.total_calories || 0)} calories, ${Math.round(s.total_protein || 0)}g protein, ${Math.round(s.total_carbs || 0)}g carbs, ${Math.round(s.total_fat || 0)}g fat, and ${Math.round(s.total_fiber || 0)}g fiber. `;
-        }
-        
-        context += 'Provide concise, helpful nutrition advice. Keep responses under 100 words unless detailed analysis is requested. Use a friendly, encouraging tone.';
+        trackSheet.autoFilter = {
+            from: 'A1',
+            to: `${String.fromCharCode(65 + trackHeaders.length - 1)}1`
+        };
 
-        const prompt = `${context}\n\nUser question: ${message}\n\nResponse:`;
-
-        const result = await geminiModel.generateContent(prompt);
-        const response = result.response;
-        const text = response.text();
+        // Save workbook
+        await workbook.xlsx.writeFile(filePath);
 
         res.json({
-            response: text,
-            fallback: false
+            success: true,
+            message: fileExistedAtStart ?
+                `Data updated in existing file: ${exportFilename} (${totalMealsProcessed} meals across ${allDatesToProcess.length} dates)` :
+                `New file created: ${exportFilename} (${totalMealsProcessed} meals across ${allDatesToProcess.length} dates)`,
+            filename: exportFilename,
+            filePath: `trackers/${exportFilename}`,
+            fileExists: fileExistedAtStart,
+            isNewFileCreation: isNewFileCreation,
+            totalSheets: allDatesToProcess.length,
+            totalMeals: totalMealsProcessed,
+            datesWithMeals: sortedDates.length,
+            datesWithoutMeals: missingSheetsAdded
         });
+
     } catch (error) {
-        console.error('Error in AI chat:', error);
-        
-        // Friendly error response
-        res.json({
-            response: "I'm having trouble processing your request right now. Please try asking in a different way or use the quick action buttons above!",
-            error: true,
-            fallback: true
+        console.error('Excel export error:', error.message);
+        res.status(500).json({
+            error: 'Failed to generate Excel export',
+            details: error.message
         });
-    }
-});
-
-app.post('/api/ai/analyze', requireDB, async (req, res) => {
-    try {
-        const { date } = req.body;
-        
-        if (!date) {
-            return res.status(400).json({ error: 'Date is required' });
-        }
-        
-        const analysis = await aiAssistant.generateSuggestions(date);
-        res.json(analysis);
-    } catch (error) {
-        console.error('Error generating AI analysis:', error);
-        res.status(500).json({ error: 'Failed to generate analysis' });
-    }
-});
-
-app.post('/api/ai/weekly-progress', requireDB, async (req, res) => {
-    try {
-        const progress = await aiAssistant.getWeeklyProgress();
-        res.json(progress);
-    } catch (error) {
-        console.error('Error getting weekly progress:', error);
-        res.status(500).json({ error: 'Failed to get weekly progress' });
-    }
-});
-
-app.post('/api/ai/compare', requireDB, async (req, res) => {
-    try {
-        const { currentStartDate, currentEndDate } = req.body;
-        
-        if (!currentStartDate || !currentEndDate) {
-            return res.status(400).json({ error: 'Date range is required' });
-        }
-        
-        const comparison = await aiAssistant.compareWithPreviousWeek(currentStartDate, currentEndDate);
-        res.json(comparison);
-    } catch (error) {
-        console.error('Error comparing periods:', error);
-        res.status(500).json({ error: 'Failed to compare periods' });
-    }
-});
-
-app.post('/api/ai/recommendations', requireDB, async (req, res) => {
-    try {
-        const { deficientNutrients } = req.body;
-        
-        if (!Array.isArray(deficientNutrients)) {
-            return res.status(400).json({ error: 'deficientNutrients must be an array' });
-        }
-        
-        const recommendations = await aiAssistant.getFoodRecommendations(deficientNutrients);
-        res.json(recommendations);
-    } catch (error) {
-        console.error('Error getting recommendations:', error);
-        res.status(500).json({ error: 'Failed to get recommendations' });
     }
 });
 
@@ -613,7 +901,6 @@ initializeDatabase().then(() => {
     app.listen(PORT, () => {
         console.log(`🚀 Food Tracker Server running on http://localhost:${PORT}`);
         console.log(`📊 Database: ${dbConnected ? 'Connected' : 'Disconnected'}`);
-        console.log(`🤖 AI Assistant: Ready`);
     });
 });
 
