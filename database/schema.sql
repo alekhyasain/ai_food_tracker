@@ -133,6 +133,27 @@ CREATE TABLE IF NOT EXISTS mood_entries (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Expenditure category definitions (like habit_definitions)
+CREATE TABLE IF NOT EXISTS expenditure_categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    emoji TEXT NOT NULL DEFAULT '💰',
+    built_in INTEGER DEFAULT 0,
+    sort_order INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Daily expenditure entries per category (like habit_entries)
+CREATE TABLE IF NOT EXISTS expenditure_entries (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    category_id INTEGER NOT NULL,
+    date TEXT NOT NULL,
+    amount REAL NOT NULL DEFAULT 0,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES expenditure_categories(id) ON DELETE CASCADE,
+    UNIQUE(category_id, date)
+);
+
 -- Indexes for better query performance
 CREATE INDEX IF NOT EXISTS idx_ingredients_category ON ingredients(category_id);
 CREATE INDEX IF NOT EXISTS idx_meals_date ON meals(date);
@@ -141,6 +162,7 @@ CREATE INDEX IF NOT EXISTS idx_daily_summary_date ON daily_summary(date);
 CREATE INDEX IF NOT EXISTS idx_recipe_ingredients_recipe ON recipe_ingredients(recipe_id);
 CREATE INDEX IF NOT EXISTS idx_habit_entries_date ON habit_entries(date);
 CREATE INDEX IF NOT EXISTS idx_mood_entries_date ON mood_entries(date);
+CREATE INDEX IF NOT EXISTS idx_expenditure_entries_date ON expenditure_entries(date);
 
 -- Triggers to update daily summary
 CREATE TRIGGER IF NOT EXISTS update_daily_summary_on_insert

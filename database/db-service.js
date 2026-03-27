@@ -18,6 +18,7 @@ class DatabaseService {
                     console.log('Connected to SQLite database');
                     try {
                         await this._initHabitTables();
+                        await this._initExpenditureTables();
                         resolve();
                     } catch (initErr) {
                         console.error('Error initializing habit tables:', initErr);
@@ -80,7 +81,7 @@ class DatabaseService {
 
         // Seed built-in habits (insert any missing ones)
         const builtIns = [
-            ['Water', '💧', 'counter', 1, 1],
+            ['Water', '🥛', 'counter', 1, 1],
             ['Nail Biting', '💅', 'counter', 1, 2],
             ['Crappy Food', '🍔', 'toggle', 1, 3],
             ['Period', '🔴', 'toggle', 1, 4],
@@ -103,6 +104,48 @@ class DatabaseService {
                 );
             }
         }
+    }
+
+    // Create expenditure tables and seed built-in categories
+    async _initExpenditureTables() {
+        await this.run(`CREATE TABLE IF NOT EXISTS expenditure_categories (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            emoji TEXT NOT NULL DEFAULT '💰',
+            built_in INTEGER DEFAULT 0,
+            sort_order INTEGER DEFAULT 0,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`);
+
+        await this.run(`CREATE TABLE IF NOT EXISTS expenditure_entries (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            category_id INTEGER NOT NULL,
+            date TEXT NOT NULL,
+            amount REAL NOT NULL DEFAULT 0,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (category_id) REFERENCES expenditure_categories(id) ON DELETE CASCADE,
+            UNIQUE(category_id, date)
+        )`);
+
+        await this.run(`CREATE INDEX IF NOT EXISTS idx_expenditure_entries_date ON expenditure_entries(date)`);
+
+        // Seed built-in expenditure categories
+        const builtIns = [
+            ['Food', '🍕', 1, 1],
+            ['Entertainment', '🎬', 1, 2],
+            ['Shopping', '🛍️', 1, 3],
+        ];
+        for (const [name, emoji, builtIn, sortOrder] of builtIns) {
+            const existing = await this.get(`SELECT id FROM expenditure_categories WHERE name = ? AND built_in = 1`, [name]);
+            if (!existing) {
+                await this.run(
+                    `INSERT INTO expenditure_categories (name, emoji, built_in, sort_order) VALUES (?, ?, ?, ?)`,
+                    [name, emoji, builtIn, sortOrder]
+                );
+            }
+        }
+        // Remove Transport if it was previously seeded
+        await this.run(`DELETE FROM expenditure_categories WHERE name = 'Transport' AND built_in = 1`);
     }
 
     // Helper methods for database operations
@@ -742,6 +785,52 @@ class DatabaseService {
              VALUES (?, ?, ?, CURRENT_TIMESTAMP)
              ON CONFLICT(date) DO UPDATE SET mood = ?, diary = ?, updated_at = CURRENT_TIMESTAMP`,
             [date, mood, diary, mood, diary]
+        );
+        return { success: true };
+    }
+
+    // ============= EXPENDITURE CATEGORIES METHODS =============
+
+    async getExpenditureCategories() {
+        return this.all(`SELECT * FROM expenditure_categories ORDER BY sort_order, id`);
+    }
+
+    async addExpenditureCategory(name, emoji) {
+        const maxOrder = await this.get(`SELECT MAX(sort_order) as max_order FROM expenditure_categories`);
+        const sortOrder = (maxOrder?.max_order || 0) + 1;
+        const result = await this.run(
+            `INSERT INTO expenditure_categories (name, emoji, built_in, sort_order) VALUES (?, ?, 0, ?)`,
+            [name, emoji || '💰', sortOrder]
+        );
+        return { id: result.lastID, name, emoji: emoji || '💰', built_in: 0, sort_order: sortOrder };
+    }
+
+    async deleteExpenditureCategory(id) {
+        const cat = await this.get(`SELECT * FROM expenditure_categories WHERE id = ?`, [id]);
+        if (!cat) throw new Error('Category not found');
+        if (cat.built_in === 1) throw new Error('Cannot delete built-in category');
+        await this.run(`DELETE FROM expenditure_categories WHERE id = ?`, [id]);
+        return { success: true, name: cat.name };
+    }
+
+    // ============= EXPENDITURE ENTRIES METHODS =============
+
+    async getExpenditureEntriesByDate(date) {
+        return this.all(`
+            SELECT ec.id as category_id, ec.name, ec.emoji, ec.built_in, ec.sort_order,
+                   COALESCE(ee.amount, 0) as amount, ee.id as entry_id
+            FROM expenditure_categories ec
+            LEFT JOIN expenditure_entries ee ON ec.id = ee.category_id AND ee.date = ?
+            ORDER BY ec.sort_order, ec.id
+        `, [date]);
+    }
+
+    async upsertExpenditureEntry(categoryId, date, amount) {
+        await this.run(
+            `INSERT INTO expenditure_entries (category_id, date, amount, updated_at)
+             VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+             ON CONFLICT(category_id, date) DO UPDATE SET amount = ?, updated_at = CURRENT_TIMESTAMP`,
+            [categoryId, date, amount, amount]
         );
         return { success: true };
     }

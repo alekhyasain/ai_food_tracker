@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Indian Food Diary - Volume Based Tracking</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .fade-in {
             animation: fadeIn 0.5s ease-in;
@@ -226,12 +227,21 @@
                         <button onclick="selectMood(4)" class="mood-btn text-3xl p-2 rounded-lg hover:bg-green-100 transition" data-mood="4">🙂</button>
                         <button onclick="selectMood(5)" class="mood-btn text-3xl p-2 rounded-lg hover:bg-blue-100 transition" data-mood="5">😄</button>
                     </div>
-                    <textarea id="diaryText" rows="3" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="What happened today? How are you feeling?"></textarea>
-                    <div class="flex justify-end mt-2">
-                        <button onclick="saveMoodEntry()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition duration-200 text-sm">
-                            Save Diary
-                        </button>
+                    <textarea id="diaryText" rows="3" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="What happened today? How are you feeling?" onblur="saveMoodEntry()"></textarea>
+                </div>
+            </div>
+
+            <!-- Expenditure Tracker -->
+            <div class="border-t pt-4">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-lg font-semibold text-gray-800">💸 Expenditure Tracker</h3>
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm font-bold text-red-600" id="expenditureDailyTotal">$0</span>
+                        <button onclick="showAddExpenditureCategoryModal()" class="text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded-full transition">+ Category</button>
                     </div>
+                </div>
+                <div id="expenditureCardsGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <!-- Populated by JS -->
                 </div>
             </div>
         </div>
@@ -391,6 +401,32 @@
                     <div class="text-center text-gray-500 py-8">
                         <p>No exercises logged yet. Add an exercise to get started!</p>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weekly Trends -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="flex justify-between items-center mb-3 cursor-pointer" onclick="document.getElementById('weeklyTrendsBody').classList.toggle('hidden')">
+                <h2 class="text-2xl font-semibold text-gray-800">📈 Weekly Trends</h2>
+                <span class="text-gray-400 text-xl">▼</span>
+            </div>
+            <div id="weeklyTrendsBody" class="grid grid-cols-2 gap-3">
+                <div class="bg-gray-50 rounded-lg p-3">
+                    <h3 class="text-sm font-medium text-gray-600 mb-1">Calories</h3>
+                    <div style="height:120px"><canvas id="chartCalories"></canvas></div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-3">
+                    <h3 class="text-sm font-medium text-gray-600 mb-1">Weight</h3>
+                    <div style="height:120px"><canvas id="chartWeight"></canvas></div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-3">
+                    <h3 class="text-sm font-medium text-gray-600 mb-1">Exercise</h3>
+                    <div style="height:120px"><canvas id="chartExercise"></canvas></div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-3 col-span-2">
+                    <h3 class="text-sm font-medium text-gray-600 mb-1">Habits</h3>
+                    <div id="habitHeatmap" class="overflow-x-auto"></div>
                 </div>
             </div>
         </div>
@@ -2153,6 +2189,7 @@
             displayMeals();
             displayTodaysExercises();
             refreshTrackers();
+            renderWeeklyTrends();
         }
 
         function goToToday() {
@@ -2164,6 +2201,7 @@
             displayMeals();
             displayTodaysExercises();
             refreshTrackers();
+            renderWeeklyTrends();
         }
 
         function goToYesterday() {
@@ -2176,6 +2214,7 @@
             displayMeals();
             displayTodaysExercises();
             refreshTrackers();
+            renderWeeklyTrends();
         }
 
         function getCurrentDateMeals() {
@@ -5560,13 +5599,35 @@
                 if (habit.type === 'text') {
                     const textVal = habitTextValues[habit.id] || '';
                     card.className = `col-span-2 relative p-3 rounded-xl transition-all duration-200 border-2 ${textVal ? 'border-purple-400 bg-purple-50 shadow-md' : 'border-gray-200 bg-gray-50'}`;
-                    card.innerHTML = `
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="text-2xl">${habit.emoji}</span>
-                            <span class="text-sm font-medium ${textVal ? 'text-purple-700' : 'text-gray-600'}">${habit.name}</span>
-                        </div>
-                        <textarea id="habitText_${habit.id}" rows="2" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none" placeholder="Enter ${habit.name.toLowerCase()}..." onblur="saveTextHabit(${habit.id})">${textVal}</textarea>
-                    `;
+
+                    // Check if this is Cooking Plan — render per-meal table
+                    if (habit.name === 'Cooking Plan') {
+                        const mealPlanTypes = ['Breakfast', 'Morning Snack', 'Lunch', 'Evening Snack', 'Dinner', 'Salad', 'Packing Plan'];
+                        let planData = {};
+                        try { planData = typeof textVal === 'string' && textVal.startsWith('{') ? JSON.parse(textVal) : {}; } catch(e) { planData = {}; }
+                        const rows = mealPlanTypes.map(meal => {
+                            const val = planData[meal] || '';
+                            return `<tr>
+                                <td class="py-1 pr-3 text-xs font-medium text-gray-600 whitespace-nowrap align-middle">${meal}</td>
+                                <td class="py-1 w-full"><input type="text" data-meal="${meal}" value="${val.replace(/"/g, '&quot;')}" placeholder="What to eat..." class="w-full border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" onblur="saveCookingPlan(${habit.id})"></td>
+                            </tr>`;
+                        }).join('');
+                        card.innerHTML = `
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-2xl">${habit.emoji}</span>
+                                <span class="text-sm font-medium ${textVal ? 'text-purple-700' : 'text-gray-600'}">${habit.name}</span>
+                            </div>
+                            <table id="cookingPlanTable_${habit.id}" class="w-full">${rows}</table>
+                        `;
+                    } else {
+                        card.innerHTML = `
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-2xl">${habit.emoji}</span>
+                                <span class="text-sm font-medium ${textVal ? 'text-purple-700' : 'text-gray-600'}">${habit.name}</span>
+                            </div>
+                            <textarea id="habitText_${habit.id}" rows="2" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none" placeholder="Enter ${habit.name.toLowerCase()}..." onblur="saveTextHabit(${habit.id})">${textVal}</textarea>
+                        `;
+                    }
                 } else if (habit.type === 'toggle') {
                     card.className = `relative text-center p-3 rounded-xl cursor-pointer transition-all duration-200 border-2 ${isActive ? 'border-green-400 bg-green-50 shadow-md' : 'border-gray-200 bg-gray-50 hover:border-gray-300'}`;
                     card.onclick = () => toggleHabit(habit.id);
@@ -5577,8 +5638,9 @@
                     `;
                 } else {
                     card.className = `relative text-center p-3 rounded-xl transition-all duration-200 border-2 ${isActive ? 'border-blue-400 bg-blue-50 shadow-md' : 'border-gray-200 bg-gray-50'}`;
+                    const emojiStyle = habit.name === 'Water' ? 'style="filter: sepia(1) saturate(5) hue-rotate(180deg) brightness(0.9)"' : '';
                     card.innerHTML = `
-                        <div class="text-3xl mb-1">${habit.emoji}</div>
+                        <div class="text-3xl mb-1" ${emojiStyle}>${habit.emoji}</div>
                         <div class="text-lg font-bold ${isActive ? 'text-blue-700' : 'text-gray-400'}">${val}</div>
                         <div class="text-xs text-gray-600 mb-1 truncate">${habit.name}</div>
                         <div class="flex justify-center gap-1">
@@ -5605,9 +5667,10 @@
             if (diaryEl) diaryEl.value = currentMoodEntry.diary || '';
         }
 
-        function selectMood(mood) {
+        async function selectMood(mood) {
             currentMoodEntry.mood = mood;
             renderMoodSection();
+            await saveMoodEntry();
         }
 
         async function toggleHabit(habitId) {
@@ -5646,21 +5709,149 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ mood: currentMoodEntry.mood, diary: currentMoodEntry.diary })
                 });
-                // Brief visual feedback
-                const btn = document.querySelector('#dailyTrackersSection .bg-orange-500');
-                if (btn) {
-                    const origText = btn.textContent;
-                    btn.textContent = 'Saved!';
-                    setTimeout(() => btn.textContent = origText, 1000);
-                }
             } catch (e) { console.error('Failed to save mood:', e); }
+        }
+
+        // ============= WEEKLY TRENDS CHARTS =============
+        let weeklyCharts = {};
+
+        async function renderWeeklyTrends() {
+            const dates = [];
+            const today = new Date(selectedDate);
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date(today);
+                d.setDate(d.getDate() - i);
+                dates.push(d.toISOString().split('T')[0]);
+            }
+            const labels = dates.map(d => {
+                const [, m, day] = d.split('-');
+                return `${parseInt(m)}/${parseInt(day)}`;
+            });
+
+            // Fetch calorie data
+            let caloriesByDate = {};
+            try {
+                const res = await fetch(`/api/analytics/weekly?startDate=${dates[0]}&endDate=${dates[6]}`);
+                const data = await res.json();
+                data.forEach(row => { caloriesByDate[row.date] = row.total_calories || 0; });
+            } catch (e) { console.error('Failed to fetch weekly calories:', e); }
+            const caloriesData = dates.map(d => caloriesByDate[d] || 0);
+
+            // Weight data from localStorage
+            const weightStore = JSON.parse(localStorage.getItem('weightByDate') || '{}');
+            const weightData = dates.map(d => {
+                const entry = weightStore[d];
+                return entry ? (typeof entry === 'object' ? entry.weight : entry) : null;
+            });
+
+            // Exercise data from localStorage
+            const exerciseStore = JSON.parse(localStorage.getItem('exerciseByDate') || '{}');
+            const exerciseData = dates.map(d => {
+                const entries = exerciseStore[d];
+                if (!entries) return 0;
+                if (Array.isArray(entries)) return entries.reduce((sum, e) => sum + (e.calories || 0), 0);
+                return entries.calories || 0;
+            });
+
+            // Habits data from API (full entries per day)
+            const habitsRaw = await Promise.all(dates.map(async d => {
+                try {
+                    const res = await fetch(`/api/habits/entries/${d}`);
+                    return await res.json();
+                } catch (e) { return []; }
+            }));
+
+            // Build habit heatmap
+            const habitMap = {};
+            habitsRaw.forEach((dayEntries, i) => {
+                dayEntries.forEach(h => {
+                    if (h.type === 'text') return;
+                    if (!habitMap[h.habit_id]) habitMap[h.habit_id] = { name: h.name, emoji: h.emoji, values: new Array(7).fill(0) };
+                    habitMap[h.habit_id].values[i] = h.value || 0;
+                });
+            });
+
+            const dayLabels = dates.map(d => {
+                const dt = new Date(d + 'T12:00:00');
+                return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dt.getDay()];
+            });
+
+            const heatmapEl = document.getElementById('habitHeatmap');
+            if (heatmapEl) {
+                const habits = Object.values(habitMap);
+                if (habits.length === 0) {
+                    heatmapEl.innerHTML = '<p class="text-xs text-gray-400 py-2">No habit data</p>';
+                } else {
+                    let html = '<table class="w-full" style="border-spacing:4px;border-collapse:separate"><thead><tr><td></td>';
+                    dayLabels.forEach(l => { html += `<td class="text-center text-xs text-gray-500 font-medium pb-1">${l}</td>`; });
+                    html += '</tr></thead><tbody>';
+                    habits.forEach(h => {
+                        html += `<tr><td class="text-xs text-gray-700 pr-2 whitespace-nowrap">${h.emoji || ''} ${h.name}</td>`;
+                        h.values.forEach(v => {
+                            const done = v > 0;
+                            const bg = done ? 'bg-green-500' : 'bg-gray-200';
+                            const title = done ? (v > 1 ? `${v}x` : 'Done') : 'Missed';
+                            html += `<td class="text-center"><div class="w-6 h-6 mx-auto rounded-md ${bg} flex items-center justify-center" title="${title}">`;
+                            if (done && v > 1) html += `<span class="text-white text-xs font-bold">${v}</span>`;
+                            html += '</div></td>';
+                        });
+                        html += '</tr>';
+                    });
+                    html += '</tbody></table>';
+                    heatmapEl.innerHTML = html;
+                }
+            }
+
+            // Helper to create or update a chart
+            function upsertChart(id, config) {
+                if (weeklyCharts[id]) {
+                    weeklyCharts[id].data = config.data;
+                    weeklyCharts[id].update();
+                } else {
+                    const ctx = document.getElementById(id);
+                    if (ctx) weeklyCharts[id] = new Chart(ctx, config);
+                }
+            }
+
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { font: { size: 10 } } },
+                    y: { beginAtZero: true, ticks: { font: { size: 10 } } }
+                },
+                elements: { point: { radius: 3 }, line: { tension: 0.3, borderWidth: 2 } }
+            };
+
+            // Calories line chart
+            upsertChart('chartCalories', {
+                type: 'line',
+                data: { labels, datasets: [{ data: caloriesData, borderColor: 'rgb(59,130,246)', backgroundColor: 'rgba(59,130,246,0.1)', fill: true }] },
+                options: commonOptions
+            });
+
+            // Weight line chart
+            upsertChart('chartWeight', {
+                type: 'line',
+                data: { labels, datasets: [{ data: weightData, borderColor: 'rgb(168,85,247)', backgroundColor: 'rgba(168,85,247,0.1)', fill: true, spanGaps: true }] },
+                options: { ...commonOptions, scales: { ...commonOptions.scales, y: { ...commonOptions.scales.y, beginAtZero: false } } }
+            });
+
+            // Exercise line chart
+            upsertChart('chartExercise', {
+                type: 'line',
+                data: { labels, datasets: [{ data: exerciseData, borderColor: 'rgb(34,197,94)', backgroundColor: 'rgba(34,197,94,0.1)', fill: true }] },
+                options: commonOptions
+            });
         }
 
         async function refreshTrackers() {
             const date = getTrackerDateStr();
-            await Promise.all([loadHabitEntries(date), loadMoodEntry(date)]);
+            await Promise.all([loadHabitEntries(date), loadMoodEntry(date), loadExpenditureEntries(date)]);
             renderHabitCards();
             renderMoodSection();
+            renderExpenditureCards();
         }
 
         async function saveTextHabit(habitId) {
@@ -5676,6 +5867,138 @@
                 body: JSON.stringify({ date, value: text ? 1 : 0, textValue: text })
             });
             renderHabitCards();
+        }
+
+        async function saveCookingPlan(habitId) {
+            const table = document.getElementById(`cookingPlanTable_${habitId}`);
+            if (!table) return;
+            const planData = {};
+            table.querySelectorAll('input[data-meal]').forEach(input => {
+                const val = input.value.trim();
+                if (val) planData[input.dataset.meal] = val;
+            });
+            const text = Object.keys(planData).length > 0 ? JSON.stringify(planData) : '';
+            habitTextValues[habitId] = text;
+            habitEntries[habitId] = text ? 1 : 0;
+            const date = getTrackerDateStr();
+            await fetch(`/api/habits/entries/${habitId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ date, value: text ? 1 : 0, textValue: text })
+            });
+        }
+
+        // ============= EXPENDITURE TRACKER =============
+        let expenditureCategories = [];
+        let expenditureEntries = {};
+
+        async function loadExpenditureCategories() {
+            try {
+                const res = await fetch('/api/expenditures');
+                if (res.ok) expenditureCategories = await res.json();
+            } catch (e) { console.error('Failed to load expenditure categories:', e); }
+        }
+
+        async function loadExpenditureEntries(date) {
+            try {
+                const res = await fetch(`/api/expenditures/entries/${date}`);
+                if (res.ok) {
+                    const entries = await res.json();
+                    expenditureEntries = {};
+                    entries.forEach(e => {
+                        expenditureEntries[e.category_id] = e.amount;
+                        if (!expenditureCategories.find(c => c.id === e.category_id)) {
+                            expenditureCategories.push({ id: e.category_id, name: e.name, emoji: e.emoji, built_in: e.built_in, sort_order: e.sort_order });
+                        }
+                    });
+                }
+            } catch (e) { console.error('Failed to load expenditure entries:', e); }
+        }
+
+        async function saveExpenditureEntry(categoryId, amount) {
+            const date = getTrackerDateStr();
+            expenditureEntries[categoryId] = amount;
+            renderExpenditureCards();
+            await fetch(`/api/expenditures/entries/${categoryId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ date, amount })
+            });
+        }
+
+        function renderExpenditureCards() {
+            const grid = document.getElementById('expenditureCardsGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            let dailyTotal = 0;
+            expenditureCategories.forEach(cat => {
+                const amount = expenditureEntries[cat.id] || 0;
+                dailyTotal += amount;
+                const hasAmount = amount > 0;
+                const card = document.createElement('div');
+                card.className = `relative p-3 rounded-xl transition-all duration-200 border-2 ${hasAmount ? 'border-red-400 bg-red-50 shadow-md' : 'border-gray-200 bg-gray-50'}`;
+                card.innerHTML = `
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-1">
+                            <span class="text-xl">${cat.emoji}</span>
+                            <span class="text-xs font-medium ${hasAmount ? 'text-red-700' : 'text-gray-600'}">${cat.name}</span>
+                        </div>
+                        ${!cat.built_in ? `<button onclick="deleteExpenditureCategory(${cat.id})" class="text-gray-400 hover:text-red-500 text-xs">&times;</button>` : ''}
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <span class="text-gray-500 text-sm">$</span>
+                        <input type="number" min="0" step="1" value="${amount || ''}" placeholder="0"
+                            class="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm text-right focus:outline-none focus:ring-2 focus:ring-red-400"
+                            onchange="saveExpenditureEntry(${cat.id}, parseFloat(this.value) || 0)"
+                            onkeyup="if(event.key==='Enter') this.blur()">
+                    </div>
+                    <div class="flex justify-center gap-1 mt-1">
+                        <button onclick="adjustExpenditure(${cat.id}, -1)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 w-6 h-6 rounded-full text-xs font-bold transition">-</button>
+                        <button onclick="adjustExpenditure(${cat.id}, 1)" class="bg-red-500 hover:bg-red-600 text-white w-6 h-6 rounded-full text-xs font-bold transition">+</button>
+                        <button onclick="adjustExpenditure(${cat.id}, 5)" class="bg-red-500 hover:bg-red-600 text-white w-6 h-6 rounded-full text-xs font-bold transition">+5</button>
+                    </div>`;
+                grid.appendChild(card);
+            });
+            const totalEl = document.getElementById('expenditureDailyTotal');
+            if (totalEl) totalEl.textContent = `$${dailyTotal.toFixed(0)}`;
+        }
+
+        function adjustExpenditure(categoryId, delta) {
+            const current = expenditureEntries[categoryId] || 0;
+            saveExpenditureEntry(categoryId, Math.max(0, current + delta));
+        }
+
+        async function showAddExpenditureCategoryModal() {
+            const name = prompt('Category name:');
+            if (!name) return;
+            const emoji = prompt('Emoji (optional):', '💰') || '💰';
+            try {
+                const res = await fetch('/api/expenditures', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, emoji })
+                });
+                if (res.ok) {
+                    const cat = await res.json();
+                    expenditureCategories.push(cat);
+                    renderExpenditureCards();
+                }
+            } catch (e) { console.error('Failed to add expenditure category:', e); }
+        }
+
+        async function deleteExpenditureCategory(id) {
+            if (!confirm('Delete this category?')) return;
+            try {
+                const res = await fetch(`/api/expenditures/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    expenditureCategories = expenditureCategories.filter(c => c.id !== id);
+                    delete expenditureEntries[id];
+                    renderExpenditureCards();
+                } else {
+                    const data = await res.json();
+                    alert(data.error || 'Failed to delete');
+                }
+            } catch (e) { console.error('Failed to delete expenditure category:', e); }
         }
 
         // CONSOLIDATED INITIALIZATION - Single DOMContentLoaded listener to prevent race conditions
@@ -5695,7 +6018,8 @@
             initializeDateSystem();
 
             // Initialize daily trackers (habits + mood)
-            loadHabitDefinitions().then(() => refreshTrackers());
+            loadHabitDefinitions().then(() => loadExpenditureCategories().then(() => refreshTrackers()));
+            renderWeeklyTrends();
 
             // Initialize meal preview updates for servings changes
             const mealServingsInput = document.getElementById('mealServings');

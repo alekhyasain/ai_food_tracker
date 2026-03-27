@@ -519,6 +519,63 @@ app.put('/api/mood/:date', requireDB, async (req, res) => {
     }
 });
 
+// ============= EXPENDITURE API =============
+
+app.get('/api/expenditures', requireDB, async (req, res) => {
+    try {
+        const categories = await db.getExpenditureCategories();
+        res.json(categories);
+    } catch (error) {
+        console.error('Error reading expenditure categories:', error);
+        res.status(500).json({ error: 'Failed to read expenditure categories' });
+    }
+});
+
+app.post('/api/expenditures', requireDB, async (req, res) => {
+    try {
+        const { name, emoji } = req.body;
+        if (!name) return res.status(400).json({ error: 'Name is required' });
+        const category = await db.addExpenditureCategory(name, emoji);
+        res.json(category);
+    } catch (error) {
+        console.error('Error adding expenditure category:', error);
+        res.status(500).json({ error: 'Failed to add expenditure category' });
+    }
+});
+
+app.delete('/api/expenditures/:id', requireDB, async (req, res) => {
+    try {
+        const result = await db.deleteExpenditureCategory(parseInt(req.params.id));
+        res.json(result);
+    } catch (error) {
+        console.error('Error deleting expenditure category:', error);
+        const status = error.message.includes('not found') ? 404 : error.message.includes('built-in') ? 400 : 500;
+        res.status(status).json({ error: error.message });
+    }
+});
+
+app.get('/api/expenditures/entries/:date', requireDB, async (req, res) => {
+    try {
+        const entries = await db.getExpenditureEntriesByDate(req.params.date);
+        res.json(entries);
+    } catch (error) {
+        console.error('Error reading expenditure entries:', error);
+        res.status(500).json({ error: 'Failed to read expenditure entries' });
+    }
+});
+
+app.put('/api/expenditures/entries/:categoryId', requireDB, async (req, res) => {
+    try {
+        const { date, amount } = req.body;
+        if (!date || amount === undefined) return res.status(400).json({ error: 'date and amount required' });
+        const result = await db.upsertExpenditureEntry(parseInt(req.params.categoryId), date, amount);
+        res.json(result);
+    } catch (error) {
+        console.error('Error upserting expenditure entry:', error);
+        res.status(500).json({ error: 'Failed to save expenditure entry' });
+    }
+});
+
 // ============= ANALYTICS API (continued) =============
 
 app.get('/api/analytics/daily/:date', requireDB, async (req, res) => {
