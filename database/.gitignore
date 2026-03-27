@@ -1,5 +1,4 @@
-# SQLite database files
-*.db
+# SQLite journal/temp files (transient, should never be committed)
 *.db-journal
 *.db-wal
 *.db-shm
