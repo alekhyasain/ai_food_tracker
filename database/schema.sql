@@ -154,6 +154,57 @@ CREATE TABLE IF NOT EXISTS expenditure_entries (
     UNIQUE(category_id, date)
 );
 
+-- Bills & Groceries line items
+CREATE TABLE IF NOT EXISTS bill_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date TEXT NOT NULL,
+    category TEXT NOT NULL DEFAULT 'bills',
+    description TEXT NOT NULL,
+    amount REAL NOT NULL DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Exercises table
+CREATE TABLE IF NOT EXISTS exercises (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date TEXT NOT NULL,
+    type TEXT NOT NULL,
+    name TEXT NOT NULL,
+    duration REAL DEFAULT 0,
+    calories REAL DEFAULT 0,
+    notes TEXT DEFAULT '',
+    timestamp TEXT DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_exercises_date ON exercises(date);
+
+-- Weight entries table
+CREATE TABLE IF NOT EXISTS weight_entries (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date TEXT NOT NULL UNIQUE,
+    weight REAL NOT NULL,
+    height REAL DEFAULT 0,
+    bmi REAL DEFAULT 0,
+    bmi_category TEXT DEFAULT '',
+    age INTEGER,
+    gender TEXT,
+    bmr_mifflin REAL DEFAULT 0,
+    bmr_harris REAL DEFAULT 0,
+    calorie_goal REAL DEFAULT 0,
+    notes TEXT DEFAULT '',
+    is_nursing INTEGER DEFAULT 0,
+    unit_system TEXT DEFAULT 'imperial',
+    original_weight REAL DEFAULT 0,
+    original_height REAL DEFAULT 0,
+    timestamp TEXT DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_weight_entries_date ON weight_entries(date);
+
+-- User settings table (for scalar values)
+CREATE TABLE IF NOT EXISTS user_settings (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+);
+
 -- Indexes for better query performance
 CREATE INDEX IF NOT EXISTS idx_ingredients_category ON ingredients(category_id);
 CREATE INDEX IF NOT EXISTS idx_meals_date ON meals(date);
@@ -163,6 +214,7 @@ CREATE INDEX IF NOT EXISTS idx_recipe_ingredients_recipe ON recipe_ingredients(r
 CREATE INDEX IF NOT EXISTS idx_habit_entries_date ON habit_entries(date);
 CREATE INDEX IF NOT EXISTS idx_mood_entries_date ON mood_entries(date);
 CREATE INDEX IF NOT EXISTS idx_expenditure_entries_date ON expenditure_entries(date);
+CREATE INDEX IF NOT EXISTS idx_bill_items_date_cat ON bill_items(date, category);
 
 -- Triggers to update daily summary
 CREATE TRIGGER IF NOT EXISTS update_daily_summary_on_insert

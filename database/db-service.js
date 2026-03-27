@@ -19,6 +19,8 @@ class DatabaseService {
                     try {
                         await this._initHabitTables();
                         await this._initExpenditureTables();
+                        await this._initExerciseWeightTables();
+                        await this._initBillsTables();
                         resolve();
                     } catch (initErr) {
                         console.error('Error initializing habit tables:', initErr);
@@ -84,16 +86,18 @@ class DatabaseService {
             ['Water', '🥛', 'counter', 1, 1],
             ['Nail Biting', '💅', 'counter', 1, 2],
             ['Crappy Food', '🍔', 'toggle', 1, 3],
-            ['Period', '🔴', 'toggle', 1, 4],
-            ['Study Something', '📚', 'text', 1, 5],
-            ['Dopamine Check', '🧠', 'counter', 1, 6],
-            ['Taught Son Something', '👨‍👦', 'toggle', 1, 7],
-            ['Cooking Plan', '🍳', 'text', 1, 8],
-            ['Multivitamins', '💊', 'toggle', 1, 9],
-            ['Iron Tablet', '💊', 'toggle', 1, 10],
-            ['Thyroid Medicine', '💊', 'toggle', 1, 11],
-            ['Sleep On Time', '🌙', 'toggle', 1, 12],
-            ['Woke Up On Time', '⏰', 'toggle', 1, 13],
+            ['Study Something', '📚', 'text', 1, 4],
+            ['Taught Son Something', '👨‍👦', 'toggle', 1, 5],
+            ['Cooking Plan', '🍳', 'text', 1, 7],
+            ['Multivitamins', '💊', 'toggle', 1, 8],
+            ['Iron Tablet', '💊', 'toggle', 1, 9],
+            ['Thyroid Medicine', '💊', 'toggle', 1, 10],
+            ['Night Brushing/Flossing/Mouthwash', '🪥', 'toggle', 1, 11],
+            ['Bad Expenditure', '💸', 'toggle', 1, 12],
+            ['Doom Scrolled', '📱', 'toggle', 1, 13],
+            ['Distracted in Meeting', '🔇', 'toggle', 1, 14],
+            ['Read a Book', '📖', 'toggle', 1, 15],
+            ['Deep Work Block', '🎯', 'toggle', 1, 16],
         ];
         for (const [name, emoji, type, builtIn, sortOrder] of builtIns) {
             const existing = await this.get(`SELECT id FROM habit_definitions WHERE name = ? AND built_in = 1`, [name]);
@@ -104,6 +108,14 @@ class DatabaseService {
                 );
             }
         }
+
+        // Remove Period habit if it was previously seeded
+        await this.run(`DELETE FROM habit_definitions WHERE name = 'Period' AND built_in = 1`);
+        // Remove Dopamine Check habit if it was previously seeded
+        await this.run(`DELETE FROM habit_definitions WHERE name = 'Dopamine Check' AND built_in = 1`);
+        // Remove Sleep On Time / Woke Up On Time — redundant with Sleep Tracker
+        await this.run(`DELETE FROM habit_definitions WHERE name = 'Sleep On Time' AND built_in = 1`);
+        await this.run(`DELETE FROM habit_definitions WHERE name = 'Woke Up On Time' AND built_in = 1`);
     }
 
     // Create expenditure tables and seed built-in categories
@@ -832,6 +844,188 @@ class DatabaseService {
              ON CONFLICT(category_id, date) DO UPDATE SET amount = ?, updated_at = CURRENT_TIMESTAMP`,
             [categoryId, date, amount, amount]
         );
+        return { success: true };
+    }
+
+    // ============= EXERCISE/WEIGHT/SETTINGS TABLES INIT =============
+
+    async _initExerciseWeightTables() {
+        await this.run(`CREATE TABLE IF NOT EXISTS exercises (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            date TEXT NOT NULL,
+            type TEXT NOT NULL,
+            name TEXT NOT NULL,
+            duration REAL DEFAULT 0,
+            calories REAL DEFAULT 0,
+            notes TEXT DEFAULT '',
+            timestamp TEXT DEFAULT (datetime('now'))
+        )`);
+        await this.run(`CREATE INDEX IF NOT EXISTS idx_exercises_date ON exercises(date)`);
+
+        await this.run(`CREATE TABLE IF NOT EXISTS weight_entries (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            date TEXT NOT NULL UNIQUE,
+            weight REAL NOT NULL,
+            height REAL DEFAULT 0,
+            bmi REAL DEFAULT 0,
+            bmi_category TEXT DEFAULT '',
+            age INTEGER,
+            gender TEXT,
+            bmr_mifflin REAL DEFAULT 0,
+            bmr_harris REAL DEFAULT 0,
+            calorie_goal REAL DEFAULT 0,
+            notes TEXT DEFAULT '',
+            is_nursing INTEGER DEFAULT 0,
+            unit_system TEXT DEFAULT 'imperial',
+            original_weight REAL DEFAULT 0,
+            original_height REAL DEFAULT 0,
+            timestamp TEXT DEFAULT (datetime('now'))
+        )`);
+        await this.run(`CREATE INDEX IF NOT EXISTS idx_weight_entries_date ON weight_entries(date)`);
+
+        await this.run(`CREATE TABLE IF NOT EXISTS user_settings (
+            key TEXT PRIMARY KEY,
+            value TEXT NOT NULL
+        )`);
+    }
+
+    // ============= EXERCISE METHODS =============
+
+    async getExercisesByDate(date) {
+        return this.all(`SELECT * FROM exercises WHERE date = ? ORDER BY timestamp`, [date]);
+    }
+
+    async addExercise(data) {
+        const result = await this.run(
+            `INSERT INTO exercises (date, type, name, duration, calories, notes, timestamp)
+             VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [data.date, data.type, data.name, data.duration || 0, data.calories || 0, data.notes || '', data.timestamp || new Date().toISOString()]
+        );
+        return { success: true, id: result.lastID };
+    }
+
+    async updateExercise(id, data) {
+        await this.run(
+            `UPDATE exercises SET type = ?, name = ?, duration = ?, calories = ?, notes = ?, timestamp = ? WHERE id = ?`,
+            [data.type, data.name, data.duration || 0, data.calories || 0, data.notes || '', data.timestamp || new Date().toISOString(), id]
+        );
+        return { success: true };
+    }
+
+    async deleteExercise(id) {
+        await this.run(`DELETE FROM exercises WHERE id = ?`, [id]);
+        return { success: true };
+    }
+
+    async deleteExercisesByDate(date) {
+        const result = await this.run(`DELETE FROM exercises WHERE date = ?`, [date]);
+        return { success: true, deleted: result.changes };
+    }
+
+    // ============= WEIGHT METHODS =============
+
+    async getWeightEntry(date) {
+        return this.get(`SELECT * FROM weight_entries WHERE date = ?`, [date]);
+    }
+
+    async getWeightEntries(startDate, endDate) {
+        return this.all(`SELECT * FROM weight_entries WHERE date >= ? AND date <= ? ORDER BY date`, [startDate, endDate]);
+    }
+
+    async upsertWeightEntry(data) {
+        await this.run(
+            `INSERT INTO weight_entries (date, weight, height, bmi, bmi_category, age, gender, bmr_mifflin, bmr_harris, calorie_goal, notes, is_nursing, unit_system, original_weight, original_height, timestamp)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             ON CONFLICT(date) DO UPDATE SET
+                weight = ?, height = ?, bmi = ?, bmi_category = ?, age = ?, gender = ?,
+                bmr_mifflin = ?, bmr_harris = ?, calorie_goal = ?, notes = ?,
+                is_nursing = ?, unit_system = ?, original_weight = ?, original_height = ?,
+                timestamp = ?`,
+            [
+                data.date, data.weight, data.height || 0, data.bmi || 0, data.bmiCategory || '',
+                data.age || null, data.gender || null, data.bmrMifflin || 0, data.bmrHarris || 0,
+                data.calorieGoal || 0, data.notes || '', data.isNursing ? 1 : 0,
+                data.unitSystem || 'imperial', data.originalWeight || 0, data.originalHeight || 0,
+                data.timestamp || new Date().toISOString(),
+                // ON CONFLICT values:
+                data.weight, data.height || 0, data.bmi || 0, data.bmiCategory || '',
+                data.age || null, data.gender || null, data.bmrMifflin || 0, data.bmrHarris || 0,
+                data.calorieGoal || 0, data.notes || '', data.isNursing ? 1 : 0,
+                data.unitSystem || 'imperial', data.originalWeight || 0, data.originalHeight || 0,
+                data.timestamp || new Date().toISOString()
+            ]
+        );
+        return { success: true };
+    }
+
+    async getLatestWeightEntry() {
+        return this.get(`SELECT * FROM weight_entries ORDER BY date DESC LIMIT 1`);
+    }
+
+    // ============= USER SETTINGS METHODS =============
+
+    async getSetting(key) {
+        const row = await this.get(`SELECT value FROM user_settings WHERE key = ?`, [key]);
+        return row ? row.value : null;
+    }
+
+    async setSetting(key, value) {
+        await this.run(
+            `INSERT INTO user_settings (key, value) VALUES (?, ?)
+             ON CONFLICT(key) DO UPDATE SET value = ?`,
+            [key, typeof value === 'string' ? value : JSON.stringify(value), typeof value === 'string' ? value : JSON.stringify(value)]
+        );
+        return { success: true };
+    }
+
+    async getAllSettings() {
+        const rows = await this.all(`SELECT key, value FROM user_settings`);
+        const settings = {};
+        rows.forEach(row => { settings[row.key] = row.value; });
+        return settings;
+    }
+
+    // ============= BILLS & GROCERIES TABLES INIT =============
+
+    async _initBillsTables() {
+        await this.run(`CREATE TABLE IF NOT EXISTS bill_items (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            date TEXT NOT NULL,
+            category TEXT NOT NULL DEFAULT 'bills',
+            description TEXT NOT NULL,
+            amount REAL NOT NULL DEFAULT 0,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`);
+        await this.run(`CREATE INDEX IF NOT EXISTS idx_bill_items_date_cat ON bill_items(date, category)`);
+    }
+
+    // ============= BILLS & GROCERIES METHODS =============
+
+    async getBillItemsByDate(date, category) {
+        return this.all(
+            `SELECT * FROM bill_items WHERE date = ? AND category = ? ORDER BY id`,
+            [date, category]
+        );
+    }
+
+    async addBillItem(date, category, description, amount) {
+        const result = await this.run(
+            `INSERT INTO bill_items (date, category, description, amount) VALUES (?, ?, ?, ?)`,
+            [date, category, description, amount]
+        );
+        return { id: result.lastID, date, category, description, amount };
+    }
+
+    async updateBillItem(id, description, amount) {
+        await this.run(
+            `UPDATE bill_items SET description = ?, amount = ? WHERE id = ?`,
+            [description, amount, id]
+        );
+        return { success: true };
+    }
+
+    async deleteBillItem(id) {
+        await this.run(`DELETE FROM bill_items WHERE id = ?`, [id]);
         return { success: true };
     }
 

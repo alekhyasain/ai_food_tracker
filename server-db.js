@@ -438,6 +438,139 @@ app.delete('/api/meals/by-date/:date', requireDB, async (req, res) => {
 
 // ============= ANALYTICS API =============
 
+// ============= EXERCISES API =============
+
+app.get('/api/exercises/:date', requireDB, async (req, res) => {
+    try {
+        const exercises = await db.getExercisesByDate(req.params.date);
+        res.json(exercises);
+    } catch (error) {
+        console.error('Error reading exercises:', error);
+        res.status(500).json({ error: 'Failed to read exercises' });
+    }
+});
+
+app.post('/api/exercises', requireDB, async (req, res) => {
+    try {
+        const { date, type, name, duration, calories, notes, timestamp } = req.body;
+        if (!date || !type || !name) return res.status(400).json({ error: 'date, type, and name are required' });
+        const result = await db.addExercise({ date, type, name, duration, calories, notes, timestamp });
+        res.json(result);
+    } catch (error) {
+        console.error('Error adding exercise:', error);
+        res.status(500).json({ error: 'Failed to add exercise' });
+    }
+});
+
+app.put('/api/exercises/:id', requireDB, async (req, res) => {
+    try {
+        const { type, name, duration, calories, notes, timestamp } = req.body;
+        if (!type || !name) return res.status(400).json({ error: 'type and name are required' });
+        const result = await db.updateExercise(parseInt(req.params.id), { type, name, duration, calories, notes, timestamp });
+        res.json(result);
+    } catch (error) {
+        console.error('Error updating exercise:', error);
+        res.status(500).json({ error: 'Failed to update exercise' });
+    }
+});
+
+app.delete('/api/exercises/by-date/:date', requireDB, async (req, res) => {
+    try {
+        const result = await db.deleteExercisesByDate(req.params.date);
+        res.json(result);
+    } catch (error) {
+        console.error('Error deleting exercises by date:', error);
+        res.status(500).json({ error: 'Failed to delete exercises' });
+    }
+});
+
+app.delete('/api/exercises/:id', requireDB, async (req, res) => {
+    try {
+        const result = await db.deleteExercise(parseInt(req.params.id));
+        res.json(result);
+    } catch (error) {
+        console.error('Error deleting exercise:', error);
+        res.status(500).json({ error: 'Failed to delete exercise' });
+    }
+});
+
+// ============= WEIGHT API =============
+
+app.get('/api/weight/:date', requireDB, async (req, res) => {
+    try {
+        const entry = await db.getWeightEntry(req.params.date);
+        res.json(entry || null);
+    } catch (error) {
+        console.error('Error reading weight entry:', error);
+        res.status(500).json({ error: 'Failed to read weight entry' });
+    }
+});
+
+app.get('/api/weight', requireDB, async (req, res) => {
+    try {
+        const { latest, startDate, endDate } = req.query;
+        if (latest === 'true') {
+            const entry = await db.getLatestWeightEntry();
+            res.json(entry || null);
+        } else if (startDate && endDate) {
+            const entries = await db.getWeightEntries(startDate, endDate);
+            res.json(entries);
+        } else {
+            const entry = await db.getLatestWeightEntry();
+            res.json(entry || null);
+        }
+    } catch (error) {
+        console.error('Error reading weight entries:', error);
+        res.status(500).json({ error: 'Failed to read weight entries' });
+    }
+});
+
+app.put('/api/weight/:date', requireDB, async (req, res) => {
+    try {
+        const data = { ...req.body, date: req.params.date };
+        if (!data.weight) return res.status(400).json({ error: 'weight is required' });
+        const result = await db.upsertWeightEntry(data);
+        res.json(result);
+    } catch (error) {
+        console.error('Error saving weight entry:', error);
+        res.status(500).json({ error: 'Failed to save weight entry' });
+    }
+});
+
+// ============= SETTINGS API =============
+
+app.get('/api/settings', requireDB, async (req, res) => {
+    try {
+        const settings = await db.getAllSettings();
+        res.json(settings);
+    } catch (error) {
+        console.error('Error reading settings:', error);
+        res.status(500).json({ error: 'Failed to read settings' });
+    }
+});
+
+app.get('/api/settings/:key', requireDB, async (req, res) => {
+    try {
+        const value = await db.getSetting(req.params.key);
+        res.json({ key: req.params.key, value });
+    } catch (error) {
+        console.error('Error reading setting:', error);
+        res.status(500).json({ error: 'Failed to read setting' });
+    }
+});
+
+app.put('/api/settings/:key', requireDB, async (req, res) => {
+    try {
+        const { value } = req.body;
+        if (value === undefined) return res.status(400).json({ error: 'value is required' });
+        const result = await db.setSetting(req.params.key, value);
+        res.json(result);
+    } catch (error) {
+        console.error('Error saving setting:', error);
+        res.status(500).json({ error: 'Failed to save setting' });
+    }
+});
+
 // ============= HABITS API =============
 
 app.get('/api/habits', requireDB, async (req, res) => {
@@ -573,6 +706,94 @@ app.put('/api/expenditures/entries/:categoryId', requireDB, async (req, res) => 
     } catch (error) {
         console.error('Error upserting expenditure entry:', error);
         res.status(500).json({ error: 'Failed to save expenditure entry' });
+    }
+});
+
+// ============= BILLS & GROCERIES API =============
+
+app.get('/api/bills/:date', requireDB, async (req, res) => {
+    try {
+        const items = await db.getBillItemsByDate(req.params.date, 'bills');
+        res.json(items);
+    } catch (error) {
+        console.error('Error reading bills:', error);
+        res.status(500).json({ error: 'Failed to read bills' });
+    }
+});
+
+app.post('/api/bills', requireDB, async (req, res) => {
+    try {
+        const { date, description, amount } = req.body;
+        if (!description) return res.status(400).json({ error: 'Description is required' });
+        const item = await db.addBillItem(date, 'bills', description, amount || 0);
+        res.json(item);
+    } catch (error) {
+        console.error('Error adding bill:', error);
+        res.status(500).json({ error: 'Failed to add bill' });
+    }
+});
+
+app.put('/api/bills/:id', requireDB, async (req, res) => {
+    try {
+        const { description, amount } = req.body;
+        await db.updateBillItem(parseInt(req.params.id), description, amount);
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error updating bill:', error);
+        res.status(500).json({ error: 'Failed to update bill' });
+    }
+});
+
+app.delete('/api/bills/:id', requireDB, async (req, res) => {
+    try {
+        await db.deleteBillItem(parseInt(req.params.id));
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error deleting bill:', error);
+        res.status(500).json({ error: 'Failed to delete bill' });
+    }
+});
+
+app.get('/api/groceries/:date', requireDB, async (req, res) => {
+    try {
+        const items = await db.getBillItemsByDate(req.params.date, 'groceries');
+        res.json(items);
+    } catch (error) {
+        console.error('Error reading groceries:', error);
+        res.status(500).json({ error: 'Failed to read groceries' });
+    }
+});
+
+app.post('/api/groceries', requireDB, async (req, res) => {
+    try {
+        const { date, description, amount } = req.body;
+        if (!description) return res.status(400).json({ error: 'Description is required' });
+        const item = await db.addBillItem(date, 'groceries', description, amount || 0);
+        res.json(item);
+    } catch (error) {
+        console.error('Error adding grocery:', error);
+        res.status(500).json({ error: 'Failed to add grocery' });
+    }
+});
+
+app.put('/api/groceries/:id', requireDB, async (req, res) => {
+    try {
+        const { description, amount } = req.body;
+        await db.updateBillItem(parseInt(req.params.id), description, amount);
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error updating grocery:', error);
+        res.status(500).json({ error: 'Failed to update grocery' });
+    }
+});
+
+app.delete('/api/groceries/:id', requireDB, async (req, res) => {
+    try {
+        await db.deleteBillItem(parseInt(req.params.id));
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error deleting grocery:', error);
+        res.status(500).json({ error: 'Failed to delete grocery' });
     }
 });
 

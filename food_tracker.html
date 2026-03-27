@@ -208,7 +208,7 @@
         <!-- Daily Trackers Section -->
         <div class="bg-white rounded-lg shadow-lg p-6 mb-8" id="dailyTrackersSection">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-semibold text-gray-800">📋 Daily Trackers</h2>
+                <h2 class="text-2xl font-semibold text-gray-800" id="dailyTrackersTitle">📋 Daily Trackers</h2>
             </div>
 
             <!-- Habit Cards Grid -->
@@ -216,25 +216,26 @@
                 <!-- Populated by JS -->
             </div>
 
-            <!-- Mood & Diary -->
+            <!-- Exercises -->
             <div class="border-t pt-4">
-                <h3 class="text-lg font-semibold text-gray-800 mb-3">😊 Mood & Diary</h3>
-                <div class="bg-gray-50 rounded-lg p-4">
-                    <div class="flex justify-center gap-3 mb-4" id="moodSelector">
-                        <button onclick="selectMood(1)" class="mood-btn text-3xl p-2 rounded-lg hover:bg-red-100 transition" data-mood="1">😢</button>
-                        <button onclick="selectMood(2)" class="mood-btn text-3xl p-2 rounded-lg hover:bg-orange-100 transition" data-mood="2">😕</button>
-                        <button onclick="selectMood(3)" class="mood-btn text-3xl p-2 rounded-lg hover:bg-yellow-100 transition" data-mood="3">😐</button>
-                        <button onclick="selectMood(4)" class="mood-btn text-3xl p-2 rounded-lg hover:bg-green-100 transition" data-mood="4">🙂</button>
-                        <button onclick="selectMood(5)" class="mood-btn text-3xl p-2 rounded-lg hover:bg-blue-100 transition" data-mood="5">😄</button>
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-lg font-semibold text-gray-800" id="exercisesSectionTitle">🏃‍♂️ Today's Exercises</h3>
+                    <div class="flex space-x-2">
+                        <button onclick="openExerciseModal()" class="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-full transition">💪 Add Exercise</button>
+                        <button onclick="clearAllExercises()" class="text-xs bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-full transition">🗑️ Clear All</button>
                     </div>
-                    <textarea id="diaryText" rows="3" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="What happened today? How are you feeling?" onblur="saveMoodEntry()"></textarea>
+                </div>
+                <div id="exercisesList" class="space-y-3">
+                    <div class="text-center text-gray-500 py-4">
+                        <p>No exercises logged yet. Add an exercise to get started!</p>
+                    </div>
                 </div>
             </div>
 
             <!-- Expenditure Tracker -->
             <div class="border-t pt-4">
                 <div class="flex justify-between items-center mb-3">
-                    <h3 class="text-lg font-semibold text-gray-800">💸 Expenditure Tracker</h3>
+                    <h3 class="text-lg font-semibold text-gray-800" id="expenditureTitle">💸 Expenditure Tracker</h3>
                     <div class="flex items-center gap-3">
                         <span class="text-sm font-bold text-red-600" id="expenditureDailyTotal">$0</span>
                         <button onclick="showAddExpenditureCategoryModal()" class="text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded-full transition">+ Category</button>
@@ -242,6 +243,37 @@
                 </div>
                 <div id="expenditureCardsGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Bills & Groceries -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Bills -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800" id="billsTitle">🧾 Bills</h2>
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm font-bold text-red-600" id="billsDailyTotal">$0.00</span>
+                        <button onclick="addBillItem('bills')" class="text-xs bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded-full transition">+ Add</button>
+                    </div>
+                </div>
+                <div id="billsList" class="space-y-2">
+                    <p class="text-sm text-gray-400 text-center py-4">No bills yet</p>
+                </div>
+            </div>
+
+            <!-- Groceries -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800" id="groceriesTitle">🛒 Groceries</h2>
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm font-bold text-red-600" id="groceriesDailyTotal">$0.00</span>
+                        <button onclick="addBillItem('groceries')" class="text-xs bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded-full transition">+ Add</button>
+                    </div>
+                </div>
+                <div id="groceriesList" class="space-y-2">
+                    <p class="text-sm text-gray-400 text-center py-4">No groceries yet</p>
                 </div>
             </div>
         </div>
@@ -382,34 +414,22 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Today's Exercises Section -->
-            <div class="bg-white rounded-lg shadow-lg p-6 mb-8" id="exercisesSection">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-2xl font-semibold text-gray-800" id="exercisesSectionTitle">🏃‍♂️ Today's Exercises</h2>
-                    <div class="flex space-x-2">
-                        <button onclick="openExerciseModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition duration-200">
-                            💪 Add Exercise
-                        </button>
-                        <button onclick="clearAllExercises()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition duration-200">
-                            🗑️ Clear All
-                        </button>
-                    </div>
-                </div>
-                
-                <div id="exercisesList" class="space-y-3">
-                    <div class="text-center text-gray-500 py-8">
-                        <p>No exercises logged yet. Add an exercise to get started!</p>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Weekly Trends -->
+        <!-- Trends -->
         <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
             <div class="flex justify-between items-center mb-3 cursor-pointer" onclick="document.getElementById('weeklyTrendsBody').classList.toggle('hidden')">
-                <h2 class="text-2xl font-semibold text-gray-800">📈 Weekly Trends</h2>
-                <span class="text-gray-400 text-xl">▼</span>
+                <h2 class="text-2xl font-semibold text-gray-800" id="weeklyTrendsTitle">📈 Weekly Trends</h2>
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2" onclick="event.stopPropagation()">
+                        <span class="text-xs font-medium text-gray-500" id="trendsLabelWeekly">Weekly</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="trendsToggle" class="sr-only peer" onchange="toggleTrendsPeriod()">
+                            <div class="w-9 h-5 bg-blue-500 peer-checked:bg-purple-500 rounded-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                        </label>
+                        <span class="text-xs font-medium text-gray-500" id="trendsLabelMonthly">Monthly</span>
+                    </div>
+                    <span class="text-gray-400 text-xl">▼</span>
+                </div>
             </div>
             <div id="weeklyTrendsBody" class="grid grid-cols-2 gap-3">
                 <div class="bg-gray-50 rounded-lg p-3">
@@ -424,6 +444,10 @@
                     <h3 class="text-sm font-medium text-gray-600 mb-1">Exercise</h3>
                     <div style="height:120px"><canvas id="chartExercise"></canvas></div>
                 </div>
+                <div class="bg-gray-50 rounded-lg p-3">
+                    <h3 class="text-sm font-medium text-gray-600 mb-1">Expenditure</h3>
+                    <div style="height:120px"><canvas id="chartExpenditure"></canvas></div>
+                </div>
                 <div class="bg-gray-50 rounded-lg p-3 col-span-2">
                     <h3 class="text-sm font-medium text-gray-600 mb-1">Habits</h3>
                     <div id="habitHeatmap" class="overflow-x-auto"></div>
@@ -432,12 +456,27 @@
         </div>
 
         <!-- Food Log -->
-        <div class="bg-white rounded-lg shadow-lg p-6">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-4">📋 Your Food Log</h2>
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4" id="foodLogTitle">📋 Your Food Log</h2>
             <div id="foodLog" class="space-y-4">
                 <div class="text-center text-gray-500 py-8">
                     <p>No meals logged yet. Try adding a dish above!</p>
                 </div>
+            </div>
+        </div>
+
+        <!-- Mood & Diary -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3" id="moodDiaryTitle">😊 Mood & Diary</h3>
+            <div class="bg-gray-50 rounded-lg p-4">
+                <div class="flex justify-center gap-3 mb-4" id="moodSelector">
+                    <button onclick="selectMood(1)" class="mood-btn text-3xl p-2 rounded-lg hover:bg-red-100 transition" data-mood="1">😢</button>
+                    <button onclick="selectMood(2)" class="mood-btn text-3xl p-2 rounded-lg hover:bg-orange-100 transition" data-mood="2">😕</button>
+                    <button onclick="selectMood(3)" class="mood-btn text-3xl p-2 rounded-lg hover:bg-yellow-100 transition" data-mood="3">😐</button>
+                    <button onclick="selectMood(4)" class="mood-btn text-3xl p-2 rounded-lg hover:bg-green-100 transition" data-mood="4">🙂</button>
+                    <button onclick="selectMood(5)" class="mood-btn text-3xl p-2 rounded-lg hover:bg-blue-100 transition" data-mood="5">😄</button>
+                </div>
+                <textarea id="diaryText" rows="3" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="What happened today? How are you feeling?" onblur="saveMoodEntry()"></textarea>
             </div>
         </div>
     </div>
@@ -1561,25 +1600,31 @@
                 <!-- Exercise Type -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Exercise Type:</label>
-                    <select id="exerciseTypeSelect" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" onchange="updateExerciseCalories()">
+                    <select id="exerciseTypeSelect" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
                         <option value="">Select exercise type...</option>
-                        <option value="walking" data-calories="4">Walking (4 cal/min)</option>
-                        <option value="jogging" data-calories="8">Jogging (8 cal/min)</option>
-                        <option value="running" data-calories="12">Running (12 cal/min)</option>
-                        <option value="cycling" data-calories="10">Cycling (10 cal/min)</option>
-                        <option value="swimming" data-calories="11">Swimming (11 cal/min)</option>
-                        <option value="yoga" data-calories="3">Yoga (3 cal/min)</option>
-                        <option value="weightlifting" data-calories="6">Weight Lifting (6 cal/min)</option>
-                        <option value="dancing" data-calories="5">Dancing (5 cal/min)</option>
-                        <option value="hiking" data-calories="7">Hiking (7 cal/min)</option>
-                        <option value="custom" data-calories="0">Custom Exercise</option>
+                        <option value="hiit">HIIT</option>
+                        <option value="kickboxing">Kickboxing</option>
+                        <option value="dance">Dance</option>
+                        <option value="mindful-cooldown">Mindful Cooldown</option>
+                        <option value="strength-upper">Strength - Upper Body</option>
+                        <option value="strength-lower">Strength - Lower Body</option>
+                        <option value="strength-total">Strength - Total Body</option>
+                        <option value="hiit-weights">HIIT - Weights</option>
+                        <option value="walking">Walking</option>
+                        <option value="jogging">Jogging</option>
+                        <option value="running">Running</option>
+                        <option value="cycling">Cycling</option>
+                        <option value="swimming">Swimming</option>
+                        <option value="yoga">Yoga</option>
+                        <option value="hiking">Hiking</option>
+                        <option value="custom">Custom Exercise</option>
                     </select>
                 </div>
                 
                 <!-- Duration -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Duration (minutes):</label>
-                    <input type="number" id="exerciseDuration" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Enter duration in minutes" min="1" max="300" step="1" oninput="updateExerciseCalories()">
+                    <input type="number" id="exerciseDuration" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Enter duration in minutes" min="1" max="300" step="1">
                 </div>
                 
                 <!-- Custom Exercise Name (shown only for custom) -->
@@ -1591,8 +1636,8 @@
                 <!-- Calories Burned (auto-calculated or manual for custom) -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Calories Burned:</label>
-                    <input type="number" id="exerciseCalories" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Calories burned" min="1" max="2000" step="1">
-                    <p class="text-xs text-gray-500 mt-1" id="calorieHint">Select exercise type and duration for auto-calculation</p>
+                    <input type="number" id="exerciseCalories" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Enter calories burned" min="1" max="2000" step="1">
+                    <p class="text-xs text-gray-500 mt-1" id="calorieHint">Enter the calories burned from your workout</p>
                 </div>
                 
                 <!-- Exercise Notes -->
@@ -1938,20 +1983,20 @@
         let selectedMealIngredient = null;
         let databaseLoadingPromise = null; // Track database loading state
 
-        // Weight tracking variables
-        let weightByDate = JSON.parse(localStorage.getItem('weightByDate') || '{}');
-        let exerciseByDate = JSON.parse(localStorage.getItem('exerciseByDate') || '{}');
-        let userHeight = parseFloat(localStorage.getItem('userHeight') || '0'); // Store height in inches
-        let userCalorieGoal = parseInt(localStorage.getItem('userCalorieGoal') || '0');
-        let userUnitSystem = localStorage.getItem('userUnitSystem') || 'imperial'; // 'metric' or 'imperial'
-        let userHeightCm = parseFloat(localStorage.getItem('userHeightCm') || '0'); // Store height in cm for metric users
+        // Weight tracking variables (loaded from DB, not localStorage)
+        let weightByDate = {};
+        let exerciseByDate = {};
+        let userHeight = 0;
+        let userCalorieGoal = 0;
+        let userUnitSystem = 'imperial';
+        let userHeightCm = 0;
 
         // Exercise calorie settings for dynamic goal adjustment
-        let exerciseCalorieSettings = JSON.parse(localStorage.getItem('exerciseCalorieSettings') || JSON.stringify({
+        let exerciseCalorieSettings = {
             eatBackExercise: false,
             eatBackPercentage: 50,
             lastUpdated: new Date().toISOString()
-        }));
+        };
 
         // Unit conversion functions
         function kgToLbs(kg) {
@@ -2114,51 +2159,90 @@
             }
         }
 
+        function getDateLabel() {
+            const today = new Date();
+            const sel = getSafeSelectedDate();
+            const selKey = formatDateKey(sel);
+            if (selKey === formatDateKey(today)) return 'Today';
+            const yesterday = new Date(today);
+            yesterday.setDate(today.getDate() - 1);
+            if (selKey === formatDateKey(yesterday)) return 'Yesterday';
+            return sel.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        }
+
+        function updateAllSectionDates() {
+            const label = getDateLabel();
+            const safeDate = getSafeSelectedDate();
+            const dateKey = formatDateKey(safeDate);
+
+            // Daily Summary
+            const summaryTitle = document.getElementById('dailySummaryTitle');
+            let summaryText = `📊 Daily Summary - ${label}`;
+            const weightData = weightByDate[dateKey] || getRecentWeightData();
+            if (weightData && weightData.isNursing) {
+                summaryText += ' 🤱';
+            }
+            summaryTitle.textContent = summaryText;
+
+            // Daily Trackers
+            const trackersTitle = document.getElementById('dailyTrackersTitle');
+            if (trackersTitle) trackersTitle.textContent = `📋 Daily Trackers - ${label}`;
+
+            // Mood & Diary
+            const moodTitle = document.getElementById('moodDiaryTitle');
+            if (moodTitle) moodTitle.textContent = `😊 Mood & Diary - ${label}`;
+
+            // Expenditure Tracker
+            const expTitle = document.getElementById('expenditureTitle');
+            if (expTitle) expTitle.textContent = `💸 Expenditure Tracker - ${label}`;
+
+            // Bills
+            const billsTitle = document.getElementById('billsTitle');
+            if (billsTitle) billsTitle.textContent = `🧾 Bills - ${label}`;
+
+            // Groceries
+            const groceriesTitle = document.getElementById('groceriesTitle');
+            if (groceriesTitle) groceriesTitle.textContent = `🛒 Groceries - ${label}`;
+
+            // Weight Tracking
+            const weightTitle = document.getElementById('weightTrackingTitle');
+            if (weightTitle) {
+                let weightText = `⚖️ Weight Tracking & Goals - ${label}`;
+                if (weightData && weightData.isNursing) {
+                    weightText += ' 🤱';
+                }
+                weightTitle.textContent = weightText;
+            }
+
+            // Trends
+            const weeklyTitle = document.getElementById('weeklyTrendsTitle');
+            if (weeklyTitle) {
+                const period = trendsMonthly ? 'Monthly' : 'Weekly';
+                weeklyTitle.textContent = `📈 ${period} Trends - ${label}`;
+            }
+
+            // Food Log
+            const foodLogTitle = document.getElementById('foodLogTitle');
+            if (foodLogTitle) foodLogTitle.textContent = `📋 Your Food Log - ${label}`;
+        }
+
         function updateDateDisplay() {
             const dateSelector = document.getElementById('dateSelector');
             const dateDisplay = document.getElementById('selectedDateDisplay');
-            const summaryTitle = document.getElementById('dailySummaryTitle');
-            
+
             // Update date input
             const safeDate = getSafeSelectedDate();
             const dateKey = formatDateKey(safeDate);
             dateSelector.value = dateKey;
             console.log('📅 UPDATE_DATE_DISPLAY: Set date selector to:', dateKey);
-            
+
             // Update display text
             const displayText = formatDateDisplay(selectedDate);
             dateDisplay.textContent = displayText;
             console.log('📅 UPDATE_DATE_DISPLAY: Set date display to:', displayText);
-            
-            // Update summary title
-            const today = new Date();
-            const todayKey = formatDateKey(today);
-            const selectedKey = dateKey; // Reuse the dateKey we already calculated
-            const isToday = selectedKey === todayKey;
-            const isYesterday = selectedKey === formatDateKey(new Date(today.getTime() - 24 * 60 * 60 * 1000));
-            
-            console.log('📅 UPDATE_DATE_DISPLAY: Today key:', todayKey);
-            console.log('📅 UPDATE_DATE_DISPLAY: Selected key:', selectedKey);
-            console.log('📅 UPDATE_DATE_DISPLAY: Is today?', isToday);
-            console.log('📅 UPDATE_DATE_DISPLAY: Is yesterday?', isYesterday);
-            
-            let titleText = '📊 Daily Summary';
-            if (isToday) {
-                titleText += ' - Today';
-            } else if (isYesterday) {
-                titleText += ' - Yesterday';
-            } else {
-                titleText += ` - ${safeDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
-            }
-            
-            // Add nursing indicator to summary title if applicable
-            const weightData = weightByDate[dateKey] || getRecentWeightData(); // Reuse dateKey
-            if (weightData && weightData.isNursing) {
-                titleText += ' 🤱';
-            }
-            
-            summaryTitle.textContent = titleText;
-            console.log('📅 UPDATE_DATE_DISPLAY: Set summary title to:', titleText);
+
+            // Update all section titles with current date
+            updateAllSectionDates();
         }
 
         function navigateDate(days) {
@@ -2374,27 +2458,208 @@
         // WEIGHT TRACKING FUNCTIONS
         // ========================================
 
-        // Save weight data to localStorage
-        function saveWeightData() {
-            localStorage.setItem('weightByDate', JSON.stringify(weightByDate));
-            localStorage.setItem('exerciseByDate', JSON.stringify(exerciseByDate));
-            localStorage.setItem('userHeight', userHeight.toString());
-            localStorage.setItem('userCalorieGoal', userCalorieGoal.toString());
-            localStorage.setItem('exerciseCalorieSettings', JSON.stringify(exerciseCalorieSettings));
+        // Save weight data to DB via API (async, fire-and-forget for settings)
+        async function saveWeightData() {
+            try {
+                await fetch('/api/settings/userHeight', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: userHeight.toString() }) });
+                await fetch('/api/settings/userCalorieGoal', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: userCalorieGoal.toString() }) });
+                await fetch('/api/settings/exerciseCalorieSettings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: JSON.stringify(exerciseCalorieSettings) }) });
+            } catch (e) { console.error('Failed to save weight data settings:', e); }
         }
 
-        // Load weight data from localStorage
-        function loadWeightData() {
-            weightByDate = JSON.parse(localStorage.getItem('weightByDate') || '{}');
-            exerciseByDate = JSON.parse(localStorage.getItem('exerciseByDate') || '{}');
-            userHeight = parseFloat(localStorage.getItem('userHeight') || '0');
-            userCalorieGoal = parseInt(localStorage.getItem('userCalorieGoal') || '0');
-            exerciseCalorieSettings = JSON.parse(localStorage.getItem('exerciseCalorieSettings') || JSON.stringify({
-                eatBackExercise: false,
-                eatBackPercentage: 50,
-                lastUpdated: new Date().toISOString()
-            }));
-            updateWeightDisplay();
+        // Load weight data from DB via API
+        async function loadWeightData() {
+            try {
+                // One-time migration: if localStorage has data and DB is empty, migrate
+                await migrateLocalStorageToDB();
+
+                // Load settings
+                const settingsRes = await fetch('/api/settings');
+                const settings = await settingsRes.json();
+                userHeight = parseFloat(settings.userHeight || '0');
+                userHeightCm = parseFloat(settings.userHeightCm || '0');
+                userCalorieGoal = parseInt(settings.userCalorieGoal || '0');
+                userUnitSystem = settings.userUnitSystem || 'imperial';
+                exerciseCalorieSettings = settings.exerciseCalorieSettings ? JSON.parse(settings.exerciseCalorieSettings) : {
+                    eatBackExercise: false,
+                    eatBackPercentage: 50,
+                    lastUpdated: new Date().toISOString()
+                };
+
+                // Load all weight entries into weightByDate cache
+                const weightRes = await fetch('/api/weight?startDate=2020-01-01&endDate=2099-12-31');
+                const weightEntries = await weightRes.json();
+                weightByDate = {};
+                if (Array.isArray(weightEntries)) {
+                    weightEntries.forEach(entry => {
+                        weightByDate[entry.date] = {
+                            weight: entry.weight,
+                            height: entry.height,
+                            bmi: entry.bmi,
+                            bmiCategory: entry.bmi_category,
+                            age: entry.age,
+                            gender: entry.gender,
+                            bmrMifflin: entry.bmr_mifflin,
+                            bmrHarris: entry.bmr_harris,
+                            calorieGoal: entry.calorie_goal,
+                            notes: entry.notes,
+                            isNursing: entry.is_nursing === 1,
+                            timestamp: entry.timestamp,
+                            date: entry.date,
+                            unitSystem: entry.unit_system,
+                            originalWeight: entry.original_weight,
+                            originalHeight: entry.original_height
+                        };
+                    });
+                }
+
+                // Load all exercises into exerciseByDate cache
+                // We need to fetch exercises for all dates; use a broad range
+                exerciseByDate = {};
+                const today = new Date();
+                const startDate = '2020-01-01';
+                const endDate = today.toISOString().split('T')[0];
+                // Fetch exercises for the current selected date and nearby dates
+                // For efficiency, load exercises per-date when needed; for now load the selected date
+                const dateKey = formatDateKey(selectedDate);
+                const exRes = await fetch(`/api/exercises/${dateKey}`);
+                const exercises = await exRes.json();
+                if (Array.isArray(exercises) && exercises.length > 0) {
+                    exerciseByDate[dateKey] = exercises;
+                }
+
+                updateWeightDisplay();
+            } catch (e) {
+                console.error('Failed to load weight data from DB:', e);
+                updateWeightDisplay();
+            }
+        }
+
+        // Load exercises for a specific date into cache
+        async function loadExercisesForDate(dateKey) {
+            try {
+                const res = await fetch(`/api/exercises/${dateKey}`);
+                const exercises = await res.json();
+                if (Array.isArray(exercises) && exercises.length > 0) {
+                    exerciseByDate[dateKey] = exercises;
+                } else {
+                    delete exerciseByDate[dateKey];
+                }
+            } catch (e) {
+                console.error('Failed to load exercises for date:', dateKey, e);
+            }
+        }
+
+        // One-time migration from localStorage to DB
+        async function migrateLocalStorageToDB() {
+            try {
+                const lsWeight = localStorage.getItem('weightByDate');
+                const lsExercise = localStorage.getItem('exerciseByDate');
+                if (!lsWeight && !lsExercise) return; // Nothing to migrate
+
+                // Check if DB already has data
+                const latestWeight = await fetch('/api/weight?latest=true');
+                const latestWeightData = await latestWeight.json();
+
+                if (latestWeightData && latestWeightData.date) {
+                    // DB already has data, clear localStorage and skip migration
+                    console.log('DB already has weight data, skipping migration');
+                    clearLocalStorageKeys();
+                    return;
+                }
+
+                console.log('Migrating localStorage data to DB...');
+
+                // Migrate weight entries
+                if (lsWeight) {
+                    const weightData = JSON.parse(lsWeight);
+                    for (const [date, entry] of Object.entries(weightData)) {
+                        try {
+                            await fetch(`/api/weight/${date}`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    weight: entry.weight,
+                                    height: entry.height,
+                                    bmi: entry.bmi,
+                                    bmiCategory: entry.bmiCategory,
+                                    age: entry.age,
+                                    gender: entry.gender,
+                                    bmrMifflin: entry.bmrMifflin,
+                                    bmrHarris: entry.bmrHarris,
+                                    calorieGoal: entry.calorieGoal,
+                                    notes: entry.notes,
+                                    isNursing: entry.isNursing,
+                                    unitSystem: entry.unitSystem,
+                                    originalWeight: entry.originalWeight,
+                                    originalHeight: entry.originalHeight,
+                                    timestamp: entry.timestamp
+                                })
+                            });
+                        } catch (e) { console.error('Failed to migrate weight entry:', date, e); }
+                    }
+                }
+
+                // Migrate exercise entries
+                if (lsExercise) {
+                    const exerciseData = JSON.parse(lsExercise);
+                    for (const [date, exercises] of Object.entries(exerciseData)) {
+                        if (Array.isArray(exercises)) {
+                            for (const ex of exercises) {
+                                try {
+                                    await fetch('/api/exercises', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({
+                                            date: date,
+                                            type: ex.type,
+                                            name: ex.name,
+                                            duration: ex.duration,
+                                            calories: ex.calories,
+                                            notes: ex.notes,
+                                            timestamp: ex.timestamp
+                                        })
+                                    });
+                                } catch (e) { console.error('Failed to migrate exercise:', date, e); }
+                            }
+                        }
+                    }
+                }
+
+                // Migrate settings
+                const settingsToMigrate = {
+                    userHeight: localStorage.getItem('userHeight'),
+                    userHeightCm: localStorage.getItem('userHeightCm'),
+                    userCalorieGoal: localStorage.getItem('userCalorieGoal'),
+                    userUnitSystem: localStorage.getItem('userUnitSystem'),
+                    exerciseCalorieSettings: localStorage.getItem('exerciseCalorieSettings'),
+                    weightLossGoals: localStorage.getItem('weightLossGoals'),
+                    weeklyDeficitData: localStorage.getItem('weeklyDeficitData')
+                };
+
+                for (const [key, value] of Object.entries(settingsToMigrate)) {
+                    if (value !== null) {
+                        try {
+                            await fetch(`/api/settings/${key}`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ value })
+                            });
+                        } catch (e) { console.error('Failed to migrate setting:', key, e); }
+                    }
+                }
+
+                console.log('Migration from localStorage to DB complete!');
+                clearLocalStorageKeys();
+            } catch (e) {
+                console.error('Migration failed:', e);
+            }
+        }
+
+        function clearLocalStorageKeys() {
+            ['weightByDate', 'exerciseByDate', 'userHeight', 'userHeightCm',
+             'userCalorieGoal', 'userUnitSystem', 'exerciseCalorieSettings',
+             'weightLossGoals', 'weeklyDeficitData'].forEach(key => localStorage.removeItem(key));
         }
 
         // Calculate BMI from weight and height (supports both unit systems)
@@ -2704,7 +2969,7 @@
             }
             
             // Save unit preference
-            localStorage.setItem('userUnitSystem', userUnitSystem);
+            fetch('/api/settings/userUnitSystem', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: userUnitSystem }) }).catch(e => console.error('Failed to save unit system:', e));
             
             // Update BMI preview if inputs have values
             updateBMIPreview();
@@ -2740,12 +3005,38 @@
             
             // Get current weight if available and convert to display units
             const dateKey = formatDateKey(selectedDate);
-            if (weightByDate[dateKey]) {
-                const storedWeight = weightByDate[dateKey].weight; // Always stored in lbs
+            const currentEntry = weightByDate[dateKey] || getRecentWeightData();
+            if (currentEntry) {
+                const storedWeight = currentEntry.weight; // Always stored in lbs
                 if (userUnitSystem === 'metric') {
                     weightInput.value = Math.round(lbsToKg(storedWeight) * 10) / 10;
                 } else {
                     weightInput.value = storedWeight;
+                }
+                // Carry forward age, gender, nursing from last entry
+                if (currentEntry.age) {
+                    const ageInput = document.getElementById('ageInput');
+                    if (ageInput) ageInput.value = currentEntry.age;
+                }
+                if (currentEntry.gender) {
+                    const genderSelect = document.getElementById('genderSelect');
+                    if (genderSelect) genderSelect.value = currentEntry.gender;
+                }
+                const nursingCheckbox = document.getElementById('nursingMotherCheckbox');
+                if (nursingCheckbox) {
+                    nursingCheckbox.checked = !!currentEntry.isNursing;
+                    updateNursingStatus();
+                }
+                // Carry forward height if not already set
+                if (currentEntry.height && userHeight <= 0 && (!userHeightCm || userHeightCm <= 0)) {
+                    if (userUnitSystem === 'metric') {
+                        const cm = inchesToCm(currentEntry.height);
+                        document.getElementById('heightCm').value = Math.round(cm * 10) / 10;
+                    } else {
+                        const feetInches = cmToFeetInches(inchesToCm(currentEntry.height));
+                        document.getElementById('heightFeet').value = Math.floor(feetInches.feet);
+                        document.getElementById('heightInches').value = Math.round(feetInches.inches * 2) / 2;
+                    }
                 }
             }
             
@@ -2989,7 +3280,7 @@
             // Store metric height separately for metric users
             if (isMetric) {
                 userHeightCm = inputHeight;
-                localStorage.setItem('userHeightCm', userHeightCm.toString());
+                fetch('/api/settings/userHeightCm', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: userHeightCm.toString() }) }).catch(e => console.error('Failed to save heightCm:', e));
             }
             
             // Calculate BMI using the input values in their original units
@@ -3043,11 +3334,18 @@
             
             console.log('💾 WEIGHT_SAVE: Weight entry created', weightEntry);
             
-            // Save to weight data
+            // Save to weight data (local cache)
             weightByDate[dateKey] = weightEntry;
             console.log('💾 WEIGHT_SAVE: Weight entry saved to weightByDate');
-            
-            // Save to localStorage
+
+            // Save to DB via API
+            fetch(`/api/weight/${dateKey}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(weightEntry)
+            }).catch(e => console.error('Failed to save weight to DB:', e));
+
+            // Save settings to DB
             saveWeightData();
             
             // Update display
@@ -3071,7 +3369,7 @@
         function openExerciseModal() {
             const modal = document.getElementById('exerciseModal');
             modal.classList.add('active');
-            
+
             // Reset form
             document.getElementById('exerciseTypeSelect').value = '';
             document.getElementById('exerciseDuration').value = '';
@@ -3079,7 +3377,9 @@
             document.getElementById('exerciseCalories').value = '';
             document.getElementById('exerciseNotesInput').value = '';
             document.getElementById('customExerciseSection').classList.add('hidden');
-            document.getElementById('calorieHint').textContent = 'Select exercise type and duration for auto-calculation';
+            document.getElementById('exerciseTypeSelect').onchange = function() {
+                document.getElementById('customExerciseSection').classList.toggle('hidden', this.value !== 'custom');
+            };
         }
 
         // Close exercise modal
@@ -3088,39 +3388,14 @@
             modal.classList.remove('active');
         }
 
-        // Update exercise calories based on type and duration
+        // Toggle custom exercise name visibility
         function updateExerciseCalories() {
             const typeSelect = document.getElementById('exerciseTypeSelect');
-            const durationInput = document.getElementById('exerciseDuration');
-            const caloriesInput = document.getElementById('exerciseCalories');
-            const customSection = document.getElementById('customExerciseSection');
-            const calorieHint = document.getElementById('calorieHint');
-            
-            const selectedOption = typeSelect.options[typeSelect.selectedIndex];
-            const duration = parseFloat(durationInput.value) || 0;
-            
-            if (typeSelect.value === 'custom') {
-                customSection.classList.remove('hidden');
-                caloriesInput.readOnly = false;
-                calorieHint.textContent = 'Enter calories burned manually for custom exercise';
-                caloriesInput.value = '';
-            } else if (typeSelect.value && duration > 0) {
-                customSection.classList.add('hidden');
-                const caloriesPerMin = parseFloat(selectedOption.dataset.calories) || 0;
-                const totalCalories = Math.round(caloriesPerMin * duration);
-                caloriesInput.value = totalCalories;
-                caloriesInput.readOnly = true;
-                calorieHint.textContent = `Auto-calculated: ${caloriesPerMin} cal/min × ${duration} min = ${totalCalories} calories`;
-            } else {
-                customSection.classList.add('hidden');
-                caloriesInput.value = '';
-                caloriesInput.readOnly = false;
-                calorieHint.textContent = 'Select exercise type and duration for auto-calculation';
-            }
+            document.getElementById('customExerciseSection').classList.toggle('hidden', typeSelect.value !== 'custom');
         }
 
         // Save exercise entry
-        function saveExerciseEntry() {
+        async function saveExerciseEntry() {
             const typeSelect = document.getElementById('exerciseTypeSelect');
             const durationInput = document.getElementById('exerciseDuration');
             const customNameInput = document.getElementById('customExerciseName');
@@ -3168,7 +3443,6 @@
             // Create exercise entry
             const dateKey = formatDateKey(selectedDate);
             const exerciseEntry = {
-                id: Date.now(),
                 type: exerciseType,
                 name: exerciseName,
                 duration: duration,
@@ -3177,14 +3451,27 @@
                 timestamp: new Date().toISOString(),
                 date: dateKey
             };
-            
-            // Add to exercise data
+
+            // Add to DB via API
+            try {
+                const res = await fetch('/api/exercises', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(exerciseEntry)
+                });
+                const result = await res.json();
+                exerciseEntry.id = result.id;
+            } catch (e) {
+                console.error('Failed to save exercise to DB:', e);
+            }
+
+            // Update local cache
             if (!exerciseByDate[dateKey]) {
                 exerciseByDate[dateKey] = [];
             }
             exerciseByDate[dateKey].push(exerciseEntry);
-            
-            // Save to localStorage
+
+            // Save settings to DB
             saveWeightData();
             
             // Update display
@@ -3202,11 +3489,14 @@
         // ========================================
 
         // Display today's exercises in the exercises section
-        function displayTodaysExercises() {
+        async function displayTodaysExercises() {
             console.log('🏃‍♂️ EXERCISES: displayTodaysExercises() called');
             const exercisesList = document.getElementById('exercisesList');
             const exercisesSectionTitle = document.getElementById('exercisesSectionTitle');
             const dateKey = formatDateKey(selectedDate);
+
+            // Load exercises from DB for this date
+            await loadExercisesForDate(dateKey);
             const todaysExercises = exerciseByDate[dateKey] || [];
             
             // Update section title with date
@@ -3396,33 +3686,17 @@
         }
 
         // Delete exercise
-        function deleteExercise(exerciseId) {
+        async function deleteExercise(exerciseId) {
             console.log('🗑️ DELETE: deleteExercise() called for ID:', exerciseId);
-            
+
+            // Delete from DB
+            try {
+                await fetch(`/api/exercises/${exerciseId}`, { method: 'DELETE' });
+            } catch (e) { console.error('Failed to delete exercise from DB:', e); }
+
+            // Refresh local cache from DB
             const dateKey = formatDateKey(selectedDate);
-            if (!exerciseByDate[dateKey]) {
-                console.log('❌ DELETE: No exercises found for date:', dateKey);
-                return;
-            }
-            
-            // Find and remove the exercise
-            const exerciseIndex = exerciseByDate[dateKey].findIndex(ex => ex.id === exerciseId);
-            if (exerciseIndex === -1) {
-                console.log('❌ DELETE: Exercise not found with ID:', exerciseId);
-                showErrorMessage('Exercise not found');
-                return;
-            }
-            
-            const deletedExercise = exerciseByDate[dateKey][exerciseIndex];
-            exerciseByDate[dateKey].splice(exerciseIndex, 1);
-            
-            // Remove the date entry if no exercises left
-            if (exerciseByDate[dateKey].length === 0) {
-                delete exerciseByDate[dateKey];
-            }
-            
-            // Save to localStorage
-            saveWeightData();
+            await loadExercisesForDate(dateKey);
             
             // Update displays
             displayTodaysExercises();
@@ -3433,7 +3707,7 @@
         }
 
         // Edit exercise
-        function editExercise(exerciseId) {
+        async function editExercise(exerciseId) {
             console.log('✏️ EDIT: editExercise() called for ID:', exerciseId);
             
             const dateKey = formatDateKey(selectedDate);
@@ -3496,7 +3770,7 @@
         }
 
         // Update exercise entry (for editing)
-        function updateExerciseEntry() {
+        async function updateExerciseEntry() {
             console.log('💾 UPDATE: updateExerciseEntry() called');
             
             if (!window.editingExerciseId) {
@@ -3549,29 +3823,25 @@
                 exerciseName = typeSelect.options[typeSelect.selectedIndex].text.split(' (')[0];
             }
             
-            // Find and update the exercise
+            // Update exercise via DB API
             const dateKey = formatDateKey(selectedDate);
-            const exerciseIndex = exerciseByDate[dateKey].findIndex(ex => ex.id === window.editingExerciseId);
-            
-            if (exerciseIndex === -1) {
-                console.log('❌ UPDATE: Exercise not found for updating');
-                showErrorMessage('Exercise not found');
-                return;
-            }
-            
-            // Update exercise data
-            exerciseByDate[dateKey][exerciseIndex] = {
-                ...exerciseByDate[dateKey][exerciseIndex],
-                type: exerciseType,
-                name: exerciseName,
-                duration: duration,
-                calories: calories,
-                notes: notes,
-                timestamp: new Date().toISOString() // Update timestamp to show it was modified
-            };
-            
-            // Save to localStorage
-            saveWeightData();
+            try {
+                await fetch(`/api/exercises/${window.editingExerciseId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        type: exerciseType,
+                        name: exerciseName,
+                        duration: duration,
+                        calories: calories,
+                        notes: notes,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+            } catch (e) { console.error('Failed to update exercise in DB:', e); }
+
+            // Refresh local cache
+            await loadExercisesForDate(dateKey);
             
             // Update displays
             displayTodaysExercises();
@@ -3606,10 +3876,10 @@
 
         // Override the original saveExerciseEntry to also update exercise display and calorie goals
         const originalSaveExerciseEntry = saveExerciseEntry;
-        saveExerciseEntry = function() {
-            originalSaveExerciseEntry();
+        saveExerciseEntry = async function() {
+            await originalSaveExerciseEntry();
             // Update the exercises display after saving
-            displayTodaysExercises();
+            await displayTodaysExercises();
             // Update calorie goal display if exercise adjustment is enabled
             if (exerciseCalorieSettings.eatBackExercise) {
                 updateWeightDisplay();
@@ -3849,24 +4119,26 @@
         }
 
         // Clear all exercises for the current date
-        function clearAllExercises() {
+        async function clearAllExercises() {
             const dateKey = formatDateKey(selectedDate);
             const todaysExercises = exerciseByDate[dateKey] || [];
-            
+
             if (todaysExercises.length === 0) {
                 showErrorMessage('No exercises to clear for this date');
                 return;
             }
-            
+
             if (!confirm(`Are you sure you want to clear all ${todaysExercises.length} exercise(s) for ${formatDateDisplay(selectedDate)}?\n\nThis action cannot be undone.`)) {
                 return;
             }
-            
-            // Remove all exercises for this date
+
+            // Delete all exercises for this date via API
+            try {
+                await fetch(`/api/exercises/by-date/${dateKey}`, { method: 'DELETE' });
+            } catch (e) { console.error('Failed to clear exercises from DB:', e); }
+
+            // Refresh local cache
             delete exerciseByDate[dateKey];
-            
-            // Save to localStorage
-            saveWeightData();
             
             // Update displays
             displayTodaysExercises();
@@ -4226,15 +4498,15 @@
             initializeApp();
         }
 
-        function initializeApp() {
+        async function initializeApp() {
             console.log('🚀 INITAPP: Starting initializeApp()...');
             console.log('🚀 INITAPP: rawIngredients state:', rawIngredients ? 'LOADED' : 'NOT_LOADED');
             console.log('🚀 INITAPP: foodDatabase state:', foodDatabase ? 'LOADED' : 'NOT_LOADED');
-            
+
             populateIngredientSelect();
             initializeDateSystem();
-            loadWeightData(); // Load weight tracking data
-            
+            await loadWeightData(); // Load weight tracking data from DB
+
             console.log('✅ INITAPP: initializeApp() completed');
         }
 
@@ -5600,8 +5872,34 @@
                     const textVal = habitTextValues[habit.id] || '';
                     card.className = `col-span-2 relative p-3 rounded-xl transition-all duration-200 border-2 ${textVal ? 'border-purple-400 bg-purple-50 shadow-md' : 'border-gray-200 bg-gray-50'}`;
 
+                    // Check if this is Sleep Tracker — render time inputs
+                    if (habit.name === 'Sleep Tracker') {
+                        let sleepData = {};
+                        try { sleepData = typeof textVal === 'string' && textVal.startsWith('{') ? JSON.parse(textVal) : {}; } catch(e) { sleepData = {}; }
+                        const sleepTime = sleepData.sleep || '';
+                        const wakeTime = sleepData.wake || '';
+                        const sleepOk = sleepTime && (sleepTime >= '20:00' && sleepTime <= '22:30');
+                        const wakeOk = wakeTime && wakeTime <= '05:30';
+                        card.innerHTML = `
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-2xl">${habit.emoji}</span>
+                                <span class="text-sm font-medium ${textVal ? 'text-purple-700' : 'text-gray-600'}">${habit.name}</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="text-xs text-gray-500">Bedtime</label>
+                                    <input type="time" id="sleepTime_${habit.id}" value="${sleepTime}" class="w-full border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" onchange="saveSleepTracker(${habit.id})">
+                                    <div class="text-xs mt-1 ${sleepTime ? (sleepOk ? 'text-green-600' : 'text-red-500') : 'text-gray-400'}">${sleepTime ? (sleepOk ? 'Good' : 'Late') : '--'}</div>
+                                </div>
+                                <div>
+                                    <label class="text-xs text-gray-500">Wake up</label>
+                                    <input type="time" id="wakeTime_${habit.id}" value="${wakeTime}" class="w-full border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500" onchange="saveSleepTracker(${habit.id})">
+                                    <div class="text-xs mt-1 ${wakeTime ? (wakeOk ? 'text-green-600' : 'text-red-500') : 'text-gray-400'}">${wakeTime ? (wakeOk ? 'Good' : 'Late') : '--'}</div>
+                                </div>
+                            </div>
+                        `;
                     // Check if this is Cooking Plan — render per-meal table
-                    if (habit.name === 'Cooking Plan') {
+                    } else if (habit.name === 'Cooking Plan') {
                         const mealPlanTypes = ['Breakfast', 'Morning Snack', 'Lunch', 'Evening Snack', 'Dinner', 'Salad', 'Packing Plan'];
                         let planData = {};
                         try { planData = typeof textVal === 'string' && textVal.startsWith('{') ? JSON.parse(textVal) : {}; } catch(e) { planData = {}; }
@@ -5715,13 +6013,41 @@
         // ============= WEEKLY TRENDS CHARTS =============
         let weeklyCharts = {};
 
+        let trendsMonthly = false;
+
+        function toggleTrendsPeriod() {
+            trendsMonthly = document.getElementById('trendsToggle').checked;
+            document.getElementById('trendsLabelWeekly').classList.toggle('text-blue-600', !trendsMonthly);
+            document.getElementById('trendsLabelWeekly').classList.toggle('font-bold', !trendsMonthly);
+            document.getElementById('trendsLabelMonthly').classList.toggle('text-purple-600', trendsMonthly);
+            document.getElementById('trendsLabelMonthly').classList.toggle('font-bold', trendsMonthly);
+            updateAllSectionDates();
+            renderWeeklyTrends();
+        }
+
         async function renderWeeklyTrends() {
             const dates = [];
-            const today = new Date(selectedDate);
-            for (let i = 6; i >= 0; i--) {
-                const d = new Date(today);
-                d.setDate(d.getDate() - i);
-                dates.push(d.toISOString().split('T')[0]);
+            const sel = new Date(selectedDate);
+
+            if (trendsMonthly) {
+                // Last 30 days ending on selected date
+                for (let i = 29; i >= 0; i--) {
+                    const d = new Date(sel);
+                    d.setDate(d.getDate() - i);
+                    dates.push(d.toISOString().split('T')[0]);
+                }
+            } else {
+                // Sat-Fri week containing the selected date
+                const dayOfWeek = sel.getDay(); // 0=Sun..6=Sat
+                // Days since last Saturday: Sat=0, Sun=1, Mon=2, ..., Fri=6
+                const daysSinceSat = (dayOfWeek + 1) % 7;
+                const saturday = new Date(sel);
+                saturday.setDate(sel.getDate() - daysSinceSat);
+                for (let i = 0; i < 7; i++) {
+                    const d = new Date(saturday);
+                    d.setDate(saturday.getDate() + i);
+                    dates.push(d.toISOString().split('T')[0]);
+                }
             }
             const labels = dates.map(d => {
                 const [, m, day] = d.split('-');
@@ -5731,27 +6057,41 @@
             // Fetch calorie data
             let caloriesByDate = {};
             try {
-                const res = await fetch(`/api/analytics/weekly?startDate=${dates[0]}&endDate=${dates[6]}`);
+                const res = await fetch(`/api/analytics/weekly?startDate=${dates[0]}&endDate=${dates[dates.length - 1]}`);
                 const data = await res.json();
                 data.forEach(row => { caloriesByDate[row.date] = row.total_calories || 0; });
             } catch (e) { console.error('Failed to fetch weekly calories:', e); }
             const caloriesData = dates.map(d => caloriesByDate[d] || 0);
 
-            // Weight data from localStorage
-            const weightStore = JSON.parse(localStorage.getItem('weightByDate') || '{}');
-            const weightData = dates.map(d => {
-                const entry = weightStore[d];
-                return entry ? (typeof entry === 'object' ? entry.weight : entry) : null;
-            });
+            // Weight data from DB API
+            let weightData;
+            try {
+                const weightRes = await fetch(`/api/weight?startDate=${dates[0]}&endDate=${dates[dates.length - 1]}`);
+                const weightEntries = await weightRes.json();
+                const weightMap = {};
+                if (Array.isArray(weightEntries)) {
+                    weightEntries.forEach(e => { weightMap[e.date] = e.weight; });
+                }
+                weightData = dates.map(d => weightMap[d] || null);
+            } catch (e) {
+                console.error('Failed to fetch weekly weight:', e);
+                weightData = dates.map(() => null);
+            }
 
-            // Exercise data from localStorage
-            const exerciseStore = JSON.parse(localStorage.getItem('exerciseByDate') || '{}');
-            const exerciseData = dates.map(d => {
-                const entries = exerciseStore[d];
-                if (!entries) return 0;
-                if (Array.isArray(entries)) return entries.reduce((sum, e) => sum + (e.calories || 0), 0);
-                return entries.calories || 0;
-            });
+            // Exercise data from DB API
+            let exerciseData;
+            try {
+                const exerciseResults = await Promise.all(dates.map(async d => {
+                    const res = await fetch(`/api/exercises/${d}`);
+                    const exercises = await res.json();
+                    if (Array.isArray(exercises)) return exercises.reduce((sum, e) => sum + (e.calories || 0), 0);
+                    return 0;
+                }));
+                exerciseData = exerciseResults;
+            } catch (e) {
+                console.error('Failed to fetch weekly exercise:', e);
+                exerciseData = dates.map(() => 0);
+            }
 
             // Habits data from API (full entries per day)
             const habitsRaw = await Promise.all(dates.map(async d => {
@@ -5763,40 +6103,88 @@
 
             // Build habit heatmap
             const habitMap = {};
+            const sleepData = { bedtime: new Array(dates.length).fill(null), wake: new Array(dates.length).fill(null) };
+            let hasSleep = false;
             habitsRaw.forEach((dayEntries, i) => {
                 dayEntries.forEach(h => {
+                    if (h.name === 'Sleep Tracker') {
+                        hasSleep = true;
+                        if (h.text_value) {
+                            try {
+                                const sd = JSON.parse(h.text_value);
+                                sleepData.bedtime[i] = sd.sleep || null;
+                                sleepData.wake[i] = sd.wake || null;
+                            } catch(e) {}
+                        }
+                        return;
+                    }
                     if (h.type === 'text') return;
-                    if (!habitMap[h.habit_id]) habitMap[h.habit_id] = { name: h.name, emoji: h.emoji, values: new Array(7).fill(0) };
+                    if (!habitMap[h.habit_id]) habitMap[h.habit_id] = { name: h.name, emoji: h.emoji, values: new Array(dates.length).fill(0) };
                     habitMap[h.habit_id].values[i] = h.value || 0;
                 });
             });
 
             const dayLabels = dates.map(d => {
                 const dt = new Date(d + 'T12:00:00');
+                if (trendsMonthly) {
+                    return `${dt.getMonth()+1}/${dt.getDate()}`;
+                }
                 return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dt.getDay()];
             });
 
             const heatmapEl = document.getElementById('habitHeatmap');
             if (heatmapEl) {
                 const habits = Object.values(habitMap);
-                if (habits.length === 0) {
+                if (habits.length === 0 && !hasSleep) {
                     heatmapEl.innerHTML = '<p class="text-xs text-gray-400 py-2">No habit data</p>';
                 } else {
-                    let html = '<table class="w-full" style="border-spacing:4px;border-collapse:separate"><thead><tr><td></td>';
-                    dayLabels.forEach(l => { html += `<td class="text-center text-xs text-gray-500 font-medium pb-1">${l}</td>`; });
+                    const cellSize = trendsMonthly ? 'w-4 h-4' : 'w-6 h-6';
+                    const fontSize = trendsMonthly ? 'font-size:5px' : 'font-size:7px';
+                    const headerStyle = trendsMonthly ? 'style="font-size:7px;writing-mode:vertical-rl;transform:rotate(180deg);height:40px"' : '';
+                    let html = '<table class="w-full" style="border-spacing:' + (trendsMonthly ? '2' : '4') + 'px;border-collapse:separate"><thead><tr><td></td>';
+                    dayLabels.forEach(l => { html += `<td class="text-center text-xs text-gray-500 font-medium pb-1" ${headerStyle}>${l}</td>`; });
                     html += '</tr></thead><tbody>';
+                    const invertedHabits = ['Crappy Food', 'Bad Expenditure', 'Nail Biting', 'Doom Scrolled', 'Distracted in Meeting'];
                     habits.forEach(h => {
+                        const inverted = invertedHabits.includes(h.name);
                         html += `<tr><td class="text-xs text-gray-700 pr-2 whitespace-nowrap">${h.emoji || ''} ${h.name}</td>`;
                         h.values.forEach(v => {
                             const done = v > 0;
-                            const bg = done ? 'bg-green-500' : 'bg-gray-200';
-                            const title = done ? (v > 1 ? `${v}x` : 'Done') : 'Missed';
-                            html += `<td class="text-center"><div class="w-6 h-6 mx-auto rounded-md ${bg} flex items-center justify-center" title="${title}">`;
-                            if (done && v > 1) html += `<span class="text-white text-xs font-bold">${v}</span>`;
+                            let bg, title;
+                            if (inverted) {
+                                bg = done ? 'bg-red-400' : 'bg-green-500';
+                                title = done ? (v > 1 ? `${v}x` : 'Yes') : 'Clean';
+                            } else {
+                                bg = done ? 'bg-green-500' : 'bg-red-400';
+                                title = done ? (v > 1 ? `${v}x` : 'Done') : 'Missed';
+                            }
+                            html += `<td class="text-center"><div class="${cellSize} mx-auto rounded-md ${bg} flex items-center justify-center" title="${title}">`;
+                            if (done && v > 1 && !trendsMonthly) html += `<span class="text-white text-xs font-bold">${v}</span>`;
                             html += '</div></td>';
                         });
                         html += '</tr>';
                     });
+                    // Sleep tracker rows
+                    if (hasSleep) {
+                        // Bedtime row — green if 8pm-10:30pm, red if later/earlier
+                        html += `<tr><td class="text-xs text-gray-700 pr-2 whitespace-nowrap">🌙 Bedtime</td>`;
+                        sleepData.bedtime.forEach(t => {
+                            if (!t) { html += `<td class="text-center"><div class="${cellSize} mx-auto rounded-md bg-gray-200"></div></td>`; return; }
+                            const ok = t >= '20:00' && t <= '22:30';
+                            const bg = ok ? 'bg-green-500' : 'bg-red-400';
+                            html += `<td class="text-center"><div class="${cellSize} mx-auto rounded-md ${bg} flex items-center justify-center" title="${t}"><span class="text-white" style="${fontSize};font-weight:600">${t.slice(0,5)}</span></div></td>`;
+                        });
+                        html += '</tr>';
+                        // Wake row — green if <= 05:30, red if later
+                        html += `<tr><td class="text-xs text-gray-700 pr-2 whitespace-nowrap">⏰ Wake up</td>`;
+                        sleepData.wake.forEach(t => {
+                            if (!t) { html += `<td class="text-center"><div class="${cellSize} mx-auto rounded-md bg-gray-200"></div></td>`; return; }
+                            const ok = t <= '05:30';
+                            const bg = ok ? 'bg-green-500' : 'bg-red-400';
+                            html += `<td class="text-center"><div class="${cellSize} mx-auto rounded-md ${bg} flex items-center justify-center" title="${t}"><span class="text-white" style="${fontSize};font-weight:600">${t.slice(0,5)}</span></div></td>`;
+                        });
+                        html += '</tr>';
+                    }
                     html += '</tbody></table>';
                     heatmapEl.innerHTML = html;
                 }
@@ -5844,14 +6232,38 @@
                 data: { labels, datasets: [{ data: exerciseData, borderColor: 'rgb(34,197,94)', backgroundColor: 'rgba(34,197,94,0.1)', fill: true }] },
                 options: commonOptions
             });
+
+            // Expenditure data
+            let expenditureData;
+            try {
+                expenditureData = await Promise.all(dates.map(async d => {
+                    const res = await fetch(`/api/expenditures/entries/${d}`);
+                    const entries = await res.json();
+                    if (Array.isArray(entries)) return entries.reduce((sum, e) => sum + (e.amount || 0), 0);
+                    return 0;
+                }));
+            } catch (e) {
+                console.error('Failed to fetch expenditure trends:', e);
+                expenditureData = dates.map(() => 0);
+            }
+
+            // Expenditure bar chart
+            upsertChart('chartExpenditure', {
+                type: 'bar',
+                data: { labels, datasets: [{ data: expenditureData, backgroundColor: 'rgba(239,68,68,0.6)', borderColor: 'rgb(239,68,68)', borderWidth: 1 }] },
+                options: { ...commonOptions, elements: { point: { radius: 0 } } }
+            });
         }
 
         async function refreshTrackers() {
             const date = getTrackerDateStr();
-            await Promise.all([loadHabitEntries(date), loadMoodEntry(date), loadExpenditureEntries(date)]);
+            await Promise.all([loadHabitEntries(date), loadMoodEntry(date), loadExpenditureEntries(date), loadBillItems(date, 'bills'), loadBillItems(date, 'groceries')]);
             renderHabitCards();
             renderMoodSection();
             renderExpenditureCards();
+            renderBillList('bills');
+            renderBillList('groceries');
+            checkBadExpenditureAutoToggle();
         }
 
         async function saveTextHabit(habitId) {
@@ -5865,6 +6277,29 @@
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ date, value: text ? 1 : 0, textValue: text })
+            });
+            renderHabitCards();
+        }
+
+        async function saveSleepTracker(habitId) {
+            const sleepInput = document.getElementById(`sleepTime_${habitId}`);
+            const wakeInput = document.getElementById(`wakeTime_${habitId}`);
+            if (!sleepInput || !wakeInput) return;
+            const sleep = sleepInput.value;
+            const wake = wakeInput.value;
+            const data = { sleep, wake };
+            const text = (sleep || wake) ? JSON.stringify(data) : '';
+            // value=1 if both times are good, 0 otherwise
+            const sleepOk = sleep && (sleep >= '20:00' && sleep <= '22:30');
+            const wakeOk = wake && wake <= '05:30';
+            const val = (sleepOk && wakeOk) ? 1 : 0;
+            habitTextValues[habitId] = text;
+            habitEntries[habitId] = val;
+            const date = getTrackerDateStr();
+            await fetch(`/api/habits/entries/${habitId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ date, value: val, textValue: text })
             });
             renderHabitCards();
         }
@@ -5924,6 +6359,39 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ date, amount })
             });
+            checkBadExpenditureAutoToggle();
+        }
+
+        async function checkBadExpenditureAutoToggle() {
+            const habit = habitDefinitions.find(h => h.name === 'Bad Expenditure');
+            if (!habit) return;
+
+            const badCategories = ['Food', 'Entertainment', 'Shopping'];
+            const hasBadSpend = expenditureCategories.some(cat =>
+                badCategories.includes(cat.name) && (expenditureEntries[cat.id] || 0) > 0
+            );
+
+            const currentVal = habitEntries[habit.id] || 0;
+            const isOn = currentVal > 0;
+            const date = getTrackerDateStr();
+
+            if (hasBadSpend && !isOn) {
+                habitEntries[habit.id] = 1;
+                renderHabitCards();
+                await fetch(`/api/habits/entries/${habit.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ date, value: 1 })
+                });
+            } else if (!hasBadSpend && isOn) {
+                habitEntries[habit.id] = 0;
+                renderHabitCards();
+                await fetch(`/api/habits/entries/${habit.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ date, value: 0 })
+                });
+            }
         }
 
         function renderExpenditureCards() {
@@ -5947,20 +6415,15 @@
                     </div>
                     <div class="flex items-center gap-1">
                         <span class="text-gray-500 text-sm">$</span>
-                        <input type="number" min="0" step="1" value="${amount || ''}" placeholder="0"
+                        <input type="number" min="0" step="0.01" value="${amount || ''}" placeholder="0.00"
                             class="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm text-right focus:outline-none focus:ring-2 focus:ring-red-400"
                             onchange="saveExpenditureEntry(${cat.id}, parseFloat(this.value) || 0)"
                             onkeyup="if(event.key==='Enter') this.blur()">
-                    </div>
-                    <div class="flex justify-center gap-1 mt-1">
-                        <button onclick="adjustExpenditure(${cat.id}, -1)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 w-6 h-6 rounded-full text-xs font-bold transition">-</button>
-                        <button onclick="adjustExpenditure(${cat.id}, 1)" class="bg-red-500 hover:bg-red-600 text-white w-6 h-6 rounded-full text-xs font-bold transition">+</button>
-                        <button onclick="adjustExpenditure(${cat.id}, 5)" class="bg-red-500 hover:bg-red-600 text-white w-6 h-6 rounded-full text-xs font-bold transition">+5</button>
                     </div>`;
                 grid.appendChild(card);
             });
             const totalEl = document.getElementById('expenditureDailyTotal');
-            if (totalEl) totalEl.textContent = `$${dailyTotal.toFixed(0)}`;
+            if (totalEl) totalEl.textContent = `$${dailyTotal.toFixed(2)}`;
         }
 
         function adjustExpenditure(categoryId, delta) {
@@ -5999,6 +6462,147 @@
                     alert(data.error || 'Failed to delete');
                 }
             } catch (e) { console.error('Failed to delete expenditure category:', e); }
+        }
+
+        // ============= BILLS & GROCERIES TRACKER =============
+        let billsItems = [];
+        let groceriesItems = [];
+
+        async function loadBillItems(date, category) {
+            try {
+                const res = await fetch(`/api/${category}/${date}`);
+                if (res.ok) {
+                    const items = await res.json();
+                    if (category === 'bills') billsItems = items;
+                    else groceriesItems = items;
+                }
+            } catch (e) { console.error(`Failed to load ${category}:`, e); }
+        }
+
+        function renderBillList(category) {
+            const items = category === 'bills' ? billsItems : groceriesItems;
+            const listEl = document.getElementById(`${category}List`);
+            const totalEl = document.getElementById(`${category}DailyTotal`);
+            if (!listEl) return;
+
+            if (items.length === 0) {
+                listEl.innerHTML = `<p class="text-sm text-gray-400 text-center py-4">No ${category} yet</p>`;
+            } else {
+                listEl.innerHTML = items.map((item, idx) => `
+                    <div class="flex items-center gap-2 px-3 py-2 rounded-lg ${idx % 2 === 0 ? 'bg-gray-50' : 'bg-white'} hover:bg-orange-50 transition group">
+                        <span class="text-xs text-gray-400 w-4">${idx + 1}.</span>
+                        <input type="text" value="${item.description.replace(/"/g, '&quot;')}"
+                            class="flex-1 text-sm bg-transparent border-b border-transparent focus:border-orange-400 focus:outline-none px-1 py-0.5"
+                            onblur="updateBillItem('${category}', ${item.id}, this.value, null)">
+                        <div class="flex items-center gap-0.5 bg-white border border-gray-200 rounded-lg px-2 py-1">
+                            <span class="text-gray-400 text-xs">$</span>
+                            <input type="number" min="0" step="0.01" value="${item.amount || ''}" placeholder="0.00"
+                                class="w-16 text-sm text-right bg-transparent border-none focus:outline-none"
+                                onchange="updateBillItem('${category}', ${item.id}, null, parseFloat(this.value) || 0)"
+                                onkeyup="if(event.key==='Enter') this.blur()">
+                        </div>
+                        <button onclick="deleteBillItem('${category}', ${item.id})" class="text-gray-300 hover:text-red-500 text-lg leading-none opacity-0 group-hover:opacity-100 transition">&times;</button>
+                    </div>
+                `).join('');
+            }
+
+            const total = items.reduce((sum, i) => sum + (i.amount || 0), 0);
+            if (totalEl) totalEl.textContent = `$${total.toFixed(2)}`;
+        }
+
+        function addBillItem(category) {
+            const listEl = document.getElementById(`${category}List`);
+            if (!listEl) return;
+            // Remove empty state message if present
+            const emptyMsg = listEl.querySelector('p.text-gray-400');
+            if (emptyMsg) emptyMsg.remove();
+            // Create inline add row
+            const row = document.createElement('div');
+            row.className = 'flex items-center gap-2 px-3 py-2 rounded-lg bg-orange-50 border border-orange-200';
+            row.innerHTML = `
+                <input type="text" placeholder="Description..."
+                    class="flex-1 text-sm bg-transparent border-b border-orange-300 focus:border-orange-500 focus:outline-none px-1 py-0.5"
+                    id="${category}_newDesc">
+                <div class="flex items-center gap-0.5 bg-white border border-gray-200 rounded-lg px-2 py-1">
+                    <span class="text-gray-400 text-xs">$</span>
+                    <input type="number" min="0" step="0.01" placeholder="0.00"
+                        class="w-16 text-sm text-right bg-transparent border-none focus:outline-none"
+                        id="${category}_newAmt">
+                </div>
+                <button onclick="confirmAddBillItem('${category}')" class="text-green-500 hover:text-green-700 text-lg leading-none font-bold">✓</button>
+                <button onclick="cancelAddBillItem('${category}')" class="text-gray-400 hover:text-red-500 text-lg leading-none">&times;</button>
+            `;
+            listEl.prepend(row);
+            row.querySelector(`#${category}_newDesc`).focus();
+            // Allow Enter to confirm
+            row.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') confirmAddBillItem(category);
+                if (e.key === 'Escape') cancelAddBillItem(category);
+            });
+        }
+
+        function cancelAddBillItem(category) {
+            renderBillList(category);
+        }
+
+        async function confirmAddBillItem(category) {
+            const descEl = document.getElementById(`${category}_newDesc`);
+            const amtEl = document.getElementById(`${category}_newAmt`);
+            if (!descEl) return;
+            const description = descEl.value.trim();
+            if (!description) { descEl.focus(); return; }
+            const amount = parseFloat(amtEl.value) || 0;
+            const date = getTrackerDateStr();
+            try {
+                const res = await fetch(`/api/${category}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ date, description, amount })
+                });
+                if (res.ok) {
+                    const item = await res.json();
+                    if (category === 'bills') billsItems.push(item);
+                    else groceriesItems.push(item);
+                    renderBillList(category);
+                }
+            } catch (e) { console.error(`Failed to add ${category} item:`, e); }
+        }
+
+        async function updateBillItem(category, id, description, amount) {
+            const items = category === 'bills' ? billsItems : groceriesItems;
+            const item = items.find(i => i.id === id);
+            if (!item) return;
+            const newDesc = description !== null ? description : item.description;
+            const newAmt = amount !== null ? amount : item.amount;
+            item.description = newDesc;
+            item.amount = newAmt;
+            renderBillList(category);
+            try {
+                await fetch(`/api/${category}/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ description: newDesc, amount: newAmt })
+                });
+            } catch (e) { console.error(`Failed to update ${category} item:`, e); }
+        }
+
+        async function deleteBillItem(category, id) {
+            const items = category === 'bills' ? billsItems : groceriesItems;
+            try {
+                const res = await fetch(`/api/${category}/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    if (category === 'bills') billsItems = billsItems.filter(i => i.id !== id);
+                    else groceriesItems = groceriesItems.filter(i => i.id !== id);
+                    renderBillList(category);
+                }
+            } catch (e) { console.error(`Failed to delete ${category} item:`, e); }
+        }
+
+        async function refreshBillsAndGroceries() {
+            const date = getTrackerDateStr();
+            await Promise.all([loadBillItems(date, 'bills'), loadBillItems(date, 'groceries')]);
+            renderBillList('bills');
+            renderBillList('groceries');
         }
 
         // CONSOLIDATED INITIALIZATION - Single DOMContentLoaded listener to prevent race conditions
@@ -10178,17 +10782,17 @@
                     weeklyDeficitGoal: 5250
                 };
                 
-                localStorage.setItem('weightLossGoals', JSON.stringify(testGoals));
-                const loadedGoals = JSON.parse(localStorage.getItem('weightLossGoals'));
-                
+                localStorage.setItem('weightLossGoals_test', JSON.stringify(testGoals));
+                const loadedGoals = JSON.parse(localStorage.getItem('weightLossGoals_test'));
+
                 if (loadedGoals.weeklyLoss === testGoals.weeklyLoss) {
                     console.log('✅ LocalStorage integration works');
                 } else {
                     throw new Error('LocalStorage integration failed');
                 }
-                
-                // Restore original goals
-                localStorage.setItem('weightLossGoals', JSON.stringify(weightLossGoals));
+
+                // Clean up test key
+                localStorage.removeItem('weightLossGoals_test');
                 
             } catch (error) {
                 console.log('❌ TEST 6 FAILED:', error.message);
@@ -10224,8 +10828,18 @@
         // Global variables for enhanced tracking
         let weeklyDeficitGoal = 3500; // Default: 1 lb per week
         let dailyCalorieTarget = 0;
-        let weeklyDeficitData = JSON.parse(localStorage.getItem('weeklyDeficitData') || '{}');
-        let weightLossGoals = JSON.parse(localStorage.getItem('weightLossGoals') || '{"weeklyLoss": 1, "dailyDeficit": 500}');
+        let weeklyDeficitData = {};
+        let weightLossGoals = { weeklyLoss: 1, dailyDeficit: 500 };
+
+        // Load enhanced tracking settings from DB on init
+        (async function loadEnhancedTrackingSettings() {
+            try {
+                const res = await fetch('/api/settings');
+                const settings = await res.json();
+                if (settings.weeklyDeficitData) weeklyDeficitData = JSON.parse(settings.weeklyDeficitData);
+                if (settings.weightLossGoals) weightLossGoals = JSON.parse(settings.weightLossGoals);
+            } catch (e) { console.error('Failed to load enhanced tracking settings:', e); }
+        })();
         
         // Goal Setting Modal Functions
         function openGoalSettingModal() {
@@ -10451,22 +11065,22 @@
                 lastUpdated: new Date().toISOString()
             };
             
-            localStorage.setItem('weightLossGoals', JSON.stringify(weightLossGoals));
-            
+            fetch('/api/settings/weightLossGoals', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: JSON.stringify(weightLossGoals) }) }).catch(e => console.error('Failed to save weightLossGoals:', e));
+
             // Update global variables
             weeklyDeficitGoal = weightLossGoals.weeklyDeficitGoal;
             dailyCalorieTarget = dailyTarget;
             userCalorieGoal = dailyTarget;
-            localStorage.setItem('userCalorieGoal', userCalorieGoal.toString());
-            
+            fetch('/api/settings/userCalorieGoal', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: userCalorieGoal.toString() }) }).catch(e => console.error('Failed to save userCalorieGoal:', e));
+
             // Update displays
             updateWeightDisplay();
             updateWeeklyDeficitDisplay();
-            
+
             closeGoalSettingModal();
             showSuccessMessage(`🎯 Goals saved! Target: ${dailyTarget.toLocaleString()} cal/day for ${weeklyLoss.toFixed(1)} lbs/week loss`);
         }
-        
+
         // Minimum Calorie Safety Functions
         function adjustToSafeCalories(minCalories) {
             console.log('🛡️ SAFETY: Adjusting to safe calorie goal:', minCalories);
@@ -10499,13 +11113,13 @@
                 safetyAdjusted: true // Flag to indicate this was safety-adjusted
             };
             
-            localStorage.setItem('weightLossGoals', JSON.stringify(weightLossGoals));
-            
+            fetch('/api/settings/weightLossGoals', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: JSON.stringify(weightLossGoals) }) }).catch(e => console.error('Failed to save weightLossGoals:', e));
+
             // Update global variables
             weeklyDeficitGoal = weightLossGoals.weeklyDeficitGoal;
             dailyCalorieTarget = minCalories;
             userCalorieGoal = minCalories;
-            localStorage.setItem('userCalorieGoal', userCalorieGoal.toString());
+            fetch('/api/settings/userCalorieGoal', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value: userCalorieGoal.toString() }) }).catch(e => console.error('Failed to save userCalorieGoal:', e));
             
             // Update displays
             updateWeightDisplay();
@@ -10666,10 +11280,14 @@
         }
         
         // Weekly Deficit Tracking Functions
-        function updateWeeklyDeficitDisplay() {
+        async function updateWeeklyDeficitDisplay() {
             console.log('📈 WEEKLY: Updating weekly deficit display');
-            
+
             const currentWeek = getCurrentWeekDates();
+
+            // Ensure exercises are loaded for the whole week
+            await Promise.all(currentWeek.map(d => loadExercisesForDate(formatDateKey(d))));
+
             const weeklyData = calculateWeeklyDeficit(currentWeek);
             
             // Update week display
