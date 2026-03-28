@@ -628,6 +628,19 @@ app.put('/api/habits/entries/:habitId', requireDB, async (req, res) => {
     }
 });
 
+// ============= MEDICATION TRACKER API =============
+
+app.get('/api/medications/:habitName/stats', requireDB, async (req, res) => {
+    try {
+        const habitName = req.params.habitName;
+        const stats = await db.getMedicationStats(habitName);
+        res.json(stats);
+    } catch (error) {
+        console.error('Error reading medication stats:', error);
+        res.status(500).json({ error: 'Failed to read medication stats' });
+    }
+});
+
 // ============= MOOD API =============
 
 app.get('/api/mood/:date', requireDB, async (req, res) => {

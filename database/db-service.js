@@ -784,6 +784,120 @@ class DatabaseService {
         return { success: true };
     }
 
+    // ============= MEDICATION STATS METHODS =============
+
+    async getMedicationStats(habitName) {
+        // Get habit ID by name
+        const habit = await this.get(
+            `SELECT id FROM habit_definitions WHERE name = ?`,
+            [habitName]
+        );
+        
+        if (!habit) {
+            return { error: 'Habit not found', habitName };
+        }
+
+        // Get all entries for this habit (ordered by date)
+        const entries = await this.all(
+            `SELECT date, value FROM habit_entries WHERE habit_id = ? ORDER BY date ASC`,
+            [habit.id]
+        );
+
+        // Start date: March 21, 2026 (when you started tracking)
+        const startDate = new Date(2026, 2, 21); // March 21, 2026
+        const today = new Date();
+        const todayKey = this._formatDateKey(today);
+
+        // Calculate year start (January 1 of current year or start date, whichever is later)
+        const yearStart = startDate;
+
+        // Build a map of dates with values
+        const dateMap = {};
+        entries.forEach(e => {
+            dateMap[e.date] = e.value;
+        });
+
+        // Calculate current streak (consecutive days taken from today backwards)
+        let currentStreak = 0;
+        let checkDate = new Date(today);
+        while (checkDate >= startDate) {
+            const dateKey = this._formatDateKey(checkDate);
+            if (dateMap[dateKey] && dateMap[dateKey] > 0) {
+                currentStreak++;
+            } else {
+                break;
+            }
+            checkDate.setDate(checkDate.getDate() - 1);
+        }
+
+        // Calculate longest streak ever
+        let longestStreak = 0;
+        let tempStreak = 0;
+        let tempStreakStart = null;
+        let longestStreakStart = null;
+
+        for (let d = new Date(startDate); d <= today; d.setDate(d.getDate() + 1)) {
+            const dateKey = this._formatDateKey(d);
+            if (dateMap[dateKey] && dateMap[dateKey] > 0) {
+                if (tempStreak === 0) {
+                    tempStreakStart = new Date(d);
+                }
+                tempStreak++;
+                if (tempStreak > longestStreak) {
+                    longestStreak = tempStreak;
+                    longestStreakStart = tempStreakStart;
+                }
+            } else {
+                tempStreak = 0;
+                tempStreakStart = null;
+            }
+        }
+
+        // Count total days taken and days skipped in the year
+        let daysTaken = 0;
+        let daysSkipped = 0;
+        
+        for (let d = new Date(yearStart); d <= today; d.setDate(d.getDate() + 1)) {
+            const dateKey = this._formatDateKey(d);
+            if (dateMap[dateKey] && dateMap[dateKey] > 0) {
+                daysTaken++;
+            } else {
+                daysSkipped++;
+            }
+        }
+
+        // Get first date taken
+        let firstDateTaken = null;
+        for (let d = new Date(startDate); d <= today; d.setDate(d.getDate() + 1)) {
+            const dateKey = this._formatDateKey(d);
+            if (dateMap[dateKey] && dateMap[dateKey] > 0) {
+                firstDateTaken = dateKey;
+                break;
+            }
+        }
+
+        return {
+            habitName,
+            habitId: habit.id,
+            startDate: this._formatDateKey(startDate),
+            firstDateTaken,
+            currentStreak,
+            longestStreak,
+            longestStreakStart: longestStreakStart ? this._formatDateKey(longestStreakStart) : null,
+            daysTaken,
+            daysSkipped,
+            totalDaysTracked: daysTaken + daysSkipped,
+            adherencePercentage: ((daysTaken / (daysTaken + daysSkipped)) * 100).toFixed(1)
+        };
+    }
+
+    _formatDateKey(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
     // ============= MOOD ENTRIES METHODS =============
 
     async getMoodEntry(date) {
